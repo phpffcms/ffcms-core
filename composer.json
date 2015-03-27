@@ -2,7 +2,7 @@
   "name": "phpffcms/ffcms-core",
   "description": "Core package for FFCMS 3 version",
   "type": "library",
-  "keywords": ["html"],
+  "keywords": ["php", "mvc", "framework"],
   "homepage": "http://ffcms.org",
   "license": "MINT",
   "authors": [
@@ -16,6 +16,6 @@
     "php": ">=5.4"
   },
   "autoload": {
-    "psr-0": { "": "src/" }
+    "psr-4": { "Ffcms\\": "src/" }
   }
 }
