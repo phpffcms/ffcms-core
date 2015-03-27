@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Exception;
+namespace Ffcms\Core\Exception;
 
 class SystemException {
 

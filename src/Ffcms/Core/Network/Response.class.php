@@ -1,10 +1,10 @@
 <?php
 
-namespace Core\Network;
+namespace Ffcms\Core\Network;
 
-use Core\App;
-use Core\Exception\SystemException;
-use Core\Helper\String;
+use Ffcms\Core\App;
+use Ffcms\Core\Exception\SystemException;
+use Ffcms\Core\Helper\String;
 
 
 class Response {

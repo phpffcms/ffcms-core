@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Ffcms\Core;
 
 class View {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Network;
+namespace Ffcms\Core\Network;
 
 
 /**

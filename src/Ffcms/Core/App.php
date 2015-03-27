@@ -1,10 +1,10 @@
 <?php
 
-namespace Core;
+namespace Ffcms\Core;
 
-use Core\Network\Request;
-use Core\Exception\RequestException;
-use Core\Network\Response;
+use Ffcms\Core\Network\Request;
+use Ffcms\Core\Exception\RequestException;
+use Ffcms\Core\Network\Response;
 
 class App {
 

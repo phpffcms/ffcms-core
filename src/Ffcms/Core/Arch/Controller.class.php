@@ -1,8 +1,8 @@
 <?php
 
-namespace Core\Arch;
+namespace Ffcms\Core\Arch;
 
-use Core\App;
+use Ffcms\Core\App;
 
 abstract class Controller {
 

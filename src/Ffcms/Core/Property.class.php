@@ -1,8 +1,8 @@
 <?php
 
-namespace Core;
+namespace Ffcms\Core;
 
-use Core\Exception\SystemException;
+use Ffcms\Core\Exception\SystemException;
 
 class Property {
 

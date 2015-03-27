@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Core\Helper;
+namespace Ffcms\Core\Helper;
 
 class String {
 
