@@ -1,0 +1,21 @@
+{
+  "name": "phpffcms/ffcms-core",
+  "description": "Core package for FFCMS 3 version",
+  "type": "library",
+  "keywords": ["html"],
+  "homepage": "http://ffcms.org",
+  "license": "MINT",
+  "authors": [
+    {
+      "name": "Pyatinskyi M.M.",
+      "email": "zenn1989@gmail.com",
+      "homepage": "http://ffcms.ru"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "autoload": {
+    "psr-0": {"Core": "Core/"}
+  }
+}
