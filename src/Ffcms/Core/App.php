@@ -28,6 +28,11 @@ class App {
      */
     public static $Data;
 
+    /**
+     * @var View
+     */
+    public static $View;
+
 
 
     public static function build()
@@ -36,6 +41,7 @@ class App {
         self::$Property = new Property();
         self::$Response = new Response();
         self::$Data = new Data();
+        self::$View = new View();
     }
 
     public static function display()
