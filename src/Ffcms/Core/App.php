@@ -2,6 +2,8 @@
 
 namespace Ffcms\Core;
 
+use Core\Helper\Security;
+
 class App {
 
     /**
@@ -34,12 +36,18 @@ class App {
      */
     public static $Debug;
 
+    /**
+     * @var \Core\Helper\Security
+     */
+    public static $Security;
+
 
     /**
      * Load entry point for another logic
      */
     public static function build()
     {
+        self::$Security = new Security();
         self::$Debug = new \Core\Debug();
         self::$Request = new \Core\Network\Request();
         self::$Property = new \Core\Property();
@@ -52,10 +60,10 @@ class App {
     public static function display()
     {
         try {
-            $controller_path = '/controller/' . self::$Request->getController() . ".php";
+            $controller_path = '/controller/' . workground . '/' . self::$Request->getController() . ".php";
             if(file_exists(root . $controller_path) && is_readable(root . $controller_path)) {
                 include_once(root . $controller_path);
-                $cname = 'Controller\\' . self::$Request->getController();
+                $cname = 'Controller\\' . workground . '\\' . self::$Request->getController();
                 if(class_exists($cname)) {
                     $load = new $cname;
                     $actionName = 'action' . ucfirst(self::$Request->getAction());

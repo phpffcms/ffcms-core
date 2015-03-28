@@ -11,7 +11,7 @@ class Data {
 
     function __construct()
     {
-        $this->viewPath = root . '/View/interface_user/' . App::$Property->get('theme');
+        $this->viewPath = root . '/View/' . workground . '/' . App::$Property->get('theme');
         try {
             if(!file_exists($this->viewPath))
                 throw new \Exception("Could not load app views: " . $this->viewPath);
