@@ -17,8 +17,6 @@ abstract class Controller {
      */
     public $response;
 
-    protected $globalVars;
-
     public function __construct()
     {
         $this->before();
@@ -53,8 +51,8 @@ abstract class Controller {
     {
         $body = $this->response;
         $global = new \stdClass();
-        if(is_array(App::$View->getGlobal())) {
-            foreach(App::$View->getGlobal() as $var => $value) {
+        if(is_array(App::$Response->getGlobal())) {
+            foreach(App::$Response->getGlobal() as $var => $value) {
                 $global->{$var} = $value;
             }
         }
@@ -65,13 +63,22 @@ abstract class Controller {
 
     public function after() {}
 
+    /**
+     * Set single global variable
+     * @param $var
+     * @param $value
+     */
     public function setGlobalVar($var, $value)
     {
-        App::$View->setGlobal($var, $value);
+        App::$Response->setGlobal($var, $value);
     }
 
+    /**
+     * Set global variables as array key=>value
+     * @param $array
+     */
     public function setGlobalVarArray($array)
     {
-        App::$View->setGlobalArray($array);
+        App::$Response->setGlobalArray($array);
     }
 }

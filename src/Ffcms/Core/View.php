@@ -7,9 +7,49 @@ use Core\Arch\ErrorController;
 
 class View {
 
-    protected $globalVars;
+    protected $view_object;
 
-    public function render($view, $params = [])
+    public function __construct($view_file = null, $controller_name = null)
+    {
+        if(!is_null($view_file) && !is_null($controller_name)) {
+            if(String::startsWith('Controller\\', $controller_name))
+                $controller_name = mb_substr($controller_name, String::length('Controller\\'), null, "UTF-8");
+            if(String::endsWith('.php', $view_file))
+                $view_file = mb_substr($view_file, 0, String::length($view_file)-4, "UTF-8");
+
+            $view_path = App::$Data->viewPath . '/' . strtolower($controller_name) . "/" . strtolower($view_file) . '.php';
+            try {
+                if(file_exists($view_path))
+                    $this->view_object = $view_path;
+                else
+                    throw new \Exception("New view object not founded: " . str_replace(root, '', $view_path));
+            } catch(\Exception $e) {
+                App::$Debug->bar->getCollector('exceptions')->addException($e);
+                new ErrorController($e);
+            }
+        }
+    }
+
+    /**
+     * Return out result of object viewer rendering. Using only with $view = new View('name', 'controller'); $view->out(['a' => 'b']);
+     * @param array $params
+     * @return string
+     */
+    public function out($params)
+    {
+        if(is_null($this->view_object) || !is_array($params))
+            return null;
+        return self::renderSandbox($this->view_object, $params);
+    }
+
+    /**
+     * Render view ONLY from controller interface
+     * @param string $view
+     * @param array $params
+     * @return string
+     * @throws \DebugBar\DebugBarException
+     */
+    public static function render($view, $params = [])
     {
         $call_log = debug_backtrace();
         $call_controller = null;
@@ -37,10 +77,10 @@ class View {
             App::$Debug->bar->getCollector('exceptions')->addException($e);
             new ErrorController($e);
         }
-        return $this->renderSandbox($view_path, $params);
+        return self::renderSandbox($view_path, $params);
     }
 
-    protected function renderSandbox($path, $params = [])
+    protected static function renderSandbox($path, $params = [])
     {
         foreach($params as $key=>$value)
         {
@@ -54,38 +94,4 @@ class View {
         ob_end_clean();
         return $response;
     }
-
-    /**
-     * Set global variable for Views
-     * @param string $var
-     * @param string $value
-     */
-    public function setGlobal($var, $value)
-    {
-        $this->globalVars[$var] = $value;
-    }
-
-    /**
-     * Set global variable from key=>value array (key = varname)
-     * @param array $array
-     */
-    public function setGlobalArray($array)
-    {
-        if(!is_array($array))
-            return;
-        foreach($array as $var => $value)
-        {
-            $this->globalVars[$var] = $value;
-        }
-    }
-
-    /**
-     * Get all global variables
-     * @return array|null
-     */
-    public function getGlobal()
-    {
-        return $this->globalVars;
-    }
-
 }
