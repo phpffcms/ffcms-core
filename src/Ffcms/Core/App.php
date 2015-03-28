@@ -2,79 +2,85 @@
 
 namespace Ffcms\Core;
 
-use Ffcms\Core\Network\Request;
-use Ffcms\Core\Exception\RequestException;
-use Ffcms\Core\Network\Response;
-
 class App {
 
     /**
-     * @var Request
+     * @var \Core\Network\Request
      */
     public static $Request;
 
     /**
-     * @var Property
+     * @var \Core\Property
      */
     public static $Property;
 
     /**
-     * @var Response
+     * @var \Core\Network\Response
      */
     public static $Response;
 
     /**
-     * @var Data
+     * @var \Core\Data
      */
     public static $Data;
 
     /**
-     * @var View
+     * @var \Core\View
      */
     public static $View;
 
+    /**
+     * @var \Core\Debug
+     */
+    public static $Debug;
 
 
+    /**
+     * Load entry point for another logic
+     */
     public static function build()
     {
-        self::$Request = new Request();
-        self::$Property = new Property();
-        self::$Response = new Response();
-        self::$Data = new Data();
-        self::$View = new View();
+        self::$Debug = new \Core\Debug();
+        self::$Request = new \Core\Network\Request();
+        self::$Property = new \Core\Property();
+        self::$Response = new \Core\Network\Response();
+        self::$Data = new \Core\Data();
+        self::$View = new \Core\View();
+
     }
 
     public static function display()
     {
-        $controller = root . '/controller/' . self::$Request->getController() . ".php";
-        $exception = false;
-        if(file_exists($controller) && is_readable($controller)) {
-            include_once($controller);
-            if(class_exists('controller\\' . self::$Request->getController())) {
-                $cname = 'controller\\' . self::$Request->getController();
-                $load = @new $cname;
-                $actionName = 'action' . ucfirst(self::$Request->getAction());
-                if(method_exists($cname, $actionName)) {
-                    if(self::$Request->getID() != null) {
-                        if(self::$Request->getAdd() != null) {
-                            @$load->$actionName(self::$Request->getID(), self::$Request->getAdd());
+        try {
+            $controller_path = '/controller/' . self::$Request->getController() . ".php";
+            if(file_exists(root . $controller_path) && is_readable(root . $controller_path)) {
+                include_once(root . $controller_path);
+                $cname = 'Controller\\' . self::$Request->getController();
+                if(class_exists($cname)) {
+                    $load = new $cname;
+                    $actionName = 'action' . ucfirst(self::$Request->getAction());
+                    if(method_exists($cname, $actionName)) {
+                        if(self::$Request->getID() != null) {
+                            if(self::$Request->getAdd() != null) {
+                                @$load->$actionName(self::$Request->getID(), self::$Request->getAdd());
+                            } else {
+                                @$load->$actionName(self::$Request->getID());
+                            }
                         } else {
-                            @$load->$actionName(self::$Request->getID());
+                            @$load->$actionName();
                         }
                     } else {
-                        @$load->$actionName();
+                        throw new \Exception("Method " . $actionName . '() not founded in ' . $cname . ' in file {root}' . $controller_path);
                     }
                 } else {
-                    $exception = true;
+                    throw new \Exception("Namespace\\Class - " . $cname . " not founded in {root}" . $controller_path);
                 }
             } else {
-                $exception = true;
+                throw new \Exception('Controller not founded: {root}' . $controller_path);
             }
-        } else {
-            $exception = true;
-        }
-        if($exception) {
-            new RequestException('Page not founded');
+        } catch(\Exception $e) {
+            self::$Debug->bar->getCollector('exceptions')->addException($e);
+            new \Core\Arch\ErrorController('Unable to find this URL');
         }
     }
 

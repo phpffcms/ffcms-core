@@ -2,10 +2,6 @@
 
 namespace Ffcms\Core\Network;
 
-use Ffcms\Core\App;
-use Ffcms\Core\Exception\SystemException;
-use Ffcms\Core\Helper\String;
-
 
 class Response {
     /**

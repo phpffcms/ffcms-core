@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core;
 
-use Ffcms\Core\Exception\SystemException;
+use Core\Exception\NativeException;
 
 class Data {
 
@@ -12,7 +12,12 @@ class Data {
     function __construct()
     {
         $this->viewPath = root . '/View/interface_user/' . App::$Property->get('theme');
-        if(!file_exists($this->viewPath))
-            new SystemException("Could not load app views: " . $this->viewPath);
+        try {
+            if(!file_exists($this->viewPath))
+                throw new \Exception("Could not load app views: " . $this->viewPath);
+        } catch(\Exception $e) {
+            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            new NativeException($e);
+        }
     }
 }

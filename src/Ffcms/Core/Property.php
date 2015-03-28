@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core;
 
-use Ffcms\Core\Exception\SystemException;
+use Core\Exception\NativeException;
 
 class Property {
 
@@ -17,7 +17,7 @@ class Property {
                 self::$config = $cfg;
             }
         } else {
-            new SystemException('file config.php not available');
+            new NativeException('file config.php not available');
         }
     }
 

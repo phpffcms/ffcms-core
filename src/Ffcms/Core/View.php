@@ -2,8 +2,8 @@
 
 namespace Ffcms\Core;
 
-use Ffcms\Core\Helper\String;
-use Ffcms\Core\Exception\SystemException;
+use Core\Helper\String;
+use Core\Arch\ErrorController;
 
 class View {
 
@@ -19,16 +19,23 @@ class View {
             }
         }
 
-        if($call_controller === null) {
-            new SystemException("View->render() not found controller!");
+        try {
+           if(is_null($call_controller))
+               throw new \Exception("On call View->render() not founded caller controller" . $call_log);
+        } catch(\Exception $e) {
+            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            new ErrorController($e);
         }
 
         $controller_name = mb_substr($call_controller, String::length('Controller\\'), null, "UTF-8");
         $view_path = App::$Data->viewPath . '/' . strtolower($controller_name) . "/" . strtolower($view) . '.php';
 
-        if(!file_exists($view_path) || !is_readable($view_path))
-        {
-            new SystemException("Viewer " . $view . " is not founded!");
+        try {
+            if(!file_exists($view_path) || !is_readable($view_path))
+                throw new \Exception("Viewer '" . $view . "' is not founded!");
+        } catch(\Exception $e) {
+            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            new ErrorController($e);
         }
         return $this->renderSandbox($view_path, $params);
     }

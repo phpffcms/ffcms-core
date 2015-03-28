@@ -2,7 +2,8 @@
 
 namespace Ffcms\Core\Arch;
 
-use Ffcms\Core\App;
+use \Core\App;
+use \Core\Exception\NativeException;
 
 abstract class Controller {
 
@@ -18,7 +19,7 @@ abstract class Controller {
 
     protected $globalVars;
 
-    public final function __construct()
+    public function __construct()
     {
         $this->before();
     }
@@ -32,11 +33,22 @@ abstract class Controller {
     {
         $this->after();
         $layoutPath = App::$Data->viewPath . '/layout/' . self::$layout;
-        if(file_exists($layoutPath) && is_readable($layoutPath)) {
-            $this->build($layoutPath);
+        try {
+            if (file_exists($layoutPath) && is_readable($layoutPath)) {
+                $this->build($layoutPath);
+            } else {
+                throw new \Exception('Layout not founded: {root}' . str_replace(root, '', $layoutPath));
+            }
+        } catch(\Exception $e) {
+            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            new NativeException($e);
         }
     }
 
+    /**
+     * Build variables and display output html
+     * @param string $layout
+     */
     protected final function build($layout)
     {
         $body = $this->response;
@@ -46,6 +58,8 @@ abstract class Controller {
                 $global->{$var} = $value;
             }
         }
+        App::$Debug->bar->getCollector('messages')->info("============== Template global variables ==============");
+        App::$Debug->bar->getCollector('messages')->info(sizeof((array)$global) > 0 ? $global : 'empty');
         @include_once($layout);
     }
 
@@ -60,6 +74,4 @@ abstract class Controller {
     {
         App::$View->setGlobalArray($array);
     }
-
-
 }
