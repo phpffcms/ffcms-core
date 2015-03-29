@@ -2,6 +2,8 @@
 
 namespace Ffcms\Core\Helper;
 
+use \Core\App;
+
 class Security {
 
     protected $purifier;
@@ -24,6 +26,16 @@ class Security {
     public function purifier()
     {
         return $this->purifier;
+    }
+
+    /**
+     * Crypt password secure with Blow fish crypt algo (defined in salt)
+     * @param string $password
+     * @return string
+     */
+    public function password_hash($password)
+    {
+        return crypt($password, App::$Property->get('password_salt'));
     }
 
 

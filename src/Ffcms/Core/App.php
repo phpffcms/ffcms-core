@@ -22,12 +22,12 @@ class App {
     public static $Response;
 
     /**
-     * @var \Core\Data
+     * @var \Core\Alias
      */
-    public static $Data;
+    public static $Alias;
 
     /**
-     * @var \Core\View
+     * @var \Core\Arch\View
      */
     public static $View;
 
@@ -52,8 +52,8 @@ class App {
         self::$Request = new \Core\Network\Request();
         self::$Property = new \Core\Property();
         self::$Response = new \Core\Network\Response();
-        self::$Data = new \Core\Data();
-        self::$View = new \Core\View();
+        self::$Alias = new \Core\Alias();
+        self::$View = new \Core\Arch\View();
 
     }
 

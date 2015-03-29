@@ -30,7 +30,7 @@ abstract class Controller {
     public final function __destruct()
     {
         $this->after();
-        $layoutPath = App::$Data->viewPath . '/layout/' . self::$layout;
+        $layoutPath = App::$Alias->currentViewPath . '/layout/' . self::$layout;
         try {
             if (file_exists($layoutPath) && is_readable($layoutPath)) {
                 $this->build($layoutPath);
@@ -50,12 +50,7 @@ abstract class Controller {
     protected final function build($layout)
     {
         $body = $this->response;
-        $global = new \stdClass();
-        if(is_array(App::$Response->getGlobal())) {
-            foreach(App::$Response->getGlobal() as $var => $value) {
-                $global->{$var} = $value;
-            }
-        }
+        $global = App::$Response->buildGlobal();
         App::$Debug->bar->getCollector('messages')->info("============== Template global variables ==============");
         App::$Debug->bar->getCollector('messages')->info(sizeof((array)$global) > 0 ? $global : 'empty');
         @include_once($layout);

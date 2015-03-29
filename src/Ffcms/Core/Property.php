@@ -17,7 +17,7 @@ class Property {
                 self::$config = $cfg;
             }
         } else {
-            new NativeException('file config.php not available');
+            new NativeException('File config.php not available');
         }
     }
 

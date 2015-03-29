@@ -8,6 +8,7 @@ class NativeException {
 
     public function __construct($message = null)
     {
+        App::$Response->setHeader(404);
         echo $this->rawHTML($message);
         die();
     }

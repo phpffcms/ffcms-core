@@ -39,23 +39,58 @@ class Request {
             self::$action = 'index';
     }
 
+    /**
+     * Get current controller name
+     * @return string
+     */
     public function getController()
     {
         return ucfirst(strtolower(self::$controller));
     }
 
+    /**
+     * Get current controller action() name
+     * @return string
+     */
     public function getAction()
     {
         return ucfirst(strtolower(self::$action));
     }
 
+    /**
+     * Get current $id argument for controller action
+     * @return string
+     */
     public function getID()
     {
         return strtolower(self::$id);
     }
 
+    /**
+     * Get current $add argument for controller action
+     * @return string
+     */
     public function getAdd()
     {
         return strtolower(self::$add);
+    }
+
+    /**
+     * Get data from global $_POST with $key. Like $_POST[$key]
+     * @param string|null $key
+     * @return string|null
+     */
+    public function post($key = null)
+    {
+        return $key === null ? $_POST : $_POST[$key];
+    }
+    /**
+     * Get data from global $_GET with $key according urldecode(). Like urldecode($_GET[$key])
+     * @param string $key
+     * @return string|null
+     */
+    public function get($key = null)
+    {
+        return $key === null ? $_GET : urldecode($_GET[$key]);
     }
 }

@@ -1,9 +1,10 @@
 <?php
 
-namespace Ffcms\Core;
+namespace Ffcms\Core\Arch;
 
 use Core\Helper\String;
 use Core\Arch\ErrorController;
+use Core\App;
 
 class View {
 
@@ -13,11 +14,11 @@ class View {
     {
         if(!is_null($view_file) && !is_null($controller_name)) {
             if(String::startsWith('Controller\\', $controller_name))
-                $controller_name = mb_substr($controller_name, String::length('Controller\\'), null, "UTF-8");
+                $controller_name = String::substr($controller_name, String::length('Controller\\'));
             if(String::endsWith('.php', $view_file))
-                $view_file = mb_substr($view_file, 0, String::length($view_file)-4, "UTF-8");
+                $view_file = String::substr($view_file, 0, String::length($view_file)-4);
 
-            $view_path = App::$Data->viewPath . '/' . strtolower($controller_name) . "/" . strtolower($view_file) . '.php';
+            $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . "/" . strtolower($view_file) . '.php';
             try {
                 if(file_exists($view_path))
                     $this->view_object = $view_path;
@@ -67,8 +68,8 @@ class View {
             new ErrorController($e);
         }
 
-        $controller_name = mb_substr($call_controller, String::length('Controller\\'), null, "UTF-8");
-        $view_path = App::$Data->viewPath . '/' . strtolower($controller_name) . "/" . strtolower($view) . '.php';
+        $controller_name = String::substr($call_controller, String::length('Controller\\'));
+        $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . "/" . strtolower($view) . '.php';
 
         try {
             if(!file_exists($view_path) || !is_readable($view_path))
@@ -82,10 +83,12 @@ class View {
 
     protected static function renderSandbox($path, $params = [])
     {
+        // render defaults params
         foreach($params as $key=>$value)
         {
             $$key = $value;
         }
+        $global = self::buildGlobal();
         // turn on output buffer
         ob_start();
         include_once($path);
@@ -93,5 +96,14 @@ class View {
         // turn off buffer
         ob_end_clean();
         return $response;
+    }
+
+    public static function buildGlobal()
+    {
+        $global = new \stdClass();
+        foreach(App::$Response->getGlobal() as $var => $value) {
+            $global->$var = $value;
+        }
+        return $global;
     }
 }
