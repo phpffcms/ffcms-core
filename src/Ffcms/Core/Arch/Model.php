@@ -2,25 +2,16 @@
 
 namespace Ffcms\Core\Arch;
 
-use \Core\Helper\Security;
 use Core\Helper\String;
 
-class Model {
+abstract class Model extends \Core\Arch\Constructors\Magic {
 
-    /**
-    public function __set($param, $value)
+    public final function construct()
     {
-        if(!in_array($param, $this->reservedNames()))
-            $this->properties[$param] = \App::$Security->purifier()->purify($value);
+        $this->before();
     }
 
-    public function __get($param)
-    {
-        if(!in_array($param, $this->reservedNames()))
-            return \App::$Security->purifier()->purify($this->properties[$param]);
-        return null;
-    }
-    */
+    public function before() {}
 
     /**
      * Set attribute labels for model variables
@@ -59,7 +50,7 @@ class Model {
     public final function validateRules()
     {
         $rules = $this->setRules();
-        var_dump($rules);
+        //var_dump($rules);
     }
 
 
@@ -84,5 +75,7 @@ class Model {
             'labels',
         ];
     }
+
+
 
 }

@@ -6,7 +6,7 @@ use Core\Helper\String;
 use Core\Arch\ErrorController;
 use Core\App;
 
-class View {
+abstract class View extends \Core\Arch\Constructors\Magic {
 
     protected $view_object;
 
@@ -81,7 +81,19 @@ class View {
         return self::renderSandbox($view_path, $params);
     }
 
-    protected static function renderSandbox($path, $params = [])
+    /**
+     * Render viewer anywhere
+     * @param string $viewPath
+     * @param array $params
+     * @return string
+     */
+    public function show($viewPath, $params = [])
+    {
+        $viewPath = App::$Alias->currentViewPath . '/' . ltrim($viewPath, '/') . '.php';
+        return $this->renderSandbox($viewPath, $params);
+    }
+
+    protected function renderSandbox($path, $params = [])
     {
         // render defaults params
         foreach($params as $key=>$value)
@@ -89,6 +101,7 @@ class View {
             $$key = $value;
         }
         $global = self::buildGlobal();
+        $self = $this;
         // turn on output buffer
         ob_start();
         include_once($path);
@@ -98,12 +111,17 @@ class View {
         return $response;
     }
 
-    public static function buildGlobal()
+    public function buildGlobal()
     {
         $global = new \stdClass();
         foreach(App::$Response->getGlobal() as $var => $value) {
             $global->$var = $value;
         }
         return $global;
+    }
+
+    public function test()
+    {
+        echo "OK";
     }
 }

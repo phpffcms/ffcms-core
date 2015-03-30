@@ -41,20 +41,25 @@ class App {
      */
     public static $Security;
 
+    /**
+     * @var \Core\I18n\Translate
+     */
+    public static $Translate;
+
 
     /**
      * Load entry point for another logic
      */
     public static function build()
     {
-        self::$Security = new Security();
+        self::$Property = new \Core\Property();
         self::$Debug = new \Core\Debug();
         self::$Request = new \Core\Network\Request();
-        self::$Property = new \Core\Property();
-        self::$Response = new \Core\Network\Response();
         self::$Alias = new \Core\Alias();
+        self::$Security = new Security();
+        self::$Response = new \Core\Network\Response();
         self::$View = new \Core\Arch\View();
-
+        self::$Translate = new \Core\I18n\Translate();
     }
 
     public static function display()
@@ -80,6 +85,7 @@ class App {
                     } else {
                         throw new \Exception("Method " . $actionName . '() not founded in ' . $cname . ' in file {root}' . $controller_path);
                     }
+                    unset($load);
                 } else {
                     throw new \Exception("Namespace\\Class - " . $cname . " not founded in {root}" . $controller_path);
                 }

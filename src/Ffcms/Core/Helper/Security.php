@@ -29,6 +29,23 @@ class Security {
     }
 
     /**
+     * String html tags
+     * @param string $html
+     * @return string
+     */
+    public function strip_tags($html)
+    {
+        $cfg = \HTMLPurifier_Config::createDefault();
+        $cfg->set('HTML.Allowed', '');
+        return $this->purifier()->purify($html, $cfg);
+    }
+
+    public function escapeQuotes($html)
+    {
+        return htmlspecialchars($html, ENT_QUOTES);
+    }
+
+    /**
      * Crypt password secure with Blow fish crypt algo (defined in salt)
      * @param string $password
      * @return string

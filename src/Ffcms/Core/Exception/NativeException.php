@@ -8,7 +8,9 @@ class NativeException {
 
     public function __construct($message = null)
     {
-        App::$Response->setHeader(404);
+        header("HTTP/1.0 404 Not Found");
+        header("HTTP/1.1 404 Not Found");
+        header("Status: 404 Not Found");
         echo $this->rawHTML($message);
         die();
     }

@@ -5,7 +5,7 @@ namespace Ffcms\Core\Arch;
 use \Core\App;
 use \Core\Exception\NativeException;
 
-abstract class Controller {
+abstract class Controller extends \Core\Arch\Constructors\Magic {
 
     /**
      * @var string $layout
@@ -17,6 +17,7 @@ abstract class Controller {
      */
     public $response;
 
+
     public function __construct()
     {
         $this->before();
@@ -27,9 +28,12 @@ abstract class Controller {
     /**
      * Compile output
      */
-    public final function __destruct()
+    public function __destruct()
     {
+        parent::__destruct();
+        // allow use and override after() method
         $this->after();
+        // prepare Layout for this controller
         $layoutPath = App::$Alias->currentViewPath . '/layout/' . self::$layout;
         try {
             if (file_exists($layoutPath) && is_readable($layoutPath)) {
@@ -51,8 +55,7 @@ abstract class Controller {
     {
         $body = $this->response;
         $global = App::$Response->buildGlobal();
-        App::$Debug->bar->getCollector('messages')->info("============== Template global variables ==============");
-        App::$Debug->bar->getCollector('messages')->info(sizeof((array)$global) > 0 ? $global : 'empty');
+        App::$Debug->bar->getCollector('messages')->info(sizeof((array)$global) > 1 ? $global : 'empty');
         @include_once($layout);
     }
 

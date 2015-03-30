@@ -1,7 +1,9 @@
 <?php
 
 namespace Ffcms\Core\Network;
-
+use Core\App;
+use Core\Helper\String;
+use Core\Network\Response;
 
 /**
  * Class Request
@@ -16,13 +18,29 @@ class Request {
     protected static $id;
     protected static $add;
 
+    protected static $language;
+
     function __construct()
     {
         // preparing url
         $raw_uri = urldecode($_SERVER['REQUEST_URI']);
         if($get_pos = strpos($raw_uri, '?'))
             $raw_uri = substr($raw_uri, 0, $get_pos);
-        self::$pathway = ltrim($raw_uri, '/');
+        $pathway = ltrim($raw_uri, '/');
+        if(App::$Property->get('multiLanguage')) {
+            foreach(App::$Property->get('languages') as $lang) {
+                if(String::startsWith($lang . '/', $pathway))
+                    self::$language = $lang;
+            }
+            if(self::$language === null)
+                Response::redirect(App::$Property->get('baseLanguage') . '/');
+
+            // remove language from pathway
+            self::$pathway = ltrim(String::substr($pathway, String::length(self::$language)), '/');
+        } else { // set current language from configs
+            self::$language = App::$Property->get('singleLanguage');
+        }
+
         $uri_split = explode('/', self::$pathway);
 
         // write mvc data
@@ -92,5 +110,29 @@ class Request {
     public function get($key = null)
     {
         return $key === null ? $_GET : urldecode($_GET[$key]);
+    }
+
+    /**
+     * Get request based protocol type (http/https)
+     * @return string
+     */
+    public static function getProtocol() {
+        $proto = 'http';
+        $cf_proxy = json_decode($_SERVER['HTTP_CF_VISITOR']);
+        if(isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on'
+                || $_SERVER['HTTPS'] == 1)
+            || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&  $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
+            || isset($_SERVER['HTTP_CF_VISITOR']) && $cf_proxy->{'scheme'} == 'https')
+            $proto = 'https';
+        return $proto;
+    }
+
+    /**
+     * Get current language
+     * @return string|null
+     */
+    public static function getLanguage()
+    {
+        return self::$language;
     }
 }

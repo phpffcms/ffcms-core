@@ -91,6 +91,27 @@ class String {
     }
 
     /**
+     * Alias for function str_replace()
+     * @param $needle
+     * @param $replacement
+     * @param $haystack
+     * @return string
+     */
+    public static function replace($needle, $replacement, $haystack)
+    {
+        $needle_len = mb_strlen($needle);
+        $replacement_len = mb_strlen($replacement);
+        $pos = mb_strpos($haystack, $needle);
+        while ($pos !== false)
+        {
+            $haystack = mb_substr($haystack, 0, $pos) . $replacement
+                . mb_substr($haystack, $pos + $needle_len);
+            $pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
+        }
+        return $haystack;
+    }
+
+    /**
      * Search entery's in string $where by string $what
      * @param $what
      * @param $where

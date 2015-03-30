@@ -2,13 +2,14 @@
 
 namespace Ffcms\Core\Network;
 
-use \Core\App;
+use Core\App;
+use Core\Exception\NativeException;
 
 
 class Response {
 
 
-    protected $globalVars;
+    protected $globalVars = [];
 
     /**
      * Set application response header. Default - html
@@ -24,9 +25,7 @@ class Response {
                 header("Content-Type: text/javascript");
                 break;
             case 404:
-                header("HTTP/1.0 404 Not Found");
                 header("HTTP/1.1 404 Not Found");
-                header("Status: 404 Not Found");
                 break;
             default:
                 header("Content-Type: text/html");
@@ -73,9 +72,13 @@ class Response {
      */
     public function buildGlobal()
     {
+        // does it empty global variables?
+        if(sizeof($this->globalVars) < 1)
+            return new \stdClass();
+
         $global = new \stdClass();
-        foreach($this->getGlobal() as $var => $value) {
-            $global->{$var} = $value;
+        foreach($this->globalVars as $var => $value) {
+            $global->$var = App::$Security->strip_tags($value);
         }
         return $global;
     }
@@ -89,5 +92,16 @@ class Response {
      */
     public function setCookie($data, $value, $time = null, $httponly = false) {
         setcookie($data, $value, $time, '/', null, null, $httponly);
+    }
+
+    /**
+     * Set header with redirect for user
+     * @param $toUri
+     */
+    public static function redirect($toUri)
+    {
+        $toUri = ltrim($toUri, '/');
+        header("Location: ./" . $toUri);
+        exit();
     }
 }
