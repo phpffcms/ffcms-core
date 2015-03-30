@@ -16,6 +16,6 @@
     "php": ">=5.4"
   },
   "autoload": {
-    "psr-4": { "Ffcms\\Core\\": "src/" }
+    "psr-0": { "Ffcms\\": "src/" }
   }
 }
