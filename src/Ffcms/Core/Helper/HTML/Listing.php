@@ -71,7 +71,7 @@ class Listing {
                 $htmlLink = '<a href="' . App::$Security->escapeQuotes(App::$Security->strip_tags($link)) . '"';
                 if(is_array($item['linkProperty']))
                     $htmlLink .= ' class="' . implode(' ', $item['linkProperty']) . '"';
-                $htmlLink .= '>' . App::$Security->strip_tags($item['text']) . '</a>';
+                $htmlLink .= '>' . ($item['html'] ? $item['text'] : App::$Security->strip_tags($item['text'])) . '</a>';
                 $items .= $htmlLink;
             }
             $items .= '</li>';
