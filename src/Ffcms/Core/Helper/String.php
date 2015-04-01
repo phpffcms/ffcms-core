@@ -123,11 +123,11 @@ class String {
     }
 
     /**
-     * Pseudo random [A-Za-z0-9] string with length $length
+     * Pseudo random [A-Za-z0-9] string with defined $length
      * @param int $length
      * @return string
      */
-    public function random($length)
+    public function randomLatinNumeric($length)
     {
         $ret = 97;
         $out = null;
@@ -139,6 +139,29 @@ class String {
                 // 33% - add random numeric
                 $out .= rand(0, 9);
             } elseif ($posibility == 1) {
+                // 33% - make upper offset+ret
+                $out .= strtoupper($char);
+            } else {
+                $out .= $char;
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * Pseudo random [A-Za-z] string with defined $length
+     * @param int $length
+     * @return string
+     */
+    public static function randomLatin($length)
+    {
+        $ret = 97;
+        $out = null;
+        for ($i = 0; $i < $length; $i++) {
+            $offset = rand(0, 15);
+            $char = chr($ret + $offset);
+            $posibility = rand(0, 1);
+            if ($posibility == 1) {
                 // 33% - make upper offset+ret
                 $out .= strtoupper($char);
             } else {

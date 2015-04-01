@@ -39,7 +39,7 @@ class Alias {
 
 
     /**
-     * Vendor library paths. Ex: App::$Alias->vendor['js']['jquery']. Available: jquery, bootstrap, fa, jquery-ui
+     * Vendor library paths. Ex: App::$Alias->vendor['js']['jquery']['url']. Available: jquery, bootstrap, fa, jquery-ui
      * @var array
      */
     public $vendor = [];
@@ -64,13 +64,19 @@ class Alias {
         if(\App::$Property->get('multiLanguage'))
             $this->baseUrl .= \App::$Request->getLanguage() . '/';
         // build vendor libs alias
-        $this->vendor['js']['jquery'] = $this->scriptUrl . 'vendor/bower/jquery/dist/jquery.min.js';
-        $this->vendor['css']['bootstrap'] = $this->scriptUrl . 'vendor/bower/bootstrap/dist/css/bootstrap.min.css';
-        $this->vendor['js']['bootstrap'] = $this->scriptUrl . 'vendor/bower/bootstrap/dist/js/bootstrap.min.js';
-        $this->vendor['css']['fa'] = $this->scriptUrl . 'vendor/bower/components-font-awesome/css/font-awesome.min.css';
-        $this->vendor['js']['jquery-ui'] = $this->scriptUrl . 'vendor/bower/jquery-ui/jquery-ui.min.js';
+        $this->vendor['js']['jquery']['url'] = $this->scriptUrl . 'vendor/bower/jquery/dist/jquery.min.js';
+        $this->vendor['js']['jquery']['path'] = root . '/vendor/bower/jquery/dist/jquery.min.js';
+        $this->vendor['css']['bootstrap']['url'] = $this->scriptUrl . 'vendor/bower/bootstrap/dist/css/bootstrap.min.css';
+        $this->vendor['css']['bootstrap']['path'] = root . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
+        $this->vendor['js']['bootstrap']['url'] = $this->scriptUrl . 'vendor/bower/bootstrap/dist/js/bootstrap.min.js';
+        $this->vendor['js']['bootstrap']['path'] = root . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
+        $this->vendor['css']['fa']['url'] = $this->scriptUrl . 'vendor/bower/components-font-awesome/css/font-awesome.min.css';
+        $this->vendor['css']['fa']['path'] = root . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
+        $this->vendor['js']['jquery-ui']['url'] = $this->scriptUrl . 'vendor/bower/jquery-ui/jquery-ui.min.js';
+        $this->vendor['js']['jquery-ui']['path'] = root . '/vendor/bower/jquery-ui/jquery-ui.min.js';
 
         $this->currentViewUrl = $this->scriptUrl . 'View/' . workground . '/' . App::$Property->get('theme');
+
     }
 
 

@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper\HTML;
 use Core\App;
 use Core\Helper\Integer;
+use Core\Helper\String;
 
 /**
  * Class HList
@@ -23,7 +24,9 @@ class Listing {
 
         $ulProperties = null;
         if(sizeof($elements['ul'])) {
-            $ulProperties .= ' class="' . implode(' ', $elements['ul']) . '"';
+            foreach($elements['ul'] as $p => $v) {
+                $ulProperties .= ' ' . $p . '="' . $v . '"';
+            }
         }
 
         $items = null;
@@ -33,18 +36,32 @@ class Listing {
             if($item['type'] == 'link') {
                 $controllerAction = trim(is_array($item['link']) ? $item['link'][0] : $item['link'], '/');
                 $currentCA = strtolower(App::$Request->getController() . '/' . App::$Request->getAction());
+                if($item['activeClass'] == null)
+                    $item['activeClass'] = 'active';
                 if($currentCA == $controllerAction) {
                     if(!is_null($item['link'][1])) {
                         if($item['link'][1] == App::$Request->getID())
-                            $item['property'][] = $item['activeClass'];
+                            $item['property']['class'] = String::length($item['property']['class']) > 0
+                                ? $item['activeClass'] . ' ' . $item['property']['class']
+                                : $item['activeClass'];
                     } else {
-                        $item['property'][] = $item['activeClass'];
+                        $item['property']['class'] = String::length($item['property']['class']) > 0
+                            ? $item['activeClass'] . ' ' . $item['property']['class']
+                            : $item['activeClass'];
                     }
                 }
             }
-            $items .= '<li' . (sizeof($item['property']) > 0 ? ' class="' . implode(' ', $item['property']) . '"' : null) . '>';
+            //$items .= '<li' . (sizeof($item['property']) > 0 ? ' class="' . implode(' ', $item['property']) . '"' : null) . '>';
+            $items .= '<li';
+            if(sizeof($item['property']) > 0) {
+                foreach($item['property'] as $attr => $value) {
+                    $items .= ' ' . $attr . '="' . $value . '"';
+                }
+            }
+            $items .= '>';
+
             if($item['type'] == 'text') {
-                $items .= ($item['html'] ? $item['text'] : App::$Security->strip_tags($item['text']));
+                $items .= ($item['html'] ? App::$Security->purifier()->purify($item['text']) : App::$Security->strip_tags($item['text']));
             } elseif($item['type'] == 'link') {
                 $link = App::$Alias->baseUrl;
                 if(is_array($item['link'])) {
@@ -65,13 +82,18 @@ class Listing {
                     } else {
                         $link .= '/';
                     }
+                } elseif(String::startsWith('#', $item['link'])) { // allow pass #part
+                    $link = $item['link'];
                 } else {
                     $link .= trim($item['link'], '/');
                 }
                 $htmlLink = '<a href="' . App::$Security->escapeQuotes(App::$Security->strip_tags($link)) . '"';
-                if(is_array($item['linkProperty']))
-                    $htmlLink .= ' class="' . implode(' ', $item['linkProperty']) . '"';
-                $htmlLink .= '>' . ($item['html'] ? $item['text'] : App::$Security->strip_tags($item['text'])) . '</a>';
+                if(is_array($item['linkProperty'])) {
+                    foreach($item['linkProperty'] as $p => $v) {
+                        $htmlLink .= ' ' . $p . '="' . $v . '"';
+                    }
+                }
+                $htmlLink .= '>' . ($item['html'] ? App::$Security->purifier()->purify($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';
                 $items .= $htmlLink;
             }
             $items .= '</li>';
