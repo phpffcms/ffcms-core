@@ -51,7 +51,14 @@ class Url {
                 $compile_property .= ' ' . $param . '="' . $value . '"';
             }
         }
-        return '<a href="' . $to . '"' . $compile_property . '>' . $name . '</a>';
+
+        if(!is_array($to)) // callback magic (:
+            $to = [$to];
+
+        $invoke = new \ReflectionMethod(get_class(), 'to');
+        $makeTo = $invoke->invokeArgs(null, $to);
+
+        return '<a href="' . $makeTo . '"' . $compile_property . '>' . $name . '</a>';
     }
 
 }

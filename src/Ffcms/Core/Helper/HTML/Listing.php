@@ -39,7 +39,7 @@ class Listing {
                 if($item['activeClass'] == null)
                     $item['activeClass'] = 'active';
                 if($currentCA == $controllerAction) {
-                    if(!is_null($item['link'][1])) {
+                    if(is_array($item['link']) && !is_null($item['link'][1])) {
                         if($item['link'][1] == App::$Request->getID())
                             $item['property']['class'] = String::length($item['property']['class']) > 0
                                 ? $item['activeClass'] . ' ' . $item['property']['class']
