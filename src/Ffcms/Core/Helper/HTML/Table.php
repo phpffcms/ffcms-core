@@ -2,10 +2,9 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
-use Core\Helper\HTML\NativeGenerator;
 use Core\Helper\Object;
 
-class Table extends NativeGenerator{
+class Table extends \Core\Helper\HTML\NativeGenerator {
 
     public static function display($elements)
     {

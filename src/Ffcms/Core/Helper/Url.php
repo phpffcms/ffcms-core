@@ -4,7 +4,7 @@ namespace Ffcms\Core\Helper;
 
 use Core\App;
 
-class Url {
+class Url extends \Core\Helper\HTML\NativeGenerator {
 
     /**
      * Build link via controller/action and other params
@@ -20,12 +20,12 @@ class Url {
         if($controller == null || $action == null)
             return App::$Alias->baseUrl;
 
-        $url = App::$Alias->baseUrl . strtolower($controller) . '/' . strtolower($action) . '/';
+        $url = App::$Alias->baseUrl . strtolower(self::nohtml($controller)) . '/' . strtolower(self::nohtml($action)) . '/';
         if($id !== null)
-            $url .= $id . '/';
+            $url .= self::nohtml($id) . '/';
 
         if($add !== null) {
-            $url .= $add;
+            $url .= self::nohtml($add);
             if(sizeof($params) < 1)
                 $url .= '/';
         }
@@ -34,9 +34,9 @@ class Url {
             $first = true;
             foreach($params as $key => $value) {
                 if($first)
-                    $url .= '?' . $key . '=' . $value;
+                    $url .= '?' . self::nohtml($key) . '=' . self::nohtml($value);
                 else
-                    $url .= '&' . $key . '=' . $value;
+                    $url .= '&' . self::nohtml($key) . '=' . self::nohtml($value);
             }
         }
 
@@ -52,12 +52,7 @@ class Url {
      */
     public static function link($to, $name, $property = [])
     {
-        $compile_property = null;
-        if(sizeof($property) > 0) {
-            foreach($property as $param => $value) {
-                $compile_property .= ' ' . $param . '="' . $value . '"';
-            }
-        }
+        $compile_property = self::applyProperty($property);
 
         if(!is_array($to)) // callback magic (:
             $to = [$to];

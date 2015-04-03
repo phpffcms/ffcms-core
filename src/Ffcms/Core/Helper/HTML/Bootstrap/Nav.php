@@ -6,7 +6,7 @@ use Core\App;
 use Core\Helper\HTML\Listing;
 use Core\Helper\String;
 
-class Nav {
+class Nav extends \Core\Helper\HTML\NativeGenerator {
 
     public static function display($elements)
     {
@@ -42,7 +42,8 @@ class Nav {
                 unset($item['content']);
                 $items[] = $item;
 
-                $tabContent .= '<div role="tabpanel" class="tab-pane' . ($tabIdx === 1 ? ' active' : null) . '" id="' . $elements['tabAnchor'] . $tabIdx . '">' . $itemContent . '</div>';
+                $tabContent .= '<div role="tabpanel" class="tab-pane' . ($tabIdx === 1 ? ' active' : null) . '" id="' . $elements['tabAnchor'] . $tabIdx . '">';
+                $tabContent .= ($item['htmlContent'] ? self::safe($itemContent) : self::nohtml($itemContent)) . '</div>';
                 $tabIdx++;
             }
         }

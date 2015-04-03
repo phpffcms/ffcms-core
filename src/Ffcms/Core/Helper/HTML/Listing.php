@@ -2,14 +2,13 @@
 
 namespace Ffcms\Core\Helper\HTML;
 use Core\App;
-use Core\Helper\Integer;
 use Core\Helper\String;
 
 /**
  * Class HList
  * @package Ffcms\Core\Helper\HTML
  */
-class Listing {
+class Listing extends \Core\Helper\HTML\NativeGenerator {
 
 
     /**
@@ -22,12 +21,7 @@ class Listing {
         if(!in_array($elements['type'], ['ul', 'ol']) || sizeof($elements['items']) < 1)
             return null;
 
-        $ulProperties = null;
-        if(sizeof($elements['ul'])) {
-            foreach($elements['ul'] as $p => $v) {
-                $ulProperties .= ' ' . $p . '="' . $v . '"';
-            }
-        }
+        $ulProperties = self::applyProperty($elements['ul']);
 
         $items = null;
         foreach($elements['items'] as $item) {
@@ -61,38 +55,34 @@ class Listing {
             $items .= '>';
 
             if($item['type'] == 'text') {
-                $items .= ($item['html'] ? App::$Security->purifier()->purify($item['text']) : App::$Security->strip_tags($item['text']));
+                $items .= ($item['html'] ? self::safe($item['text']) : self::nohtml($item['text']));
             } elseif($item['type'] == 'link') {
                 $link = App::$Alias->baseUrl;
                 if(is_array($item['link'])) {
                     $link .= trim($item['link'][0], '/'); // controller/action
                     if(!is_null($item['link'][1]))
-                        $link .= '/' . $item['link'][1]; // param id
+                        $link .= '/' . self::nohtml($item['link'][1]); // param id
                     if(!is_null($item['link'][2]))
-                        $link .= '/' . $item['link'][2]; // param id
+                        $link .= '/' . self::nohtml($item['link'][2]); // param id
                     if(is_array($item['link'][3])) { // dynamic params ?a=b&v=c etc
                         $firstParam = true;
                         foreach($item['link'][3] as $p => $v) {
                             if($firstParam)
-                                $link .= "?" . $p . '=' . $v;
+                                $link .= "?" . self::nohtml($p) . '=' . self::nohtml($v);
                             else
-                                $link .= "&" . $p . '=' . $v;
+                                $link .= "&" . self::nohtml($p) . '=' . self::nohtml($v);
                             $firstParam = false;
                         }
                     } else {
                         $link .= '/';
                     }
                 } elseif(String::startsWith('#', $item['link'])) { // allow pass #part
-                    $link = $item['link'];
+                    $link = self::nohtml($item['link']);
                 } else {
-                    $link .= trim($item['link'], '/');
+                    $link .= self::nohtml(trim($item['link'], '/'));
                 }
-                $htmlLink = '<a href="' . App::$Security->escapeQuotes(App::$Security->strip_tags($link)) . '"';
-                if(is_array($item['linkProperty'])) {
-                    foreach($item['linkProperty'] as $p => $v) {
-                        $htmlLink .= ' ' . $p . '="' . $v . '"';
-                    }
-                }
+                $htmlLink = '<a href="' . self::nohtml($link) . '"';
+                $htmlLink .= self::applyProperty($item['linkProperty']);
                 $htmlLink .= '>' . ($item['html'] ? App::$Security->purifier()->purify($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';
                 $items .= $htmlLink;
             }

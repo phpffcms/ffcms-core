@@ -2,9 +2,9 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
-use Core\App;
+use \Core\App;
 
-class NativeGenerator {
+abstract class NativeGenerator {
 
     /**
      * Make data "safe" - all dangerous html/js/etc will be removed
