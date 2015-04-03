@@ -42,7 +42,7 @@ class Security {
 
     public function escapeQuotes($html)
     {
-        return htmlspecialchars($html, ENT_QUOTES);
+        return str_replace(['"', "'"], '&quot;', $html);
     }
 
     /**

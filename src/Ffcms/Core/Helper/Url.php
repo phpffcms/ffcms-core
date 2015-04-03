@@ -43,6 +43,13 @@ class Url {
         return $url;
     }
 
+    /**
+     * Create <a></a> block link
+     * @param string|array $to
+     * @param string $name
+     * @param array $property
+     * @return string
+     */
     public static function link($to, $name, $property = [])
     {
         $compile_property = null;
