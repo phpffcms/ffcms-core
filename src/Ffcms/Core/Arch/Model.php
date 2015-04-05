@@ -31,7 +31,8 @@ abstract class Model extends \Core\Arch\Constructors\Magic {
     public final function getLabel($param)
     {
         $labels = $this->setLabels();
-        return $labels[$param];
+
+        return ($labels[$param] == null ? String::splitCamelCase($param) : $labels[$param]);
     }
 
     /**

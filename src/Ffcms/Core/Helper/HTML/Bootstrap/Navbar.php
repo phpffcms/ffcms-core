@@ -7,7 +7,7 @@ use Core\Helper\String;
 use Core\Helper\Url;
 
 
-class Navbar {
+class Navbar extends \Core\Helper\HTML\NativeGenerator {
 
 
     public static function display($elements)
@@ -18,7 +18,10 @@ class Navbar {
         $elements['ul']['class'] .= ' nav';
         $elements['nav']['class'] .= ' navbar';
 
-        $mobileCollapse = $elements['collapseId'];
+        if($elements['container'] == null)
+            $elements['container'] = 'container-fluid';
+
+        $mobileCollapse = self::nohtml($elements['collapseId']);
         if(is_null($mobileCollapse))
             $mobileCollapse = String::randomLatin(rand(6,12)) . rand(1,99);
 
@@ -68,13 +71,8 @@ class Navbar {
 
 
 
-        $build = '<nav';
-        foreach($elements['nav'] as $p => $v) {
-            $build .= ' ' . $p . '="' . $v . '"';
-        }
-
-        $build .= '>';
-        $build .= '<div class="container-fluid">';
+        $build = '<nav' . self::applyProperty($elements['nav']) . '>';
+        $build .= '<div class="' . $elements['container'] . '">';
 
         $build .= '<div class="navbar-header">';
         $build .= '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="' . $mobileCollapse . '">';

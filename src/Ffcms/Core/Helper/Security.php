@@ -35,9 +35,10 @@ class Security {
      */
     public function strip_tags($html)
     {
-        $cfg = \HTMLPurifier_Config::createDefault();
+        return strip_tags($html); // x10 faster
+        /**$cfg = \HTMLPurifier_Config::createDefault();
         $cfg->set('HTML.Allowed', '');
-        return $this->purifier()->purify($html, $cfg);
+        return $this->purifier()->purify($html, $cfg); */
     }
 
     public function escapeQuotes($html)
