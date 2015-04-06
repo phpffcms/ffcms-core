@@ -1,6 +1,7 @@
 <?php
 
 namespace Ffcms\Core\Network;
+
 use Core\App;
 use Core\Helper\String;
 use Core\Network\Response;
@@ -10,7 +11,8 @@ use Core\Network\Response;
  * Class to work with input website data - request params and headers.
  * @package Core\Network
  */
-class Request {
+class Request
+{
 
     protected static $pathway;
     protected static $controller;
@@ -20,20 +22,23 @@ class Request {
 
     protected static $language;
 
-    function __construct()
+    public function __construct()
     {
         // preparing url
         $raw_uri = urldecode($_SERVER['REQUEST_URI']);
-        if($get_pos = strpos($raw_uri, '?'))
+        if ($get_pos = strpos($raw_uri, '?')) {
             $raw_uri = substr($raw_uri, 0, $get_pos);
+        }
         $pathway = ltrim($raw_uri, '/');
-        if(App::$Property->get('multiLanguage')) {
-            foreach(App::$Property->get('languages') as $lang) {
-                if(String::startsWith($lang . '/', $pathway))
+        if (App::$Property->get('multiLanguage')) {
+            foreach (App::$Property->get('languages') as $lang) {
+                if (String::startsWith($lang . '/', $pathway)) {
                     self::$language = $lang;
+                }
             }
-            if(self::$language === null)
+            if (self::$language == null) {
                 Response::redirect(App::$Property->get('baseLanguage') . '/');
+            }
 
             // remove language from pathway
             self::$pathway = ltrim(String::substr($pathway, String::length(self::$language)), '/');
@@ -44,17 +49,54 @@ class Request {
         $uri_split = explode('/', self::$pathway);
 
         // write mvc data
-        self::$controller = $uri_split[0];
-        self::$action = $uri_split[1];
-        self::$id = $uri_split[2];
-        self::$add = $uri_split[3];
+        self::$controller = strtolower($uri_split[0]);
+        self::$action = strtolower($uri_split[1]);
+        self::$id = strtolower($uri_split[2]);
+        self::$add = strtolower($uri_split[3]);
 
-        // set defaults
-        if(self::$controller == null)
-            self::$controller = 'main';
-
-        if(self::$action == null)
+        if (self::$action == null) {
             self::$action = 'index';
+        }
+
+        if (self::$controller == null || self::$pathway == null) {
+            $defaultRoute = App::$Property->get('siteIndex');
+            list(self::$controller, self::$action) = explode('::', trim($defaultRoute, '/'));
+        }
+    }
+
+    /**
+     * Get request based protocol type (http/https)
+     * @return string
+     */
+    public static function getProtocol()
+    {
+        $proto = 'http';
+        $cf_proxy = json_decode($_SERVER['HTTP_CF_VISITOR']);
+        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1)
+            || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
+            || isset($_SERVER['HTTP_CF_VISITOR']) && $cf_proxy->{'scheme'} == 'https'
+        ) {
+            $proto = 'https';
+        }
+        return $proto;
+    }
+
+    /**
+     * Get current pathway as string
+     * @return string
+     */
+    public static function getPathway()
+    {
+        return self::$pathway;
+    }
+
+    /**
+     * Get current language
+     * @return string|null
+     */
+    public static function getLanguage()
+    {
+        return self::$language;
     }
 
     /**
@@ -102,6 +144,7 @@ class Request {
     {
         return $key === null ? $_POST : $_POST[$key];
     }
+
     /**
      * Get data from global $_GET with $key according urldecode(). Like urldecode($_GET[$key])
      * @param string $key
@@ -110,29 +153,5 @@ class Request {
     public function get($key = null)
     {
         return $key === null ? $_GET : urldecode($_GET[$key]);
-    }
-
-    /**
-     * Get request based protocol type (http/https)
-     * @return string
-     */
-    public static function getProtocol() {
-        $proto = 'http';
-        $cf_proxy = json_decode($_SERVER['HTTP_CF_VISITOR']);
-        if(isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on'
-                || $_SERVER['HTTPS'] == 1)
-            || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&  $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
-            || isset($_SERVER['HTTP_CF_VISITOR']) && $cf_proxy->{'scheme'} == 'https')
-            $proto = 'https';
-        return $proto;
-    }
-
-    /**
-     * Get current language
-     * @return string|null
-     */
-    public static function getLanguage()
-    {
-        return self::$language;
     }
 }

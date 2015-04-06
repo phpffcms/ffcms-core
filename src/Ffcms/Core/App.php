@@ -3,6 +3,7 @@
 namespace Ffcms\Core;
 
 use Core\Helper\Security;
+use ActiveRecord;
 
 class App {
 
@@ -52,6 +53,7 @@ class App {
      */
     public static function build()
     {
+        // init dynamic classes and make access point
         self::$Property = new \Core\Property();
         self::$Debug = new \Core\Debug();
         self::$Request = new \Core\Network\Request();
@@ -60,12 +62,28 @@ class App {
         self::$Response = new \Core\Network\Response();
         self::$View = new \Core\Arch\View();
         self::$Translate = new \Core\I18n\Translate();
+
+        // init ActiveRecord
+        $connections = self::$Property->get('database');
+        ActiveRecord\Config::initialize(function ($cfg) use ($connections) {
+            $cfg->set_model_directory(root . '/Model/ActiveRecord/');
+            $cfg->set_connections($connections);
+
+            # default connection is now production
+            $cfg->set_default_connection('main');
+        });
+        try {
+            \ActiveRecord\Connection::instance();
+        } catch(\Exception $e) {
+            self::$Debug->bar->getCollector('exceptions')->addException($e);
+            new \Core\Exception\NativeException('Unable connect to database! Database is DOWN!');
+        }
     }
 
     public static function display()
     {
         try {
-            $controller_path = '/controller/' . workground . '/' . self::$Request->getController() . ".php";
+            $controller_path = '/controller/' . workground . '/' . self::$Request->getController() . '.php';
             if(file_exists(root . $controller_path) && is_readable(root . $controller_path)) {
                 include_once(root . $controller_path);
                 $cname = 'Controller\\' . workground . '\\' . self::$Request->getController();
@@ -73,8 +91,8 @@ class App {
                     $load = new $cname;
                     $actionName = 'action' . ucfirst(self::$Request->getAction());
                     if(method_exists($cname, $actionName)) {
-                        if(self::$Request->getID() != null) {
-                            if(self::$Request->getAdd() != null) {
+                        if(self::$Request->getID() !== null) {
+                            if(self::$Request->getAdd() !== null) {
                                 @$load->$actionName(self::$Request->getID(), self::$Request->getAdd());
                             } else {
                                 @$load->$actionName(self::$Request->getID());
@@ -83,11 +101,11 @@ class App {
                             @$load->$actionName();
                         }
                     } else {
-                        throw new \Exception("Method " . $actionName . '() not founded in ' . $cname . ' in file {root}' . $controller_path);
+                        throw new \Exception('Method ' . $actionName . '() not founded in ' . $cname . ' in file {root}' . $controller_path);
                     }
                     unset($load);
                 } else {
-                    throw new \Exception("Namespace\\Class - " . $cname . " not founded in {root}" . $controller_path);
+                    throw new \Exception('Namespace\\Class - ' . $cname . ' not founded in {root}' . $controller_path);
                 }
             } else {
                 throw new \Exception('Controller not founded: {root}' . $controller_path);

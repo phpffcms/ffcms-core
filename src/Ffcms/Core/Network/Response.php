@@ -22,13 +22,13 @@ class Response {
                 header('Content-Type: application/json');
                 break;
             case 'js':
-                header("Content-Type: text/javascript");
+                header('Content-Type: text/javascript');
                 break;
             case 404:
-                header("HTTP/1.1 404 Not Found");
+                header('HTTP/1.1 404 Not Found');
                 break;
             default:
-                header("Content-Type: text/html");
+                header('Content-Type: text/html');
                 break;
         }
     }
@@ -49,9 +49,10 @@ class Response {
      */
     public function setGlobalArray($array)
     {
-        if(!is_array($array))
+        if (!is_array($array)) {
             return;
-        foreach($array as $var => $value)
+        }
+        foreach ($array as $var => $value)
         {
             $this->globalVars[$var] = $value;
         }
@@ -73,8 +74,9 @@ class Response {
     public function buildGlobal()
     {
         // does it empty global variables?
-        if(sizeof($this->globalVars) < 1)
+        if(count($this->globalVars) < 1) {
             return new \stdClass();
+        }
 
         $global = new \stdClass();
         foreach($this->globalVars as $var => $value) {
@@ -101,7 +103,7 @@ class Response {
     public static function redirect($toUri)
     {
         $toUri = ltrim($toUri, '/');
-        header("Location: ./" . $toUri);
+        header('Location: ./' . $toUri);
         exit();
     }
 }

@@ -55,7 +55,7 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
     {
         $body = $this->response;
         $global = App::$Response->buildGlobal();
-        App::$Debug->bar->getCollector('messages')->info(sizeof((array)$global) > 1 ? $global : 'empty');
+        App::$Debug->bar->getCollector('messages')->info(count((array)$global) > 1 ? $global : 'empty');
         @include_once($layout);
     }
 
