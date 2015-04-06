@@ -76,6 +76,8 @@ class Listing extends \Core\Helper\HTML\NativeGenerator {
                     } else {
                         $link .= '/';
                     }
+                } elseif(String::startsWith('http', $item['link'])) {
+                    $link = self::nohtml($item['link']);
                 } elseif(String::startsWith('#', $item['link'])) { // allow pass #part
                     $link = self::nohtml($item['link']);
                 } else {

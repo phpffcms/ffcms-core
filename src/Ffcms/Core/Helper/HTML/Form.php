@@ -9,6 +9,8 @@ class Form extends \Core\Helper\HTML\NativeGenerator
     protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item%</div></div>';
     protected $structureCheckbox = '<div class="form-group"><div class="col-md-9 col-md-offset-3"><div class="checkbox"><label>%item% %label%</label></div></div></div>';
     protected $name;
+    /** @var  \Core\Arch\Model */
+    protected $model;
 
 
     public function __construct($elements)
@@ -20,19 +22,25 @@ class Form extends \Core\Helper\HTML\NativeGenerator
         else
             $this->name = String::randomLatin(rand(6,12));
 
+        if(is_object($elements['model']))
+            $this->model = $elements['model'];
+
         echo '<form' . self::applyProperty($elements['property']) . '>';
     }
 
     /**
-     * @param \Core\Arch\Model $model
      * @param $object
      * @param $type
      * @param null|array $property
+     * @param null|string $helper
      * @param null|string $structure
      * @return mixed
      */
-    public function field($model, $object, $type, $property = null, $structure = null)
+    public function field($object, $type, $property = null, $helper = null, $structure = null)
     {
+        if($this->model === null)
+            return null;
+
         if(is_null($structure)) {
             if($type == 'checkbox')
                 $structure = $this->structureCheckbox;
@@ -40,11 +48,16 @@ class Form extends \Core\Helper\HTML\NativeGenerator
                 $structure = $this->structure;
         }
 
+
         $labelFor = $this->name . '-' . $object;
-        $labelText = $model->getLabel($object);
-        $itemValue = $model->{$object};
+        $labelText = $this->model->getLabel($object);
+        $itemValue = $this->model->{$object};
         $itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
-        return str_replace(['%name%', '%label%', '%item%'], [$labelFor, $labelText, $itemBody], $structure);
+        return str_replace(
+            ['%name%', '%label%', '%item%', '%help%'],
+            [$labelFor, $labelText, $itemBody, self::nohtml($helper)],
+            $structure
+        );
     }
 
     public function submitButton($title, $property = [])

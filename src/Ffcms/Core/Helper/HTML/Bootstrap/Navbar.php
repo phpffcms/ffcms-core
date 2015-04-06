@@ -72,7 +72,7 @@ class Navbar extends \Core\Helper\HTML\NativeGenerator {
 
 
         $build = '<nav' . self::applyProperty($elements['nav']) . '>';
-        $build .= '<div class="' . $elements['container'] . '">';
+        $build .= '<div class="' . self::nohtml($elements['container']) . '">';
 
         $build .= '<div class="navbar-header">';
         $build .= '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="' . $mobileCollapse . '">';
