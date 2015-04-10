@@ -22,7 +22,7 @@ abstract class Magic {
 
     public function __destruct()
     {
-        if(sizeof($this->data) > 0) {
+        if(count($this->data) > 0) {
             foreach($this->data as $var => $value) {
                 App::$Response->setGlobal($var, $value);
             }

@@ -47,6 +47,11 @@ class App {
      */
     public static $Translate;
 
+    /**
+     * @var \Core\Notify\Message
+     */
+    public static $Message;
+
 
     /**
      * Load entry point for another logic
@@ -62,6 +67,7 @@ class App {
         self::$Response = new \Core\Network\Response();
         self::$View = new \Core\Arch\View();
         self::$Translate = new \Core\I18n\Translate();
+        self::$Message = new \Core\Notify\Message();
 
         // init ActiveRecord
         $connections = self::$Property->get('database');

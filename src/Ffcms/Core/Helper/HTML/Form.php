@@ -84,8 +84,12 @@ class Form extends \Core\Helper\HTML\NativeGenerator
                     . self::nohtml($value) . '</textarea>';
                 break;
             case 'checkbox':
-                $response = '<input type="checkbox" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString
-                    . ($value != 0 ? ' checked' : null) . ' />';
+                // hook DOM model
+                $response = '<input type="hidden" value="0" name="' . self::nohtml($name) . '" />';
+                $response .= '<input type="checkbox" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString
+                    . ' value="1"'. ($value == 1 ? ' checked' : null) .' />';
+                //$response = '<input type="checkbox" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString
+                //    . ($value != 0 ? ' checked' : null) . ' />';
                 break;
             case 'select':
                 if (count($selectOptions) < 1) {

@@ -29,13 +29,18 @@ class Security {
     }
 
     /**
-     * String html tags
+     * String html tags and escape quotes
      * @param string $html
+     * @param boolean $escapeQuotes
      * @return string
      */
-    public function strip_tags($html)
+    public function strip_tags($html, $escapeQuotes = true)
     {
-        return strip_tags($html); // x10 faster
+        $text = strip_tags($html);
+        if($escapeQuotes) {
+            $text = $this->escapeQuotes($text);
+        }
+        return $text; // x10 faster
         /**$cfg = \HTMLPurifier_Config::createDefault();
         $cfg->set('HTML.Allowed', '');
         return $this->purifier()->purify($html, $cfg); */
@@ -51,7 +56,7 @@ class Security {
      * @param string $password
      * @return string
      */
-    public function password_hash($password)
+    public static function password_hash($password)
     {
         return crypt($password, App::$Property->get('password_salt'));
     }
