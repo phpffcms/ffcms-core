@@ -19,7 +19,7 @@ class String {
             return false;
         }
         $pharse_prefix = self::substr($where, 0, self::length($string));
-        return $pharse_prefix === $string ? true : false;
+        return $pharse_prefix === $string;
     }
 
     /**
@@ -31,12 +31,12 @@ class String {
     public static function endsWith($string, $where)
     {
         // check is not empty string
-        if(self::length($string) < 1 || self::length($where))
+        if(self::length($string) < 1 || self::length($where) < 1)
         {
             return false;
         }
         $pharse_suffix = self::substr($where, -self::length($string));
-        return $pharse_suffix === $string ? true : false;
+        return $pharse_suffix === $string;
     }
 
 
@@ -47,7 +47,7 @@ class String {
      */
     public static function length($string)
     {
-        return mb_strlen($string, "UTF-8");
+        return mb_strlen($string, 'UTF-8');
     }
 
     /**
@@ -67,10 +67,11 @@ class String {
                         /x';
         $split = preg_split($expression, $string);
         $output = [];
-        for($i=0;$i<sizeof($split);++$i) {
+        for($i=0;$i<count($split);++$i) {
             $word = strtolower($split[$i]);
-            if($i === 0)
+            if($i === 0) {
                 $word = ucfirst($word);
+            }
             $output[] = $word;
         }
 
@@ -117,9 +118,9 @@ class String {
      * @param $where
      * @return bool
      */
-    public function contains($what, $where)
+    public static function contains($what, $where)
     {
-        return mb_strpos($where, $what, 0, "UTF-8") !== false ? true : false;
+        return mb_strpos($where, $what, 0, 'UTF-8') !== false;
     }
 
     /**
@@ -171,8 +172,15 @@ class String {
         return $out;
     }
 
-
-
+    /**
+     * Check is $string look's like email
+     * @param string $string
+     * @return bool
+     */
+    public static function isEmail($string)
+    {
+        return filter_var($string, FILTER_VALIDATE_EMAIL) !== false;
+    }
 
 
 

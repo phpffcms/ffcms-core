@@ -30,13 +30,13 @@ class Request
             $raw_uri = substr($raw_uri, 0, $get_pos);
         }
         $pathway = ltrim($raw_uri, '/');
-        if (App::$Property->get('multiLanguage')) {
-            foreach (App::$Property->get('languages') as $lang) {
+        if (App::$Property->get('multiLanguage')) { // does multilang enabled?
+            foreach (App::$Property->get('languages') as $lang) { // extract current language from pathway
                 if (String::startsWith($lang . '/', $pathway)) {
                     self::$language = $lang;
                 }
             }
-            if (self::$language == null) {
+            if (self::$language === null) {
                 Response::redirect(App::$Property->get('baseLanguage') . '/');
             }
 
@@ -74,8 +74,7 @@ class Request
         $cf_proxy = json_decode($_SERVER['HTTP_CF_VISITOR']);
         if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1)
             || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
-            || isset($_SERVER['HTTP_CF_VISITOR']) && $cf_proxy->{'scheme'} == 'https'
-        ) {
+            || isset($_SERVER['HTTP_CF_VISITOR']) && $cf_proxy->{'scheme'} == 'https') {
             $proto = 'https';
         }
         return $proto;

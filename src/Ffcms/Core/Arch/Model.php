@@ -9,6 +9,7 @@ use Core\Filter\Native;
 
 abstract class Model extends \Core\Arch\Constructors\Magic
 {
+    public $wrongFields = [];
 
     public final function construct()
     {
@@ -49,7 +50,6 @@ abstract class Model extends \Core\Arch\Constructors\Magic
         $rules = $this->setRules();
         $success = true; // set is success
 
-        $unset_property = [];
         $default_property = [];
         $reflection = new \ReflectionClass($this);
         foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $obj) {
@@ -61,46 +61,69 @@ abstract class Model extends \Core\Arch\Constructors\Magic
             if ($rule[0] === null || $rule[1] === null) {
                 continue;
             }
-            $save_html = ($rule[3] === 'html');
-            $rule_value = App::$Request->post($rule[0]);
-            if (!$save_html && !Object::isArray($rule_value)) {
-                $rule_value = App::$Security->strip_tags($rule_value);
-            } else {
-                $rule_value = App::$Security->purifier()->purify($rule_value);
-            }
-            $rule_filter = $rule[1];
-            $rule_filter_argv = $rule[2];
-
-            try {
-                if (method_exists('\Core\Filter\Native', $rule_filter)) { // only full namespace\class path based :(
-                    $check = false;
-                    if ($rule_filter_argv != null) {
-                        $check = Native::$rule_filter($rule_value, $rule_filter_argv);
-                    } else {
-                        $check = Native::$rule_filter($rule_value);
+            $validate = false;
+            if (Object::isArray($rule[0])) {
+                $validate_foreach = true;
+                foreach ($rule[0] as $field_name) {
+                    if (!$this->validateRecursive($field_name, $rule[1], $rule[2], $rule[3])) {
+                        $validate_foreach = false;
                     }
-                    if ($check === false) { // switch only on fail check.
-                        $success = false;
-                        $unset_property[] = $rule[0];
-                    } else {
-                        if (property_exists($this, $rule[0])) {
-                            $this->{$rule[0]} = $rule_value; // refresh model property's from post data
-                        }
-                    }
-                } else {
-                    throw new \Exception('Filter "' . $rule_filter . '" is not exist');
                 }
-            } catch (\Exception $e) {
-                App::$Debug->bar->getCollector('exceptions')->addException($e);
+                $validate = $validate_foreach;
+            } else {
+                $validate = $this->validateRecursive($rule[0], $rule[1], $rule[2], $rule[3]);
+            }
+            if ($validate === false) {
                 $success = false;
             }
         }
 
-        foreach ($unset_property as $property) {
+        foreach ($this->wrongFields as $property) {
             $this->{$property} = App::$Security->strip_tags($default_property[$property]);
         }
 
         return $success;
+    }
+
+    protected final function validateRecursive($field_name, $filter_name, $filter_argv, $html = false)
+    {
+        $field_value = App::$Request->post($field_name);
+        if (!$html && !Object::isArray($field_value)) {
+            $field_value = App::$Security->strip_tags($field_value);
+        } else {
+            $field_value = App::$Security->purifier()->purify($field_value);
+        }
+
+        $check = false;
+        try {
+            if (String::contains('::', $filter_name)) { // sounds like a callback
+                list($callback_class, $callback_method) = explode('::', $filter_name);
+                $callback_class = '\\' . trim($callback_class, '\\');
+                if (method_exists($callback_class, $callback_method)) {
+                    $check = @$callback_class::$callback_method($field_value, $filter_argv); // callback class::method(name, value);
+                } else {
+                    throw new \Exception('Filter callback execution "' . $field_name . '" is not exist');
+                }
+            } elseif (method_exists('\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
+                if ($filter_argv != null) {
+                    $check = Native::$filter_name($field_value, $filter_argv);
+                } else {
+                    $check = Native::$filter_name($field_value);
+                }
+            } else {
+                throw new \Exception('Filter "' . $filter_name . '" is not exist');
+            }
+        } catch (\Exception $e) {
+            App::$Debug->bar->getCollector('exceptions')->addException($e);
+        }
+        if ($check !== true) { // switch only on fail check.
+            $this->wrongFields[] = $field_name;
+        } else {
+            if (property_exists($this, $field_name)) {
+                $this->{$field_name} = $field_value; // refresh model property's from post data
+            }
+        }
+        return $check;
     }
 
     /**

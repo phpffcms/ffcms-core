@@ -44,6 +44,18 @@ class Alias {
      */
     public $vendor = [];
 
+    /**
+     * Additional variable for custom JS scripts
+     * @var array
+     */
+    public $customJS = [];
+
+    /**
+     * Additional variable for custom CSS scripts
+     * @var array
+     */
+    public $customCSS = [];
+
 
 
     public function __construct()
@@ -51,8 +63,9 @@ class Alias {
         // build current viewer's path theme - full dir path
         $this->currentViewPath = root . '/View/' . workground . '/' . App::$Property->get('theme');
         try {
-            if(!file_exists($this->currentViewPath))
-                throw new \Exception("Could not load app views: " . $this->currentViewPath);
+            if(!file_exists($this->currentViewPath)) {
+                throw new \Exception('Could not load app views: ' . $this->currentViewPath);
+            }
         } catch(\Exception $e) {
             \Core\App::$Debug->bar->getCollector('exceptions')->addException($e);
             new NativeException($e);
@@ -61,8 +74,9 @@ class Alias {
         // build baseUrl
         $this->baseDomain = $_SERVER['SERVER_NAME'];
         $this->baseUrl = $this->scriptUrl = Request::getProtocol() . '://' . $this->baseDomain . App::$Property->get('basePath');
-        if(\App::$Property->get('multiLanguage'))
+        if (\App::$Property->get('multiLanguage')) {
             $this->baseUrl .= \App::$Request->getLanguage() . '/';
+        }
         // build vendor libs alias
         $this->vendor['js']['jquery']['url'] = $this->scriptUrl . 'vendor/bower/jquery/dist/jquery.min.js';
         $this->vendor['js']['jquery']['path'] = root . '/vendor/bower/jquery/dist/jquery.min.js';

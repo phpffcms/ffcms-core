@@ -120,8 +120,31 @@ abstract class View extends \Core\Arch\Constructors\Magic {
         return $global;
     }
 
-    public function test()
+    public function showCustomJS()
     {
-        echo "OK";
+        $js = App::$Alias->customJS;
+        $output = null;
+        if (count($js) < 1) {
+            return null;
+        }
+
+        foreach ($js as $item) {
+            $item = trim($item, '/');
+            if(!String::endsWith('.js', $item)) {
+                continue;
+            }
+            if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
+                $item = App::$Alias->scriptUrl . $item;
+            }
+            $output[] = $item;
+        }
+
+        $clear = array_unique($output);
+        $output = null;
+        foreach ($clear as $row) {
+            $output .= '<script src="' . $row . '"></script>' . "\n";
+        }
+
+        return $output;
     }
 }

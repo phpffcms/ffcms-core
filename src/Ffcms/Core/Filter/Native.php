@@ -99,4 +99,17 @@ class Native {
         return Object::isLikeBoolean($object);
     }
 
+    /**
+     * Filter ['object', 'required']
+     * @param $object
+     * @return bool
+     */
+    public static function required($object)
+    {
+        if (Object::isArray($object)) {
+            return count($object) > 0;
+        }
+        return String::length($object) > 0;
+    }
+
 }

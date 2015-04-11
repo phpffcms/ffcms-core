@@ -103,7 +103,7 @@ class Response {
     public static function redirect($toUri)
     {
         $toUri = ltrim($toUri, '/');
-        header('Location: ./' . $toUri);
+        header('Location: /' . $toUri);
         exit();
     }
 }

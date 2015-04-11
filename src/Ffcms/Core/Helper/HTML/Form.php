@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
+use Core\App;
 use Core\Helper\String;
 
 class Form extends \Core\Helper\HTML\NativeGenerator
@@ -19,7 +20,7 @@ class Form extends \Core\Helper\HTML\NativeGenerator
             $this->structure = $elements['structure'];
         }
         if (String::length($elements['name']) > 0) {
-            $this->name = $elements['name'];
+            $this->name = App::$Security->strip_tags($elements['name']);
         } else {
             $this->name = String::randomLatin(rand(6, 12));
         }
@@ -27,6 +28,8 @@ class Form extends \Core\Helper\HTML\NativeGenerator
         if (is_object($elements['model'])) {
             $this->model = $elements['model'];
         }
+
+        $elements['property']['id'] = $this->name; // define form id
 
         echo '<form' . self::applyProperty($elements['property']) . '>';
     }
@@ -124,8 +127,13 @@ class Form extends \Core\Helper\HTML\NativeGenerator
     /**
      * Finish current form.
      */
-    public function finish()
+    public function finish($validate = true)
     {
         echo '</form>';
+        // validation ;)
+        if ($validate) {
+            echo '<script>$().ready(function() { $("#' . $this->name . '").validate(); });</script>';
+            App::$Alias->customJS[] = '/vendor/bower/jquery-validation/dist/jquery.validate.min.js';
+        }
     }
 }
