@@ -36,12 +36,17 @@ abstract class NativeGenerator {
      */
     public static function applyProperty($property = null)
     {
-        if(!is_array($property) || sizeof($property) < 1)
+        if (!is_array($property) || count($property) < 1) {
             return null;
+        }
 
         $build = null;
         foreach($property as $p => $v) {
-            $build .= ' ' . self::nohtml($p) . '="' . self::nohtml($v) . '"';
+            if($v === null) {
+                $build .= ' ' . self::nohtml($p);
+            } else {
+                $build .= ' ' . self::nohtml($p) . '="' . self::nohtml($v) . '"';
+            }
         }
         return $build;
     }

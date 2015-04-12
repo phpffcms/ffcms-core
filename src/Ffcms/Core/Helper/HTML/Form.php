@@ -75,6 +75,25 @@ class Form extends \Core\Helper\HTML\NativeGenerator
         if (is_array($property['options'])) {
             $selectOptions = $property['options'];
         }
+
+        // jquery validation quick-build some rules
+        $rules = $this->model->getValidationRule($name);
+        if (count($rules) > 0) {
+            foreach ($rules as $rule_name=>$rule_value) {
+                switch($rule_name) {
+                    case 'required':
+                        $property['required'] = null;
+                        break;
+                    case 'length_min':
+                        $property['minlength'] = $rule_value;
+                        break;
+                    case 'length_max':
+                        $property['maxlength'] = $rule_value;
+                        break;
+                }
+            }
+        }
+
         unset($property['options']);
         $propertyString = self::applyProperty($property);
         $response = null;
@@ -105,6 +124,10 @@ class Form extends \Core\Helper\HTML\NativeGenerator
                     $response .= '</select>';
                 }
                 break;
+            case 'inputEmail':
+                $response = '<input type="email" name="' . self::nohtml($name) . '" value="' . self::nohtml($value)
+                    . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString . ' />';
+                break;
             default:
                 $response = '<input type="text" name="' . self::nohtml($name) . '" value="' . self::nohtml($value)
                     . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString . ' />';
@@ -132,8 +155,11 @@ class Form extends \Core\Helper\HTML\NativeGenerator
         echo '</form>';
         // validation ;)
         if ($validate) {
-            echo '<script>$().ready(function() { $("#' . $this->name . '").validate(); });</script>';
+            App::$Alias->afterBody[] = '<script>$().ready(function() { $("#' . $this->name . '").validate(); });</script>';
             App::$Alias->customJS[] = '/vendor/bower/jquery-validation/dist/jquery.validate.min.js';
+            if(App::$Request->getLanguage() !== 'en') {
+                App::$Alias->customJS[] = '/vendor/bower/jquery-validation/src/localization/messages_' . App::$Request->getLanguage() . '.js';
+            }
         }
     }
 }

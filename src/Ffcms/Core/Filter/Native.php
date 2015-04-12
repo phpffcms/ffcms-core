@@ -112,4 +112,17 @@ class Native {
         return String::length($object) > 0;
     }
 
+    /**
+     * Filter ['object', 'email']
+     * @param $object
+     * @return bool
+     */
+    public static function email($object)
+    {
+        if(Object::isArray($object)) {
+            return false;
+        }
+        return String::isEmail($object);
+    }
+
 }

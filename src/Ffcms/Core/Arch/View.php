@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Arch;
 
+use Core\Helper\Object;
 use Core\Helper\String;
 use Core\Arch\ErrorController;
 use Core\App;
@@ -120,6 +121,10 @@ abstract class View extends \Core\Arch\Constructors\Magic {
         return $global;
     }
 
+    /**
+     * Display custom JS libs
+     * @return null|string
+     */
     public function showCustomJS()
     {
         $js = App::$Alias->customJS;
@@ -147,4 +152,53 @@ abstract class View extends \Core\Arch\Constructors\Magic {
 
         return $output;
     }
+
+    /**
+     * Display custom CSS libs
+     * @return null|string
+     */
+    public function showCustomCSS()
+    {
+        $css = App::$Alias->customCSS;
+        $output = null;
+        if (count($css) < 1) {
+            return null;
+        }
+
+        foreach ($css as $item) {
+            $item = trim($item, '/');
+            if(!String::endsWith('.css', $item)) {
+                continue;
+            }
+            if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
+                $item = App::$Alias->scriptUrl . $item;
+            }
+            $output[] = $item;
+        }
+
+        $clear = array_unique($output);
+        $output = null;
+        foreach ($clear as $row) {
+            $output .= '<link rel="stylesheet" type="text/css" href="' . $row . '">' . "\n";
+        }
+
+        return $output;
+    }
+
+    /**
+     * Display custom code after body main (on before </body> close tag)
+     * @return null|string
+     */
+    public function showAfterBody()
+    {
+        $code = null;
+        if (Object::isArray(App::$Alias->afterBody) && count(App::$Alias->afterBody) > 0) {
+            foreach(App::$Alias->afterBody as $row) {
+                $code .= $row . "\n";
+            }
+        }
+        return $code;
+    }
+
+
 }

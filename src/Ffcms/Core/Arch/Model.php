@@ -16,9 +16,7 @@ abstract class Model extends \Core\Arch\Constructors\Magic
         $this->before();
     }
 
-    public function before()
-    {
-    }
+    public function before() {}
 
     /**
      * Get label value by variable name
@@ -143,19 +141,38 @@ abstract class Model extends \Core\Arch\Constructors\Magic
     {
         $properties = get_object_vars($this);
         foreach ($properties as $var => $value) {
-            if (String::startsWith('_', $var)) // ignore $_var
+            if (String::startsWith('_', $var)) { // ignore $_var
                 continue;
+            }
             $this->$var = \App::$Security->purifier()->purify($value);
         }
         return $this;
     }
 
-    protected final function reservedNames()
+    /**
+     * Get validation rules for field
+     * @param string $field
+     * @return array
+     */
+    public final function getValidationRule($field)
     {
-        return [
-            'labels'
-        ];
+        $rules = $this->setRules();
+        $response = [];
+
+        foreach ($rules as $rule) {
+            if(is_array($rule[0])) { // 2 or more rules [['field1', 'field2'], 'filter', 'filter_argv']
+                foreach($rule[0] as $tfield) {
+                    if($tfield == $field) {
+                        $response[$rule[1]] = $rule[2]; // ['min_length' => 1, 'required' => null]
+                    }
+                }
+            } else { // 1 rule ['field1', 'filter', 'filter_argv']
+                if($rule[0] === $field) {
+                    $response[$rule[1]] = $rule[2];
+                }
+            }
+        }
+
+        return $response;
     }
-
-
 }

@@ -56,6 +56,12 @@ class Alias {
      */
     public $customCSS = [];
 
+    /**
+     * Block with additional code/etc before </body> close tag
+     * @var array
+     */
+    public $afterBody = [];
+
 
 
     public function __construct()
