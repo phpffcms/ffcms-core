@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core;
 
-use Core\Helper\Security;
 use ActiveRecord;
 
 class App {
@@ -62,12 +61,13 @@ class App {
         self::$Property = new \Core\Property();
         self::$Debug = new \Core\Debug();
         self::$Request = new \Core\Network\Request();
-        self::$Alias = new \Core\Alias();
-        self::$Security = new Security();
+        self::$Security = new \Core\Helper\Security();
         self::$Response = new \Core\Network\Response();
         self::$View = new \Core\Arch\View();
         self::$Translate = new \Core\I18n\Translate();
         self::$Message = new \Core\Notify\Message();
+
+        self::$Alias = new \Core\Alias();
 
         // init ActiveRecord
         $connections = self::$Property->get('database');
@@ -86,6 +86,10 @@ class App {
         }
     }
 
+    /**
+     * Display content after build
+     * @throws \DebugBar\DebugBarException
+     */
     public static function display()
     {
         try {

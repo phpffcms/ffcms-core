@@ -99,11 +99,12 @@ class Response {
     /**
      * Set header with redirect for user
      * @param $toUri
+     * @param boolean $full
      */
-    public static function redirect($toUri)
+    public static function redirect($toUri, $full = false)
     {
         $toUri = ltrim($toUri, '/');
-        header('Location: /' . $toUri);
+        header('Location: ' . ($full === false ? '/' : '') . $toUri);
         exit();
     }
 }

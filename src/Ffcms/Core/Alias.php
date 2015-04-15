@@ -3,7 +3,7 @@
 namespace Ffcms\Core;
 
 use \Core\Exception\NativeException;
-use Core\Network\Request;
+use \Core\App;
 
 class Alias {
 
@@ -66,23 +66,14 @@ class Alias {
 
     public function __construct()
     {
-        // build current viewer's path theme - full dir path
-        $this->currentViewPath = root . '/View/' . workground . '/' . App::$Property->get('theme');
-        try {
-            if(!file_exists($this->currentViewPath)) {
-                throw new \Exception('Could not load app views: ' . $this->currentViewPath);
-            }
-        } catch(\Exception $e) {
-            \Core\App::$Debug->bar->getCollector('exceptions')->addException($e);
-            new NativeException($e);
-        }
+        // make alias for view pathway
+        $this->currentViewPath = App::$View->currentViewPath;
 
-        // build baseUrl
-        $this->baseDomain = $_SERVER['SERVER_NAME'];
-        $this->baseUrl = $this->scriptUrl = Request::getProtocol() . '://' . $this->baseDomain . App::$Property->get('basePath');
-        if (\App::$Property->get('multiLanguage')) {
-            $this->baseUrl .= \App::$Request->getLanguage() . '/';
-        }
+        // make alias for baseUrl, script url and domain
+        $this->baseDomain = App::$Request->baseDomain;
+        $this->baseUrl = App::$Request->baseUrl;
+        $this->scriptUrl = App::$Request->scriptUrl;
+
         // build vendor libs alias
         $this->vendor['js']['jquery']['url'] = $this->scriptUrl . 'vendor/bower/jquery/dist/jquery.min.js';
         $this->vendor['js']['jquery']['path'] = root . '/vendor/bower/jquery/dist/jquery.min.js';

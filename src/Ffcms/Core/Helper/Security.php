@@ -9,7 +9,7 @@ class Security {
     protected $purifier;
 
 
-    function __construct()
+    public function __construct()
     {
         $config = \HTMLPurifier_Config::createDefault();
         //$config->set('HTML.Allowed', 'p,b,a[href],i');

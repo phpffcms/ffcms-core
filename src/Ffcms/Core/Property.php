@@ -4,16 +4,17 @@ namespace Ffcms\Core;
 
 use Core\Exception\NativeException;
 
-class Property {
+class Property
+{
 
     protected static $config;
 
-    function __construct()
+    public function __construct()
     {
         $file = root . '/config.php';
-        if(file_exists($file) && is_readable($file)) {
+        if (file_exists($file) && is_readable($file)) {
             $cfg = @include_once($file);
-            if(is_array($cfg) && sizeof($cfg) > 0) {
+            if (is_array($cfg) && count($cfg) > 0) {
                 self::$config = $cfg;
             }
         } else {

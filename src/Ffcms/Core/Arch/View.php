@@ -5,26 +5,54 @@ namespace Ffcms\Core\Arch;
 use Core\Helper\Object;
 use Core\Helper\String;
 use Core\Arch\ErrorController;
+use Core\Exception\NativeException;
 use Core\App;
 
 abstract class View extends \Core\Arch\Constructors\Magic {
 
     protected $view_object;
 
+    /**
+     * Current theme full pathway
+     * @var string
+     */
+    public $currentViewPath;
+
+
+    /**
+     * @param null|string $view_file
+     * @param null|string $controller_name
+     * @throws \DebugBar\DebugBarException
+     */
     public function __construct($view_file = null, $controller_name = null)
     {
-        if(!is_null($view_file) && !is_null($controller_name)) {
-            if(String::startsWith('Controller\\', $controller_name))
-                $controller_name = String::substr($controller_name, String::length('Controller\\'));
-            if(String::endsWith('.php', $view_file))
-                $view_file = String::substr($view_file, 0, String::length($view_file)-4);
+        // build current viewer's path theme - full dir path
+        $this->currentViewPath = root . '/View/' . workground . '/' . App::$Property->get('theme');
+        try {
+            if(!file_exists($this->currentViewPath)) {
+                throw new \Exception('Could not load app views: ' . $this->currentViewPath);
+            }
+        } catch(\Exception $e) {
+            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            new NativeException($e);
+        }
 
-            $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . "/" . strtolower($view_file) . '.php';
+        // built on $view = new View('index', 'main');
+        if(!is_null($view_file) && !is_null($controller_name)) {
+            if (String::startsWith('Controller\\', $controller_name)) {
+                $controller_name = String::substr($controller_name, String::length('Controller\\'));
+            }
+            if (String::endsWith('.php', $view_file)) {
+                $view_file = String::substr($view_file, 0, String::length($view_file) - 4);
+            }
+
+            $view_path = $this->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view_file) . '.php';
             try {
-                if(file_exists($view_path))
+                if (file_exists($view_path)) {
                     $this->view_object = $view_path;
-                else
-                    throw new \Exception("New view object not founded: " . str_replace(root, '', $view_path));
+                } else {
+                    throw new \Exception('New view object not founded: ' . str_replace(root, null, $view_path));
+                }
             } catch(\Exception $e) {
                 App::$Debug->bar->getCollector('exceptions')->addException($e);
                 new ErrorController($e);
@@ -62,19 +90,21 @@ abstract class View extends \Core\Arch\Constructors\Magic {
         }
 
         try {
-           if(is_null($call_controller))
-               throw new \Exception("On call View->render() not founded caller controller" . $call_log);
+           if(is_null($call_controller)) {
+               throw new \Exception('On call View->render() not founded caller controller' . $call_log);
+           }
         } catch(\Exception $e) {
             App::$Debug->bar->getCollector('exceptions')->addException($e);
             new ErrorController($e);
         }
 
         $controller_name = String::substr($call_controller, String::length('Controller\\'));
-        $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . "/" . strtolower($view) . '.php';
+        $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view) . '.php';
 
         try {
-            if(!file_exists($view_path) || !is_readable($view_path))
-                throw new \Exception("Viewer '" . $view . "' is not founded!");
+            if(!file_exists($view_path) || !is_readable($view_path)) {
+                throw new \Exception('Viewer "' . $view . '" is not founded!');
+            }
         } catch(\Exception $e) {
             App::$Debug->bar->getCollector('exceptions')->addException($e);
             new ErrorController($e);
@@ -90,7 +120,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
      */
     public function show($viewPath, $params = [])
     {
-        $viewPath = App::$Alias->currentViewPath . '/' . ltrim($viewPath, '/') . '.php';
+        $viewPath = $this->currentViewPath . '/' . ltrim($viewPath, '/') . '.php';
         return $this->renderSandbox($viewPath, $params);
     }
 
