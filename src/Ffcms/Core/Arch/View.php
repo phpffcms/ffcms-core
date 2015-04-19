@@ -4,7 +4,7 @@ namespace Ffcms\Core\Arch;
 
 use Core\Helper\Object;
 use Core\Helper\String;
-use Core\Arch\ErrorController;
+use Core\Exception\ErrorException;
 use Core\Exception\NativeException;
 use Core\App;
 
@@ -27,7 +27,8 @@ abstract class View extends \Core\Arch\Constructors\Magic {
     public function __construct($view_file = null, $controller_name = null)
     {
         // build current viewer's path theme - full dir path
-        $this->currentViewPath = root . '/View/' . workground . '/' . App::$Property->get('theme');
+        $themeAll = App::$Property->get('theme');
+        $this->currentViewPath = root . '/View/' . workground . '/' . $themeAll[workground];
         try {
             if(!file_exists($this->currentViewPath)) {
                 throw new \Exception('Could not load app views: ' . $this->currentViewPath);
@@ -55,7 +56,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
                 }
             } catch(\Exception $e) {
                 App::$Debug->bar->getCollector('exceptions')->addException($e);
-                new ErrorController($e);
+                new ErrorException($e);
             }
         }
     }
@@ -67,8 +68,9 @@ abstract class View extends \Core\Arch\Constructors\Magic {
      */
     public function out($params)
     {
-        if(is_null($this->view_object) || !is_array($params))
+        if ($this->view_object === null || !Object::isArray($params)) {
             return null;
+        }
         return self::renderSandbox($this->view_object, $params);
     }
 
@@ -95,7 +97,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
            }
         } catch(\Exception $e) {
             App::$Debug->bar->getCollector('exceptions')->addException($e);
-            new ErrorController($e);
+            new ErrorException($e);
         }
 
         $controller_name = String::substr($call_controller, String::length('Controller\\'));
@@ -107,7 +109,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
             }
         } catch(\Exception $e) {
             App::$Debug->bar->getCollector('exceptions')->addException($e);
-            new ErrorController($e);
+            new ErrorException($e);
         }
         return self::renderSandbox($view_path, $params);
     }

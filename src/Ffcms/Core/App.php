@@ -122,7 +122,7 @@ class App {
             }
         } catch(\Exception $e) {
             self::$Debug->bar->getCollector('exceptions')->addException($e);
-            new \Core\Arch\ErrorController('Unable to find this URL');
+            new \Core\Exception\ErrorException('Unable to find this URL');
         }
     }
 

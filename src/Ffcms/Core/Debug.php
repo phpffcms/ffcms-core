@@ -2,7 +2,9 @@
 
 namespace Ffcms\Core;
 
-use DebugBar\StandardDebugBar;
+use \DebugBar\StandardDebugBar;
+use \DebugBar\DataCollector\ConfigCollector;
+use \Core\App;
 
 class Debug
 {
@@ -15,7 +17,9 @@ class Debug
         $this->bar = new StandardDebugBar();
         $this->render = $this->bar->getJavascriptRenderer();
 
-        $this->printOS();
+        // add cfg debug info
+        //$this->bar->addCollector(new ConfigCollector(['Configs' => App::$Property->getAll()]));
+        //$this->printOS();
     }
 
     protected function printOS()

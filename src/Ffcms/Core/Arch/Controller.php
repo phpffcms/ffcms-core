@@ -4,6 +4,7 @@ namespace Ffcms\Core\Arch;
 
 use \Core\App;
 use \Core\Exception\NativeException;
+use \DebugBar\DataCollector\ConfigCollector;
 
 abstract class Controller extends \Core\Arch\Constructors\Magic {
 
@@ -55,7 +56,7 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
     {
         $body = $this->response;
         $global = App::$Response->buildGlobal();
-        App::$Debug->bar->getCollector('messages')->info(count((array)$global) > 1 ? $global : 'empty');
+        App::$Debug->bar->addCollector(new ConfigCollector(['Global Vars' => (array)$global]));
         @include_once($layout);
     }
 

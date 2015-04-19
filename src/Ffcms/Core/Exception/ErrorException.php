@@ -1,11 +1,9 @@
 <?php
 
-namespace Ffcms\Core\Arch;
+namespace Ffcms\Core\Exception;
+use \Core\App;
 
-use Core\App;
-
-class ErrorController extends Controller
-{
+class ErrorException extends \Core\Arch\Controller {
 
     public function __construct($message = null)
     {
