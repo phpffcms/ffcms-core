@@ -11,6 +11,8 @@ class Response {
 
     protected $globalVars = [];
 
+    public $errorString;
+
     /**
      * Set application response header. Default - html
      * @param string $type ['html', 'js', 'json', 404]
@@ -62,7 +64,7 @@ class Response {
      * Get all global variables
      * @return array|null
      */
-    public function getGlobal()
+    public function getGlobals()
     {
         return $this->globalVars;
     }

@@ -3,6 +3,7 @@
 
 namespace Ffcms\Core\Arch\Constructors;
 use Core\App;
+use Core\Helper\Object;
 
 
 /**
@@ -12,20 +13,16 @@ use Core\App;
  */
 abstract class Magic {
 
-    protected $data = [];
+    protected $data;
 
     public final function __set($var, $value)
     {
-        $this->data[$var] = $value;
+        App::$Response->setGlobal($var, $value);
     }
 
-
-    public function __destruct()
+    public final function __get($var)
     {
-        if(count($this->data) > 0) {
-            foreach($this->data as $var => $value) {
-                App::$Response->setGlobal($var, $value);
-            }
-        }
+        $globals = App::$Response->getGlobals();
+        return $globals[$var];
     }
 }

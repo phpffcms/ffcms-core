@@ -3,12 +3,11 @@
 namespace Ffcms\Core\Exception;
 use \Core\App;
 
-class ErrorException extends \Core\Arch\Controller {
+class ErrorException {
 
     public function __construct($message = null)
     {
-        parent::__construct();
         App::$Response->setHeader(404);
-        $this->response = $message;
+        App::$Response->errorString = App::$Security->purifier()->purify($message);
     }
 }

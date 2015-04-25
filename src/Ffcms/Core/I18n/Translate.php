@@ -54,7 +54,7 @@ class Translate {
      * @param array $params
      * @return string
      */
-    public function translate($text, array $params)
+    public function translate($text, array $params = [])
     {
         $index = null;
         $namespace = 'Controller\\' . workground . '\\';

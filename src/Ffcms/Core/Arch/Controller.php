@@ -31,13 +31,13 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
      */
     public function __destruct()
     {
-        parent::__destruct();
+        //parent::__destruct();
         // allow use and override after() method
         $this->after();
         // prepare Layout for this controller
         $layoutPath = App::$Alias->currentViewPath . '/layout/' . self::$layout;
         try {
-            if (file_exists($layoutPath) && is_readable($layoutPath)) {
+            if (is_readable($layoutPath)) {
                 $this->build($layoutPath);
             } else {
                 throw new \Exception('Layout not founded: {root}' . str_replace(root, '', $layoutPath));
@@ -55,6 +55,9 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
     protected final function build($layout)
     {
         $body = $this->response;
+        if (App::$Response->errorString !== null) {
+            $body = App::$Response->errorString;
+        }
         $global = App::$Response->buildGlobal();
         App::$Debug->bar->addCollector(new ConfigCollector(['Global Vars' => (array)$global]));
         @include_once($layout);
@@ -80,4 +83,6 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
     {
         App::$Response->setGlobalArray($array);
     }
+
+
 }

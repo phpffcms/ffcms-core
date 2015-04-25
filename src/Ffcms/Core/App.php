@@ -51,6 +51,11 @@ class App {
      */
     public static $Message;
 
+    /**
+     * @var \Core\Identify\User
+     */
+    public static $User;
+
 
     /**
      * Load entry point for another logic
@@ -66,8 +71,8 @@ class App {
         self::$View = new \Core\Arch\View();
         self::$Translate = new \Core\I18n\Translate();
         self::$Message = new \Core\Notify\Message();
-
         self::$Alias = new \Core\Alias();
+        self::$User = new \Core\Identify\User();
 
         // init ActiveRecord
         $connections = self::$Property->get('database');
@@ -122,7 +127,7 @@ class App {
             }
         } catch(\Exception $e) {
             self::$Debug->bar->getCollector('exceptions')->addException($e);
-            new \Core\Exception\ErrorException('Unable to find this URL');
+            new \Core\Exception\EmptyException('Unable to find this URL');
         }
     }
 

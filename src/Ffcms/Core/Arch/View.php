@@ -20,11 +20,12 @@ abstract class View extends \Core\Arch\Constructors\Magic {
 
 
     /**
-     * @param null|string $view_file
+     * Construct object viewer from new View()
      * @param null|string $controller_name
+     * @param null|string $view_file
      * @throws \DebugBar\DebugBarException
      */
-    public function __construct($view_file = null, $controller_name = null)
+    public function __construct($controller_name = null, $view_file = null)
     {
         // build current viewer's path theme - full dir path
         $themeAll = App::$Property->get('theme');
@@ -38,7 +39,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
             new NativeException($e);
         }
 
-        // built on $view = new View('index', 'main');
+        // built on $view = new View('main', 'index');
         if(!is_null($view_file) && !is_null($controller_name)) {
             if (String::startsWith('Controller\\', $controller_name)) {
                 $controller_name = String::substr($controller_name, String::length('Controller\\'));
@@ -81,7 +82,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
      * @return string
      * @throws \DebugBar\DebugBarException
      */
-    public static function render($view, $params = [])
+    public function render($view, $params = [])
     {
         $call_log = debug_backtrace();
         $call_controller = null;
@@ -100,7 +101,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
             new ErrorException($e);
         }
 
-        $controller_name = String::substr($call_controller, String::length('Controller\\'));
+        $controller_name = String::substr($call_controller, String::length('Controller\\' . workground . '\\'));
         $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view) . '.php';
 
         try {
@@ -147,7 +148,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
     public function buildGlobal()
     {
         $global = new \stdClass();
-        foreach(App::$Response->getGlobal() as $var => $value) {
+        foreach(App::$Response->getGlobals() as $var => $value) {
             $global->$var = $value;
         }
         return $global;

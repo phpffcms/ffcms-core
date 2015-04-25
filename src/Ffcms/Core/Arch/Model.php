@@ -11,7 +11,7 @@ abstract class Model extends \Core\Arch\Constructors\Magic
 {
     public $wrongFields = [];
 
-    public final function construct()
+    public final function __construct()
     {
         $this->before();
     }
