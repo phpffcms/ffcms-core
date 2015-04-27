@@ -59,7 +59,7 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
             $body = App::$Response->errorString;
         }
         $global = App::$Response->buildGlobal();
-        App::$Debug->bar->addCollector(new ConfigCollector(['Global Vars' => (array)$global]));
+        App::$Debug->bar->getCollector('config')->setData(['Global Vars' => (array)App::$Response->getGlobals()]);
         @include_once($layout);
     }
 

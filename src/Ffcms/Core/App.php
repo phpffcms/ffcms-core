@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core;
 
-use ActiveRecord;
+use \Illuminate\Database\Capsule\Manager as Capsule;
 
 class App {
 
@@ -74,21 +74,15 @@ class App {
         self::$Alias = new \Core\Alias();
         self::$User = new \Core\Identify\User();
 
-        // init ActiveRecord
-        $connections = self::$Property->get('database');
-        ActiveRecord\Config::initialize(function ($cfg) use ($connections) {
-            $cfg->set_model_directory(root . '/Model/ActiveRecord/');
-            $cfg->set_connections($connections);
+        // establish database link
+        $capsule = new Capsule;
+        $capsule->addConnection(self::$Property->get('database'));
 
-            # default connection is now production
-            $cfg->set_default_connection('main');
-        });
-        try {
-            \ActiveRecord\Connection::instance();
-        } catch(\Exception $e) {
-            self::$Debug->bar->getCollector('exceptions')->addException($e);
-            new \Core\Exception\NativeException('Unable connect to database! Database is DOWN!');
-        }
+        // Make this Capsule instance available globally via static methods... (optional)
+        $capsule->setAsGlobal();
+
+        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+        $capsule->bootEloquent();
     }
 
     /**

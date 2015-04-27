@@ -142,7 +142,7 @@ class Form extends \Core\Helper\HTML\NativeGenerator
      * @param array $property
      * @return string
      */
-    public function submitButton($title, array $property)
+    public function submitButton($title, array $property = [])
     {
         return '<input type="submit" name="submit" value="' . self::nohtml($title) . '"' . self::applyProperty($property) . ' />';
     }
