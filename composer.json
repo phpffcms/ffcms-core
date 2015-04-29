@@ -4,7 +4,7 @@
   "type": "library",
   "keywords": ["php", "mvc", "framework"],
   "homepage": "http://ffcms.org",
-  "license": "MINT",
+  "license": "MIT",
   "authors": [
     {
       "name": "Pyatinskyi M.M.",

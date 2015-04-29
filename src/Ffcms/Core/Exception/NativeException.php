@@ -11,7 +11,11 @@ class NativeException
     public function __construct($message = null)
     {
         header('HTTP/1.1 404 Not Found');
-        echo $this->rawHTML($message);
+        if (type === 'web') {
+            echo $this->rawHTML($message);
+        } else {
+            echo $message;
+        }
         die();
     }
 
