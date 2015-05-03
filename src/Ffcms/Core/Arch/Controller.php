@@ -4,9 +4,11 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
-use Ffcms\Core\Arch\Constructors\Magic;
+use Ffcms\Core\Traits\DynamicGlobal;
 
-class Controller extends Magic {
+class Controller {
+
+    use DynamicGlobal;
 
     /**
      * @var string $layout

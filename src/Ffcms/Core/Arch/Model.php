@@ -6,10 +6,12 @@ use Ffcms\Core\App;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Filter\Native;
-use Ffcms\Core\Arch\Constructors\Magic;
+use Ffcms\Core\Traits\DynamicGlobal;
 
-class Model extends Magic
+class Model
 {
+    use DynamicGlobal;
+
     public $wrongFields = [];
 
     public final function __construct()

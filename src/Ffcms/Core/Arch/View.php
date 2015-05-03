@@ -7,9 +7,11 @@ use Ffcms\Core\Helper\String;
 use Ffcms\Core\Exception\ErrorException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\App;
-use Ffcms\Core\Arch\Constructors\Magic;
+use Ffcms\Core\Traits\DynamicGlobal;
 
-class View extends Magic {
+class View {
+
+    use DynamicGlobal;
 
     protected $view_object;
 
@@ -30,7 +32,7 @@ class View extends Magic {
     {
         // build current viewer's path theme - full dir path
         $themeAll = App::$Property->get('theme');
-        $this->currentViewPath = root . '/View/' . workground . '/' . $themeAll[workground];
+        $this->currentViewPath = root . '/Apps/View/' . workground . '/' . $themeAll[workground];
         try {
             if(!file_exists($this->currentViewPath)) {
                 throw new \Exception('Could not load app views: ' . $this->currentViewPath);
@@ -42,8 +44,8 @@ class View extends Magic {
 
         // built on $view = new View('main', 'index');
         if(!is_null($view_file) && !is_null($controller_name)) {
-            if (String::startsWith('Controller\\', $controller_name)) {
-                $controller_name = String::substr($controller_name, String::length('Controller\\'));
+            if (String::startsWith('Apps\\Controller\\', $controller_name)) {
+                $controller_name = String::substr($controller_name, String::length('Apps\\Controller\\'));
             }
             if (String::endsWith('.php', $view_file)) {
                 $view_file = String::substr($view_file, 0, String::length($view_file) - 4);
@@ -88,7 +90,7 @@ class View extends Magic {
         $call_log = debug_backtrace();
         $call_controller = null;
         foreach($call_log as $caller) {
-            if(String::startsWith('Controller\\', $caller['class'])) {
+            if(String::startsWith('Apps\\Controller\\', $caller['class'])) {
                 $call_controller = (string)$caller['class'];
             }
         }
@@ -102,7 +104,7 @@ class View extends Magic {
             new ErrorException($e);
         }
 
-        $controller_name = String::substr($call_controller, String::length('Controller\\' . workground . '\\'));
+        $controller_name = String::substr($call_controller, String::length('Apps\\Controller\\' . workground . '\\'));
         $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view) . '.php';
 
         try {

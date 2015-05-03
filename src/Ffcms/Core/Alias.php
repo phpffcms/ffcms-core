@@ -89,8 +89,7 @@ class Alias {
         $this->vendor['js']['jquery-ui']['path'] = root . '/vendor/bower/jquery-ui/jquery-ui.min.js';
 
         $themeAll = App::$Property->get('theme');
-        $this->currentViewUrl = $this->scriptUrl . 'View/' . workground . '/' . $themeAll[workground];
-
+        $this->currentViewUrl = $this->scriptUrl . 'Apps/View/' . workground . '/' . $themeAll[workground];
     }
 
 

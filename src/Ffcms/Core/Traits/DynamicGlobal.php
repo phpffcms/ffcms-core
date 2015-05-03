@@ -1,16 +1,15 @@
 <?php
 
-
-namespace Ffcms\Core\Arch\Constructors;
+namespace Ffcms\Core\Traits;
 
 use Ffcms\Core\App;
 
 /**
  * Special street magic class for extending MVC model usage $this->undefined from any places.
- * Class Magic
+ * Class DynamicProperty
  * @package Ffcms\Core\Arch\Constructors
  */
-abstract class Magic {
+trait DynamicGlobal {
 
     protected $data;
 

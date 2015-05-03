@@ -9,7 +9,6 @@ use Ffcms\Core\Network\Response;
 use Ffcms\Core\Arch\View;
 use Ffcms\Core\Notify\Message;
 use Ffcms\Core\Exception\EmptyException;
-use \Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * Class App - entry point for applications
@@ -62,11 +61,6 @@ class App {
      */
     public static $Message;
 
-    /**
-     * @var \Ffcms\Core\Identify\User
-     */
-    public static $User;
-
 
     /**
      * Load entry point for another logic
@@ -83,19 +77,6 @@ class App {
         self::$Translate = new Translate();
         self::$Message = new Message();
         self::$Alias = new Alias();
-
-        // *todo: define on config like a ['user' => new Ffcms\Core\Identify\User([params])]
-        self::$User = new \Ffcms\Core\Identify\User();
-
-        // establish database link
-        $capsule = new Capsule;
-        $capsule->addConnection(self::$Property->get('database'));
-
-        // Make this Capsule instance available globally via static methods... (optional)
-        $capsule->setAsGlobal();
-
-        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
-        $capsule->bootEloquent();
     }
 
     /**
@@ -105,10 +86,10 @@ class App {
     public static function display()
     {
         try {
-            $controller_path = '/controller/' . workground . '/' . self::$Request->getController() . '.php';
+            $controller_path = '/Apps/Controller/' . workground . '/' . self::$Request->getController() . '.php';
             if(file_exists(root . $controller_path) && is_readable(root . $controller_path)) {
                 include_once(root . $controller_path);
-                $cname = 'Controller\\' . workground . '\\' . self::$Request->getController();
+                $cname = 'Apps\\Controller\\' . workground . '\\' . self::$Request->getController();
                 if(class_exists($cname)) {
                     $load = new $cname;
                     $actionName = 'action' . ucfirst(self::$Request->getAction());
