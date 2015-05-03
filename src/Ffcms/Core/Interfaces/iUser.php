@@ -1,6 +1,6 @@
 <?php
 
-namespace Ffcms\Core\Identify;
+namespace Ffcms\Core\Interfaces;
 
 interface iUser
 {
@@ -19,5 +19,4 @@ interface iUser
     public function isLoginExist($login);
 
     public function getPersonViaEmail($email);
-
 }

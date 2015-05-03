@@ -2,9 +2,11 @@
 
 namespace Ffcms\Core;
 
-use \Core\Exception\NativeException;
-use \Core\App;
 
+/**
+ * Class Alias - fast alias for core property's
+ * @package Ffcms\Core
+ */
 class Alias {
 
     /**

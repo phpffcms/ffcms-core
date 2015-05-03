@@ -2,13 +2,14 @@
 
 namespace Ffcms\Core\Arch;
 
-use Core\Helper\Object;
-use Core\Helper\String;
-use Core\Exception\ErrorException;
-use Core\Exception\NativeException;
-use Core\App;
+use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\String;
+use Ffcms\Core\Exception\ErrorException;
+use Ffcms\Core\Exception\NativeException;
+use Ffcms\Core\App;
+use Ffcms\Core\Arch\Constructors\Magic;
 
-abstract class View extends \Core\Arch\Constructors\Magic {
+class View extends Magic {
 
     protected $view_object;
 
@@ -35,7 +36,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
                 throw new \Exception('Could not load app views: ' . $this->currentViewPath);
             }
         } catch(\Exception $e) {
-            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            App::$Debug->addException($e);
             new NativeException($e);
         }
 
@@ -56,7 +57,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
                     throw new \Exception('New view object not founded: ' . str_replace(root, null, $view_path));
                 }
             } catch(\Exception $e) {
-                App::$Debug->bar->getCollector('exceptions')->addException($e);
+                App::$Debug->addException($e);
                 new ErrorException($e);
             }
         }
@@ -97,7 +98,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
                throw new \Exception('On call View->render() not founded caller controller' . $call_log);
            }
         } catch(\Exception $e) {
-            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            App::$Debug->addException($e);
             new ErrorException($e);
         }
 
@@ -109,7 +110,7 @@ abstract class View extends \Core\Arch\Constructors\Magic {
                 throw new \Exception('Viewer "' . $view . '" is not founded!');
             }
         } catch(\Exception $e) {
-            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            App::$Debug->addException($e);
             new ErrorException($e);
         }
         return self::renderSandbox($view_path, $params);

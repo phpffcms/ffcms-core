@@ -2,9 +2,10 @@
 
 namespace Ffcms\Core\Helper;
 
-use Core\App;
+use Ffcms\Core\App;
+use Ffcms\Core\Helper\HTML\NativeGenerator;
 
-class Url extends \Core\Helper\HTML\NativeGenerator {
+class Url extends NativeGenerator {
 
     /**
      * Build link via controller/action and other params
@@ -17,26 +18,30 @@ class Url extends \Core\Helper\HTML\NativeGenerator {
     public static function to($controller_action, $id = null, $add = null, $params = [])
     {
         list($controller, $action) = explode('/', trim($controller_action, '/'));
-        if($controller == null || $action == null)
+        if ($controller == null || $action == null) {
             return App::$Alias->baseUrl;
-
-        $url = App::$Alias->baseUrl . strtolower(self::nohtml($controller)) . '/' . strtolower(self::nohtml($action)) . '/';
-        if($id !== null)
-            $url .= self::nohtml($id) . '/';
-
-        if($add !== null) {
-            $url .= self::nohtml($add);
-            if(sizeof($params) < 1)
-                $url .= '/';
         }
 
-        if(sizeof($params) > 0) {
+        $url = App::$Alias->baseUrl . strtolower(self::nohtml($controller)) . '/' . strtolower(self::nohtml($action)) . '/';
+        if ($id !== null) {
+            $url .= self::nohtml($id) . '/';
+        }
+
+        if ($add !== null) {
+            $url .= self::nohtml($add);
+            if (count($params) < 1) {
+                $url .= '/';
+            }
+        }
+
+        if(count($params) > 0) {
             $first = true;
             foreach($params as $key => $value) {
-                if($first)
+                if($first) {
                     $url .= '?' . self::nohtml($key) . '=' . self::nohtml($value);
-                else
+                } else {
                     $url .= '&' . self::nohtml($key) . '=' . self::nohtml($value);
+                }
             }
         }
 
@@ -54,8 +59,9 @@ class Url extends \Core\Helper\HTML\NativeGenerator {
     {
         $compile_property = self::applyProperty($property);
 
-        if(!is_array($to)) // callback magic (:
+        if (!is_array($to)) { // callback magic (:
             $to = [$to];
+        }
 
         $invoke = new \ReflectionMethod(get_class(), 'to');
         $makeTo = $invoke->invokeArgs(null, $to);

@@ -2,15 +2,16 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
-use Core\App;
-use Core\Helper\String;
+use Ffcms\Core\App;
+use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\HTML\NativeGenerator;
 
-class Form extends \Core\Helper\HTML\NativeGenerator
+class Form extends NativeGenerator
 {
     protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item%</div></div>';
     protected $structureCheckbox = '<div class="form-group"><div class="col-md-9 col-md-offset-3"><div class="checkbox"><label>%item% %label%</label></div></div></div>';
     protected $name;
-    /** @var  \Core\Arch\Model */
+    /** @var  \Ffcms\Core\Arch\Model */
     protected $model;
 
 

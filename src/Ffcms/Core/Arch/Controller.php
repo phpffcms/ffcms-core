@@ -2,11 +2,11 @@
 
 namespace Ffcms\Core\Arch;
 
-use \Core\App;
-use \Core\Exception\NativeException;
-use \DebugBar\DataCollector\ConfigCollector;
+use Ffcms\Core\App;
+use Ffcms\Core\Exception\NativeException;
+use Ffcms\Core\Arch\Constructors\Magic;
 
-abstract class Controller extends \Core\Arch\Constructors\Magic {
+class Controller extends Magic {
 
     /**
      * @var string $layout
@@ -43,7 +43,7 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
                 throw new \Exception('Layout not founded: {root}' . str_replace(root, '', $layoutPath));
             }
         } catch(\Exception $e) {
-            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            App::$Debug->addException($e);
             new NativeException($e);
         }
     }
@@ -83,6 +83,5 @@ abstract class Controller extends \Core\Arch\Constructors\Magic {
     {
         App::$Response->setGlobalArray($array);
     }
-
 
 }

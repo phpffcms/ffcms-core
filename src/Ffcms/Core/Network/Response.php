@@ -2,8 +2,7 @@
 
 namespace Ffcms\Core\Network;
 
-use Core\App;
-use Core\Exception\NativeException;
+use Ffcms\Core\App;
 
 
 class Response {

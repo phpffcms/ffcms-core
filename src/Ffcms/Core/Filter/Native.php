@@ -2,8 +2,9 @@
 
 namespace Ffcms\Core\Filter;
 
-use Core\Helper\Object;
-use Core\Helper\String;
+use Ffcms\Core\Helper\Arr;
+use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\String;
 
 class Native {
 
@@ -46,7 +47,7 @@ class Native {
         if (Object::isArray($object)) {
             return false;
         }
-        return in_array($object, $handle);
+        return Arr::in($object, $handle);
     }
 
     /**

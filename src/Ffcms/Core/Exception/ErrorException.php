@@ -1,7 +1,8 @@
 <?php
 
 namespace Ffcms\Core\Exception;
-use \Core\App;
+
+use Ffcms\Core\App;
 
 class ErrorException {
 

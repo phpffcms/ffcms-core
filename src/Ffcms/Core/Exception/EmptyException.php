@@ -2,9 +2,10 @@
 
 namespace Ffcms\Core\Exception;
 
-use \Core\App;
+use Ffcms\Core\App;
+use Ffcms\Core\Arch\Controller;
 
-class EmptyException extends \Core\Arch\Controller
+class EmptyException extends Controller
 {
     public function __construct($m = null)
     {

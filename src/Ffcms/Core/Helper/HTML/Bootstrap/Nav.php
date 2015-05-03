@@ -2,16 +2,17 @@
 
 namespace Ffcms\Core\Helper\HTML\Bootstrap;
 
-use Core\App;
-use Core\Helper\HTML\Listing;
-use Core\Helper\String;
+use Ffcms\Core\App;
+use Ffcms\Core\Helper\HTML\Listing;
+use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\HTML\NativeGenerator;
 
-class Nav extends \Core\Helper\HTML\NativeGenerator
+class Nav extends NativeGenerator
 {
 
     public static function display($elements)
     {
-        if (!is_array($elements) || sizeof($elements['items']) < 1) {
+        if (!is_array($elements) || count($elements['items']) < 1) {
             return null;
         }
 

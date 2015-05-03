@@ -2,22 +2,26 @@
 
 namespace Ffcms\Core;
 
-use Core\Exception\NativeException;
+use Ffcms\Core\Exception\NativeException;
 
+/**
+ * Class Property - work with system configurations
+ * @package Ffcms\Core
+ */
 class Property
 {
     protected static $config;
 
     public function __construct()
     {
-        $file = root . '/config.php';
+        $file = root . '/Private/Config/General.php';
         if (is_file($file) && is_readable($file)) {
             $cfg = @include_once($file);
             if (is_array($cfg) && count($cfg) > 0) {
                 self::$config = $cfg;
             }
         } else {
-            new NativeException('File config.php not founded!');
+            new NativeException('File /Private/Config/General.php not founded!');
         }
     }
 

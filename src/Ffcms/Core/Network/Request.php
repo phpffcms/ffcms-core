@@ -2,9 +2,8 @@
 
 namespace Ffcms\Core\Network;
 
-use Core\App;
-use Core\Helper\String;
-use Core\Network\Response;
+use Ffcms\Core\App;
+use Ffcms\Core\Helper\String;
 
 /**
  * Class Request

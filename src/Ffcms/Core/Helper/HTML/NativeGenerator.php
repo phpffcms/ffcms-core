@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
-use \Core\App;
+use Ffcms\Core\App;
 
 abstract class NativeGenerator {
 

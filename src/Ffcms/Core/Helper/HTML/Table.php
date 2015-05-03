@@ -2,21 +2,24 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
-use Core\Helper\Object;
+use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\HTML\NativeGenerator;
 
-class Table extends \Core\Helper\HTML\NativeGenerator {
+class Table extends NativeGenerator {
 
     public static function display($elements)
     {
-        if(!is_array($elements) || sizeof($elements) < 1)
+        if (!Object::isArray($elements) || count($elements) < 1) {
             return null;
+        }
 
-        if(!is_array($elements['tbody']['items']) || sizeof($elements['tbody']['items']) < 1)
+        if (!Object::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1) {
             return null;
+        }
 
         $tbody_items = null;
 
-        if(is_array($elements['tbody']) && sizeof($elements['tbody']) > 0) {
+        if(is_array($elements['tbody']) && count($elements['tbody']) > 0) {
             $tbody_items .= '<tbody' . self::applyProperty($elements['tbody']['property']) . '>';
             foreach($elements['tbody']['items'] as $item) {
                 ksort($item); // sort by key
@@ -34,10 +37,10 @@ class Table extends \Core\Helper\HTML\NativeGenerator {
         }
 
         $thead_items = null;
-        if(is_array($elements['thead']) && sizeof($elements['thead']) > 0) {
+        if(is_array($elements['thead']) && count($elements['thead']) > 0) {
             $thead_items .= '<thead' . self::applyProperty($elements['thead']['property']) . '>';
             $thead_items .= '<tr>';
-            if(is_array($elements['thead']['titles']) && sizeof($elements['thead']['titles']) > 0) {
+            if(is_array($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
                 foreach($elements['thead']['titles'] as $title) {
                     $thead_items .= '<th>' . ($title['html'] ? self::safe($title['text'], true) : self::nohtml($title['text'])) . '</th>';
                 }

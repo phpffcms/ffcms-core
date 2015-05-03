@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Helper;
 
-use \Core\App;
+use Ffcms\Core\App;
 
 class Security {
 

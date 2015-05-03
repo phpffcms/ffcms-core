@@ -2,4 +2,6 @@
 
 namespace Ffcms\Core\Arch;
 
-class ActiveModel extends \Illuminate\Database\Eloquent\Model {}
+use \Illuminate\Database\Eloquent\Model as LaravelModel;
+
+class ActiveModel extends LaravelModel {}

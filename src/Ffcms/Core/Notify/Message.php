@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Notify;
 
-use Core\App;
+use Ffcms\Core\App;
 
 class Message {
     protected $data;

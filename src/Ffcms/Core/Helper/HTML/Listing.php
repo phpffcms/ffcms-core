@@ -1,15 +1,16 @@
 <?php
 
 namespace Ffcms\Core\Helper\HTML;
-use Core\App;
-use Core\Helper\String;
+use Ffcms\Core\App;
+use Ffcms\Core\Helper\Arr;
+use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\String;
 
 /**
  * Class HList
  * @package Ffcms\Core\Helper\HTML
  */
-class Listing extends \Core\Helper\HTML\NativeGenerator {
-
+class Listing extends NativeGenerator {
 
     /**
      * Construct listing elements,property's and future's
@@ -18,26 +19,30 @@ class Listing extends \Core\Helper\HTML\NativeGenerator {
      */
     public static function display($elements)
     {
-        if(!in_array($elements['type'], ['ul', 'ol']) || sizeof($elements['items']) < 1)
+        if (!Arr::in($elements['type'], ['ul', 'ol']) || count($elements['items']) < 1) {
             return null;
+        }
 
         $ulProperties = self::applyProperty($elements['ul']);
 
         $items = null;
         foreach($elements['items'] as $item) {
-            if(!in_array($item['type'], ['text', 'link']))
+            if (!Arr::in($item['type'], ['text', 'link'])) {
                 continue;
-            if($item['type'] == 'link') {
-                $controllerAction = trim(is_array($item['link']) ? $item['link'][0] : $item['link'], '/');
+            }
+            if($item['type'] === 'link') {
+                $controllerAction = trim(Object::isArray($item['link']) ? $item['link'][0] : $item['link'], '/');
                 $currentCA = strtolower(App::$Request->getController() . '/' . App::$Request->getAction());
-                if($item['activeClass'] == null)
+                if ($item['activeClass'] === null) {
                     $item['activeClass'] = 'active';
-                if($currentCA == $controllerAction) {
-                    if(is_array($item['link']) && !is_null($item['link'][1])) {
-                        if($item['link'][1] == App::$Request->getID())
+                }
+                if($currentCA === $controllerAction) {
+                    if(null !== $item['link'][1] && Object::isArray($item['link'])) {
+                        if ($item['link'][1] === App::$Request->getID()) {
                             $item['property']['class'] = String::length($item['property']['class']) > 0
                                 ? $item['activeClass'] . ' ' . $item['property']['class']
                                 : $item['activeClass'];
+                        }
                     } else {
                         $item['property']['class'] = String::length($item['property']['class']) > 0
                             ? $item['activeClass'] . ' ' . $item['property']['class']
@@ -47,30 +52,33 @@ class Listing extends \Core\Helper\HTML\NativeGenerator {
             }
             //$items .= '<li' . (sizeof($item['property']) > 0 ? ' class="' . implode(' ', $item['property']) . '"' : null) . '>';
             $items .= '<li';
-            if(sizeof($item['property']) > 0) {
+            if(count($item['property']) > 0) {
                 foreach($item['property'] as $attr => $value) {
                     $items .= ' ' . $attr . '="' . $value . '"';
                 }
             }
             $items .= '>';
 
-            if($item['type'] == 'text') {
+            if ($item['type'] === 'text') {
                 $items .= ($item['html'] ? self::safe($item['text']) : self::nohtml($item['text']));
-            } elseif($item['type'] == 'link') {
+            } elseif ($item['type'] === 'link') {
                 $link = App::$Alias->baseUrl;
-                if(is_array($item['link'])) {
+                if (Object::isArray($item['link'])) {
                     $link .= trim($item['link'][0], '/'); // controller/action
-                    if(!is_null($item['link'][1]))
+                    if (null !== $item['link'][1]) {
                         $link .= '/' . self::nohtml($item['link'][1]); // param id
-                    if(!is_null($item['link'][2]))
+                    }
+                    if (null !== $item['link'][2]) {
                         $link .= '/' . self::nohtml($item['link'][2]); // param id
-                    if(is_array($item['link'][3])) { // dynamic params ?a=b&v=c etc
+                    }
+                    if (Object::isArray($item['link'][3])) { // dynamic params ?a=b&v=c etc
                         $firstParam = true;
                         foreach($item['link'][3] as $p => $v) {
-                            if($firstParam)
-                                $link .= "?" . self::nohtml($p) . '=' . self::nohtml($v);
-                            else
-                                $link .= "&" . self::nohtml($p) . '=' . self::nohtml($v);
+                            if($firstParam) {
+                                $link .= '?' . self::nohtml($p) . '=' . self::nohtml($v);
+                            } else {
+                                $link .= '&' . self::nohtml($p) . '=' . self::nohtml($v);
+                            }
                             $firstParam = false;
                         }
                     } else {

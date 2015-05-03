@@ -2,12 +2,13 @@
 
 namespace Ffcms\Core\Arch;
 
-use Core\App;
-use Core\Helper\Object;
-use Core\Helper\String;
-use Core\Filter\Native;
+use Ffcms\Core\App;
+use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\String;
+use Ffcms\Core\Filter\Native;
+use Ffcms\Core\Arch\Constructors\Magic;
 
-abstract class Model extends \Core\Arch\Constructors\Magic
+class Model extends Magic
 {
     public $wrongFields = [];
 
@@ -112,7 +113,7 @@ abstract class Model extends \Core\Arch\Constructors\Magic
                 throw new \Exception('Filter "' . $filter_name . '" is not exist');
             }
         } catch (\Exception $e) {
-            App::$Debug->bar->getCollector('exceptions')->addException($e);
+            App::$Debug->addException($e);
         }
         if ($check !== true) { // switch only on fail check.
             $this->wrongFields[] = $field_name;
@@ -144,7 +145,7 @@ abstract class Model extends \Core\Arch\Constructors\Magic
             if (String::startsWith('_', $var)) { // ignore $_var
                 continue;
             }
-            $this->$var = \App::$Security->purifier()->purify($value);
+            $this->$var = App::$Security->purifier()->purify($value);
         }
         return $this;
     }

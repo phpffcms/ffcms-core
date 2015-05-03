@@ -2,8 +2,8 @@
 
 namespace Ffcms\Core\I18n;
 
-use Core\App;
-use Core\Helper\String;
+use Ffcms\Core\App;
+use Ffcms\Core\Helper\String;
 
 class Translate {
 

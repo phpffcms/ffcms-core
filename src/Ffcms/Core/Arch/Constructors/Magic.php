@@ -2,9 +2,8 @@
 
 
 namespace Ffcms\Core\Arch\Constructors;
-use Core\App;
-use Core\Helper\Object;
 
+use Ffcms\Core\App;
 
 /**
  * Special street magic class for extending MVC model usage $this->undefined from any places.
