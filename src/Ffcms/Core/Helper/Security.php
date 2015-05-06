@@ -48,7 +48,7 @@ class Security {
 
     public function escapeQuotes($html)
     {
-        return str_replace(['"', "'"], '&quot;', $html);
+        return String::replace(['"', "'"], '&quot;', $html);
     }
 
     /**

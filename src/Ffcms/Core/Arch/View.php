@@ -56,7 +56,7 @@ class View {
                 if (file_exists($view_path)) {
                     $this->view_object = $view_path;
                 } else {
-                    throw new \Exception('New view object not founded: ' . str_replace(root, null, $view_path));
+                    throw new \Exception('New view object not founded: ' . String::replace(root, null, $view_path));
                 }
             } catch(\Exception $e) {
                 App::$Debug->addException($e);

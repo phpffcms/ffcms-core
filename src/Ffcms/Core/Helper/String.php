@@ -93,14 +93,16 @@ class String {
 
     /**
      * Alias for function str_replace()
-     * @param $needle
-     * @param $replacement
-     * @param $haystack
+     * @param string|array|null $needle
+     * @param string|array|null $replacement
+     * @param string $haystack
      * @return string
      */
     public static function replace($needle, $replacement, $haystack)
     {
-        $needle_len = mb_strlen($needle);
+        return str_replace($needle, $replacement, $haystack);
+       /** Bugged method for (array, array, string)
+        * $needle_len = mb_strlen($needle);
         $replacement_len = mb_strlen($replacement);
         $pos = mb_strpos($haystack, $needle);
         while ($pos !== false)
@@ -109,7 +111,7 @@ class String {
                 . mb_substr($haystack, $pos + $needle_len);
             $pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
         }
-        return $haystack;
+        return $haystack; */
     }
 
     /**

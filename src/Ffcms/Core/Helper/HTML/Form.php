@@ -62,7 +62,7 @@ class Form extends NativeGenerator
         $labelText = $this->model->getLabel($object);
         $itemValue = $this->model->{$object};
         $itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
-        return str_replace(
+        return String::replace(
             ['%name%', '%label%', '%item%', '%help%'],
             [$labelFor, $labelText, $itemBody, self::nohtml($helper)],
             $structure

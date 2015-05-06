@@ -4,6 +4,7 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
+use Ffcms\Core\Helper\String;
 use Ffcms\Core\Traits\DynamicGlobal;
 
 class Controller {
@@ -42,7 +43,7 @@ class Controller {
             if (is_readable($layoutPath)) {
                 $this->build($layoutPath);
             } else {
-                throw new \Exception('Layout not founded: {root}' . str_replace(root, '', $layoutPath));
+                throw new \Exception('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
             }
         } catch(\Exception $e) {
             App::$Debug->addException($e);

@@ -10,6 +10,11 @@ use Ffcms\Core\Exception\NativeException;
  */
 class Property
 {
+    public $version = [
+        'num' => '3.0.0',
+        'date' => '01.10.2015'
+    ];
+
     protected static $config;
 
     public function __construct()
