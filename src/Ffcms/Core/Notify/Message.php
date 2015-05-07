@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Notify;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Object;
 
 class Message {
     protected $data;
@@ -23,11 +24,24 @@ class Message {
 
     /**
      * Get messages for group
-     * @param string $group
+     * @param string|array $group
      * @return array|null
      */
     public function getGroup($group)
     {
+        $output = null;
+        if (Object::isArray($group)) {
+            foreach($group as $row) {
+                if (Object::isArray($this->data[$row])) {
+                    if ($output === null) {
+                        $output = $this->data[$row];
+                    } else {
+                        $output = array_merge($output, $this->data[$row]);
+                    }
+                }
+            }
+            return $output;
+        }
         return $this->data[$group];
     }
 

@@ -59,7 +59,7 @@ class Url extends NativeGenerator {
     {
         $compile_property = self::applyProperty($property);
 
-        if (!is_array($to)) { // callback magic (:
+        if (!Object::isArray($to)) { // callback magic (:
             $to = [$to];
         }
 

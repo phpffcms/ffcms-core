@@ -57,7 +57,7 @@ class Translate {
     public function translate($text, array $params = [])
     {
         $index = null;
-        $namespace = 'Controller\\' . workground . '\\';
+        $namespace = 'Apps\\Controller\\' . workground . '\\';
         foreach(debug_backtrace() as $caller)
         {
             if(String::startsWith($namespace, $caller['class'])) {

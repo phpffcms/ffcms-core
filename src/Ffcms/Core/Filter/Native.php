@@ -126,4 +126,19 @@ class Native {
         return String::isEmail($object);
     }
 
+    /**
+     * Filter ['object', 'equal', value]
+     * @param $object
+     * @param $value
+     * @return bool
+     */
+    public static function equal($object, $value)
+    {
+        if (Object::isArray($object)) {
+            return false;
+        }
+
+        return $object === $value;
+    }
+
 }

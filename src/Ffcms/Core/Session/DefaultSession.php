@@ -2,12 +2,13 @@
 
 namespace Ffcms\Core\Session;
 
+use Ffcms\Core\Helper\Directory;
 use Ffcms\Core\Interfaces\iSession;
 
 class DefaultSession implements iSession
 {
     protected $path;
-    protected $lifetime;
+    protected $lifetime = 1440;
 
 
     /**
@@ -69,7 +70,7 @@ class DefaultSession implements iSession
      */
     public function gc($maxlifetime)
     {
-        if (null !== $this->lifetime) {
+        if ($this->lifetime !== 1440) {
             $maxlifetime = $this->lifetime; // overwrite over abstract layer
         }
         foreach (glob($this->path . '/session_*') as $file) {
@@ -99,8 +100,8 @@ class DefaultSession implements iSession
         if (null === $this->path) {
             $this->path = $save_path;
         }
-        if (!is_dir($this->path)) {
-            mkdir($this->path, 0777);
+        if (!Directory::exist($this->path)) {
+            Directory::create($this->path, 0777);
         }
         return true;
     }
@@ -155,9 +156,9 @@ class DefaultSession implements iSession
         // register custom handler's
         $this->registerHandler();
         // set cookie lifetime
-        if (null !== $this->lifetime) {
-            @session_set_cookie_params($this->lifetime);
-        }
+        @ini_set('session.cookie_lifetime', $this->lifetime);
+        @ini_set('session.gc_maxlifetime', $this->lifetime);
+        @session_set_cookie_params($this->lifetime);
         // open session
         @session_start();
     }

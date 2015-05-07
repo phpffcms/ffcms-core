@@ -81,6 +81,7 @@ class Model
 
         foreach ($this->wrongFields as $property) {
             $this->{$property} = App::$Security->strip_tags($default_property[$property]);
+            App::$Message->set('global', 'warning', App::$Translate->get('Default', 'Field %field% was completed incorrectly', ['field' => $property]));
         }
 
         return $success;
@@ -105,7 +106,7 @@ class Model
                 } else {
                     throw new \Exception('Filter callback execution "' . $field_name . '" is not exist');
                 }
-            } elseif (method_exists('\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
+            } elseif (method_exists('Ffcms\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
                 if ($filter_argv != null) {
                     $check = Native::$filter_name($field_value, $filter_argv);
                 } else {

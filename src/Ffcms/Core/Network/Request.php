@@ -70,7 +70,7 @@ class Request
 
         // if language is required and undefined - redirect to basic lang version
         if ($language_undefined === true) {
-            Response::redirect($this->baseUrl . App::$Property->get('baseLanguage') . '/', true);
+            Response::aloneRedirect($this->baseUrl . App::$Property->get('baseLanguage') . '/', true);
         }
 
         $uri_split = explode('/', self::$pathway);

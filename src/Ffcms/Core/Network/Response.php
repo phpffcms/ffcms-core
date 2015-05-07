@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Network;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Url;
 
 
 class Response {
@@ -93,16 +94,30 @@ class Response {
      * @param int $time
      * @param boolean $httponly
      */
-    public function setCookie($data, $value, $time = null, $httponly = false) {
+    public function setCookie($data, $value, $time = null, $httponly = false)
+    {
         setcookie($data, $value, $time, '/', null, null, $httponly);
     }
 
     /**
-     * Set header with redirect for user
+     * @param string $controller_action
+     * @param null|mixed $id
+     * @param null|mixed $add
+     * @param array $params
+     */
+    public function redirect($controller_action, $id = null, $add = null, $params = [])
+    {
+        $link = Url::to($controller_action, $id, $add, $params);
+        header('Location: ' . $link);
+        exit();
+    }
+
+    /**
+     * Set header with redirect for user. Only standalone usage.
      * @param $toUri
      * @param boolean $full
      */
-    public static function redirect($toUri, $full = false)
+    public static function aloneRedirect($toUri, $full = false)
     {
         $toUri = ltrim($toUri, '/');
         header('Location: ' . ($full === false ? '/' : '') . $toUri);
