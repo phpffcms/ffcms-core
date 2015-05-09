@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core;
 
+use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Network\Request;
@@ -87,7 +88,7 @@ class App {
     {
         try {
             $controller_path = '/Apps/Controller/' . workground . '/' . self::$Request->getController() . '.php';
-            if(file_exists(root . $controller_path) && is_readable(root . $controller_path)) {
+            if(File::exist(root . $controller_path)) {
                 include_once(root . $controller_path);
                 $cname = 'Apps\\Controller\\' . workground . '\\' . self::$Request->getController();
                 if(class_exists($cname)) {
@@ -96,12 +97,12 @@ class App {
                     if(method_exists($cname, $actionName)) {
                         if(self::$Request->getID() !== null) {
                             if(self::$Request->getAdd() !== null) {
-                                @$load->$actionName(self::$Request->getID(), self::$Request->getAdd());
+                                $load->$actionName(self::$Request->getID(), self::$Request->getAdd());
                             } else {
-                                @$load->$actionName(self::$Request->getID());
+                                $load->$actionName(self::$Request->getID());
                             }
                         } else {
-                            @$load->$actionName();
+                            $load->$actionName();
                         }
                     } else {
                         throw new \Exception('Method ' . $actionName . '() not founded in ' . $cname . ' in file {root}' . $controller_path);
