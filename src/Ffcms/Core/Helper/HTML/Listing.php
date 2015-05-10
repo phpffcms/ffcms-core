@@ -1,6 +1,7 @@
 <?php
 
 namespace Ffcms\Core\Helper\HTML;
+
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\Object;
@@ -10,7 +11,8 @@ use Ffcms\Core\Helper\String;
  * Class HList
  * @package Ffcms\Core\Helper\HTML
  */
-class Listing extends NativeGenerator {
+class Listing extends NativeGenerator
+{
 
     /**
      * Construct listing elements,property's and future's
@@ -26,18 +28,18 @@ class Listing extends NativeGenerator {
         $ulProperties = self::applyProperty($elements['ul']);
 
         $items = null;
-        foreach($elements['items'] as $item) {
+        foreach ($elements['items'] as $item) {
             if (!Arr::in($item['type'], ['text', 'link'])) {
                 continue;
             }
-            if($item['type'] === 'link') {
+            if ($item['type'] === 'link') {
                 $controllerAction = trim(Object::isArray($item['link']) ? $item['link'][0] : $item['link'], '/');
                 $currentCA = strtolower(App::$Request->getController() . '/' . App::$Request->getAction());
                 if ($item['activeClass'] === null) {
                     $item['activeClass'] = 'active';
                 }
-                if($currentCA === $controllerAction) {
-                    if(null !== $item['link'][1] && Object::isArray($item['link'])) {
+                if ($currentCA === $controllerAction) {
+                    if (null !== $item['link'][1] && Object::isArray($item['link'])) {
                         if ($item['link'][1] === App::$Request->getID()) {
                             $item['property']['class'] = String::length($item['property']['class']) > 0
                                 ? $item['activeClass'] . ' ' . $item['property']['class']
@@ -52,8 +54,8 @@ class Listing extends NativeGenerator {
             }
             //$items .= '<li' . (sizeof($item['property']) > 0 ? ' class="' . implode(' ', $item['property']) . '"' : null) . '>';
             $items .= '<li';
-            if(count($item['property']) > 0) {
-                foreach($item['property'] as $attr => $value) {
+            if (count($item['property']) > 0) {
+                foreach ($item['property'] as $attr => $value) {
                     $items .= ' ' . $attr . '="' . $value . '"';
                 }
             }
@@ -73,8 +75,8 @@ class Listing extends NativeGenerator {
                     }
                     if (Object::isArray($item['link'][3])) { // dynamic params ?a=b&v=c etc
                         $firstParam = true;
-                        foreach($item['link'][3] as $p => $v) {
-                            if($firstParam) {
+                        foreach ($item['link'][3] as $p => $v) {
+                            if ($firstParam) {
                                 $link .= '?' . self::nohtml($p) . '=' . self::nohtml($v);
                             } else {
                                 $link .= '&' . self::nohtml($p) . '=' . self::nohtml($v);
@@ -84,9 +86,9 @@ class Listing extends NativeGenerator {
                     } else {
                         $link .= '/';
                     }
-                } elseif(String::startsWith('http', $item['link'])) {
+                } elseif (String::startsWith('http', $item['link'])) {
                     $link = self::nohtml($item['link']);
-                } elseif(String::startsWith('#', $item['link'])) { // allow pass #part
+                } elseif (String::startsWith('#', $item['link'])) { // allow pass #part
                     $link = self::nohtml($item['link']);
                 } else {
                     $link .= self::nohtml(trim($item['link'], '/'));

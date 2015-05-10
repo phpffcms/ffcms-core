@@ -30,13 +30,13 @@ class Request extends FoundationRequest
      *
      * This method also re-initializes all properties.
      *
-     * @param array  $query      The GET parameters
-     * @param array  $request    The POST parameters
-     * @param array  $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-     * @param array  $cookies    The COOKIE parameters
-     * @param array  $files      The FILES parameters
-     * @param array  $server     The SERVER parameters
-     * @param string $content    The raw body data
+     * @param array $query The GET parameters
+     * @param array $request The POST parameters
+     * @param array $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array $cookies The COOKIE parameters
+     * @param array $files The FILES parameters
+     * @param array $server The SERVER parameters
+     * @param string $content The raw body data
      *
      * @api
      */
@@ -98,10 +98,11 @@ class Request extends FoundationRequest
 
     public function getPathInfo()
     {
-        return $this->language === null ? parent::getPathInfo() : String::substr(parent::getPathInfo(), String::length($this->language)+1);
+        return $this->language === null ? parent::getPathInfo() : String::substr(parent::getPathInfo(), String::length($this->language) + 1);
     }
 
-    public function getLanguage() {
+    public function getLanguage()
+    {
         return $this->language;
     }
 

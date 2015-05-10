@@ -9,7 +9,8 @@ use Ffcms\Core\Template\Variables;
  * Class DynamicProperty
  * @package Ffcms\Core\Arch\Constructors
  */
-trait DynamicGlobal {
+trait DynamicGlobal
+{
 
     protected $data;
 

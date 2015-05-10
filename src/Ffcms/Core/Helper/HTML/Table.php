@@ -5,7 +5,8 @@ namespace Ffcms\Core\Helper\HTML;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
-class Table extends NativeGenerator {
+class Table extends NativeGenerator
+{
 
     public static function display($elements)
     {
@@ -19,13 +20,13 @@ class Table extends NativeGenerator {
 
         $tbody_items = null;
 
-        if(is_array($elements['tbody']) && count($elements['tbody']) > 0) {
+        if (Object::isArray($elements['tbody']) && count($elements['tbody']) > 0) {
             $tbody_items .= '<tbody' . self::applyProperty($elements['tbody']['property']) . '>';
-            foreach($elements['tbody']['items'] as $item) {
+            foreach ($elements['tbody']['items'] as $item) {
                 ksort($item); // sort by key
                 $tbody_items .= '<tr' . self::applyProperty($item['property']) . '>';
-                foreach($item as $id => $data) {
-                    if(Object::isInt($id)) { // td element
+                foreach ($item as $id => $data) {
+                    if (Object::isInt($id)) { // td element
                         $tbody_items .= '<td' . self::applyProperty($data['property']) . '>';
                         $tbody_items .= $data['html'] ? self::safe($data['text'], true) : self::nohtml($data['text']);
                         $tbody_items .= '</td>';
@@ -37,11 +38,11 @@ class Table extends NativeGenerator {
         }
 
         $thead_items = null;
-        if(is_array($elements['thead']) && count($elements['thead']) > 0) {
+        if (Object::isArray($elements['thead']) && count($elements['thead']) > 0) {
             $thead_items .= '<thead' . self::applyProperty($elements['thead']['property']) . '>';
             $thead_items .= '<tr>';
-            if(is_array($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
-                foreach($elements['thead']['titles'] as $title) {
+            if (Object::isArray($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
+                foreach ($elements['thead']['titles'] as $title) {
                     $thead_items .= '<th>' . ($title['html'] ? self::safe($title['text'], true) : self::nohtml($title['text'])) . '</th>';
                 }
             }

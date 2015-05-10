@@ -15,7 +15,8 @@ use Ffcms\Core\Exception\EmptyException;
  * Class App - entry point for applications
  * @package Ffcms\Core
  */
-class App {
+class App
+{
 
     /**
      * @var \Ffcms\Core\Network\Request

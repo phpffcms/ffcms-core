@@ -3,7 +3,8 @@
 
 namespace Ffcms\Core\Helper;
 
-class String {
+class String
+{
 
     /**
      * Check is $where starts with prefix $string
@@ -14,8 +15,7 @@ class String {
     public static function startsWith($string, $where)
     {
         // check is not empty string
-        if(self::length($string) < 1 || self::length($where) < 1)
-        {
+        if (self::length($string) < 1 || self::length($where) < 1) {
             return false;
         }
         $pharse_prefix = self::substr($where, 0, self::length($string));
@@ -31,8 +31,7 @@ class String {
     public static function endsWith($string, $where)
     {
         // check is not empty string
-        if(self::length($string) < 1 || self::length($where) < 1)
-        {
+        if (self::length($string) < 1 || self::length($where) < 1) {
             return false;
         }
         $pharse_suffix = self::substr($where, -self::length($string));
@@ -67,9 +66,9 @@ class String {
                         /x';
         $split = preg_split($expression, $string);
         $output = [];
-        for($i=0;$i<count($split);++$i) {
+        for ($i = 0; $i < count($split); ++$i) {
             $word = strtolower($split[$i]);
-            if($i === 0) {
+            if ($i === 0) {
                 $word = ucfirst($word);
             }
             $output[] = $word;
@@ -101,17 +100,17 @@ class String {
     public static function replace($needle, $replacement, $haystack)
     {
         return str_replace($needle, $replacement, $haystack);
-       /** Bugged method for (array, array, string)
-        * $needle_len = mb_strlen($needle);
-        $replacement_len = mb_strlen($replacement);
-        $pos = mb_strpos($haystack, $needle);
-        while ($pos !== false)
-        {
-            $haystack = mb_substr($haystack, 0, $pos) . $replacement
-                . mb_substr($haystack, $pos + $needle_len);
-            $pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
-        }
-        return $haystack; */
+        /** Bugged method for (array, array, string)
+         * $needle_len = mb_strlen($needle);
+         * $replacement_len = mb_strlen($replacement);
+         * $pos = mb_strpos($haystack, $needle);
+         * while ($pos !== false)
+         * {
+         * $haystack = mb_substr($haystack, 0, $pos) . $replacement
+         * . mb_substr($haystack, $pos + $needle_len);
+         * $pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
+         * }
+         * return $haystack; */
     }
 
     /**
@@ -183,7 +182,6 @@ class String {
     {
         return filter_var($string, FILTER_VALIDATE_EMAIL) !== false;
     }
-
 
 
 }

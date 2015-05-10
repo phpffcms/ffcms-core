@@ -4,11 +4,13 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
+use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Template\Variables;
 
-class Controller {
+class Controller
+{
 
     use DynamicGlobal;
 
@@ -28,7 +30,9 @@ class Controller {
         $this->before();
     }
 
-    public function before() {}
+    public function before()
+    {
+    }
 
     /**
      * Compile output
@@ -41,12 +45,12 @@ class Controller {
         // prepare Layout for this controller
         $layoutPath = App::$Alias->currentViewPath . '/layout/' . self::$layout;
         try {
-            if (is_readable($layoutPath)) {
+            if (File::exist($layoutPath)) {
                 $this->build($layoutPath);
             } else {
                 throw new \Exception('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             App::$Debug->addException($e);
             new NativeException($e);
         }
@@ -73,7 +77,9 @@ class Controller {
         App::$Response->send();
     }
 
-    public function after() {}
+    public function after()
+    {
+    }
 
     /**
      * Set single global variable

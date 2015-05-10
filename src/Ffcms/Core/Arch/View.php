@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Arch;
 
+use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Exception\ErrorException;
@@ -10,7 +11,8 @@ use Ffcms\Core\App;
 use Ffcms\Core\Template\Variables;
 use Ffcms\Core\Traits\DynamicGlobal;
 
-class View {
+class View
+{
 
     use DynamicGlobal;
 
@@ -35,16 +37,16 @@ class View {
         $themeAll = App::$Property->get('theme');
         $this->currentViewPath = root . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
         try {
-            if(!file_exists($this->currentViewPath)) {
+            if (!File::exist($this->currentViewPath)) {
                 throw new \Exception('Could not load app views: ' . $this->currentViewPath);
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             App::$Debug->addException($e);
             new NativeException($e);
         }
 
         // built on $view = new View('main', 'index');
-        if(!is_null($view_file) && !is_null($controller_name)) {
+        if (null !== $view_file && null !== $controller_name) {
             if (String::startsWith('Apps\\Controller\\', $controller_name)) {
                 $controller_name = String::substr($controller_name, String::length('Apps\\Controller\\'));
             }
@@ -54,12 +56,12 @@ class View {
 
             $view_path = $this->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view_file) . '.php';
             try {
-                if (file_exists($view_path)) {
+                if (File::exist($view_path)) {
                     $this->view_object = $view_path;
                 } else {
                     throw new \Exception('New view object not founded: ' . String::replace(root, null, $view_path));
                 }
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 App::$Debug->addException($e);
                 new ErrorException($e);
             }
@@ -90,17 +92,17 @@ class View {
     {
         $call_log = debug_backtrace();
         $call_controller = null;
-        foreach($call_log as $caller) {
-            if(String::startsWith('Apps\\Controller\\', $caller['class'])) {
+        foreach ($call_log as $caller) {
+            if (String::startsWith('Apps\\Controller\\', $caller['class'])) {
                 $call_controller = (string)$caller['class'];
             }
         }
 
         try {
-           if(is_null($call_controller)) {
-               throw new \Exception('On call View->render() not founded caller controller' . $call_log);
-           }
-        } catch(\Exception $e) {
+            if (null === $call_controller) {
+                throw new \Exception('On call View->render() not founded caller controller' . $call_log);
+            }
+        } catch (\Exception $e) {
             App::$Debug->addException($e);
             new ErrorException($e);
         }
@@ -109,10 +111,10 @@ class View {
         $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view) . '.php';
 
         try {
-            if(!file_exists($view_path) || !is_readable($view_path)) {
+            if (!File::exist($view_path)) {
                 throw new \Exception('Viewer "' . $view . '" is not founded!');
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             App::$Debug->addException($e);
             new ErrorException($e);
         }
@@ -134,8 +136,7 @@ class View {
     protected function renderSandbox($path, $params = [])
     {
         // render defaults params
-        foreach($params as $key=>$value)
-        {
+        foreach ($params as $key => $value) {
             $$key = $value;
         }
         $global = self::buildGlobal();
@@ -152,7 +153,7 @@ class View {
     public function buildGlobal()
     {
         $global = new \stdClass();
-        foreach(Variables::instance()->getGlobalsObject() as $var => $value) {
+        foreach (Variables::instance()->getGlobalsObject() as $var => $value) {
             $global->$var = $value;
         }
         return $global;
@@ -172,7 +173,7 @@ class View {
 
         foreach ($js as $item) {
             $item = trim($item, '/');
-            if(!String::endsWith('.js', $item)) {
+            if (!String::endsWith('.js', $item)) {
                 continue;
             }
             if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
@@ -204,7 +205,7 @@ class View {
 
         foreach ($css as $item) {
             $item = trim($item, '/');
-            if(!String::endsWith('.css', $item)) {
+            if (!String::endsWith('.css', $item)) {
                 continue;
             }
             if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
@@ -230,7 +231,7 @@ class View {
     {
         $code = null;
         if (Object::isArray(App::$Alias->afterBody) && count(App::$Alias->afterBody) > 0) {
-            foreach(App::$Alias->afterBody as $row) {
+            foreach (App::$Alias->afterBody as $row) {
                 $code .= $row . "\n";
             }
         }

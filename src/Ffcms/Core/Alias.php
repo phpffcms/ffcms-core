@@ -7,7 +7,8 @@ namespace Ffcms\Core;
  * Class Alias - fast alias for core property's
  * @package Ffcms\Core
  */
-class Alias {
+class Alias
+{
 
     /**
      * Absolute path to current view folder
@@ -63,7 +64,6 @@ class Alias {
      * @var array
      */
     public $afterBody = [];
-
 
 
     public function __construct()

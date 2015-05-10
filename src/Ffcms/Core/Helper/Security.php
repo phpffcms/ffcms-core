@@ -4,7 +4,8 @@ namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
 
-class Security {
+class Security
+{
 
     protected $purifier;
 
@@ -37,13 +38,13 @@ class Security {
     public function strip_tags($html, $escapeQuotes = true)
     {
         $text = strip_tags($html);
-        if($escapeQuotes) {
+        if ($escapeQuotes) {
             $text = $this->escapeQuotes($text);
         }
         return $text; // x10 faster
         /**$cfg = \HTMLPurifier_Config::createDefault();
-        $cfg->set('HTML.Allowed', '');
-        return $this->purifier()->purify($html, $cfg); */
+         * $cfg->set('HTML.Allowed', '');
+         * return $this->purifier()->purify($html, $cfg); */
     }
 
     public function escapeQuotes($html)

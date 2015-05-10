@@ -2,7 +2,8 @@
 
 namespace Ffcms\Core\Helper;
 
-class Integer {
+class Integer
+{
 
     const MAX = 2147483647;
 

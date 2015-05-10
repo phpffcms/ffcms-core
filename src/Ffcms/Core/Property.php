@@ -3,6 +3,8 @@
 namespace Ffcms\Core;
 
 use Ffcms\Core\Exception\NativeException;
+use Ffcms\Core\Helper\File;
+use Ffcms\Core\Helper\Object;
 
 /**
  * Class Property - work with system configurations
@@ -20,9 +22,9 @@ class Property
     public function __construct()
     {
         $file = root . '/Private/Config/General.php';
-        if (is_file($file) && is_readable($file)) {
+        if (File::exist($file)) {
             $cfg = @include_once($file);
-            if (is_array($cfg) && count($cfg) > 0) {
+            if (Object::isArray($cfg) && count($cfg) > 0) {
                 self::$config = $cfg;
             }
         } else {
@@ -36,7 +38,7 @@ class Property
      */
     public function isConfigExists()
     {
-        return (is_array(self::$config) && count(self::$config) > 0);
+        return (Object::isArray(self::$config) && count(self::$config) > 0);
     }
 
     /**

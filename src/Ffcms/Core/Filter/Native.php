@@ -6,7 +6,8 @@ use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 
-class Native {
+class Native
+{
 
     /**
      * Filter ['object', 'length_min', 'length']
@@ -120,7 +121,7 @@ class Native {
      */
     public static function email($object)
     {
-        if(Object::isArray($object)) {
+        if (Object::isArray($object)) {
             return false;
         }
         return String::isEmail($object);

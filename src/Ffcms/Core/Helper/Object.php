@@ -2,7 +2,8 @@
 
 namespace Ffcms\Core\Helper;
 
-class Object {
+class Object
+{
 
 
     public static function isInt($data)

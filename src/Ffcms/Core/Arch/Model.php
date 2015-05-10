@@ -19,7 +19,9 @@ class Model
         $this->before();
     }
 
-    public function before() {}
+    public function before()
+    {
+    }
 
     /**
      * Get label value by variable name
@@ -170,14 +172,14 @@ class Model
         $response = [];
 
         foreach ($rules as $rule) {
-            if(is_array($rule[0])) { // 2 or more rules [['field1', 'field2'], 'filter', 'filter_argv']
-                foreach($rule[0] as $tfield) {
-                    if($tfield == $field) {
+            if (Object::isArray($rule[0])) { // 2 or more rules [['field1', 'field2'], 'filter', 'filter_argv']
+                foreach ($rule[0] as $tfield) {
+                    if ($tfield == $field) {
                         $response[$rule[1]] = $rule[2]; // ['min_length' => 1, 'required' => null]
                     }
                 }
             } else { // 1 rule ['field1', 'filter', 'filter_argv']
-                if($rule[0] === $field) {
+                if ($rule[0] === $field) {
                     $response[$rule[1]] = $rule[2];
                 }
             }

@@ -4,6 +4,7 @@ namespace Ffcms\Core\Helper\HTML\Bootstrap;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\HTML\Listing;
+use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
@@ -12,7 +13,7 @@ class Nav extends NativeGenerator
 
     public static function display($elements)
     {
-        if (!is_array($elements) || count($elements['items']) < 1) {
+        if (!Object::isArray($elements) || count($elements['items']) < 1) {
             return null;
         }
 

@@ -5,7 +5,8 @@ namespace Ffcms\Core\Helper;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
-class Url extends NativeGenerator {
+class Url extends NativeGenerator
+{
 
     /**
      * Build link via controller/action and other params
@@ -34,10 +35,10 @@ class Url extends NativeGenerator {
             }
         }
 
-        if(count($params) > 0) {
+        if (count($params) > 0) {
             $first = true;
-            foreach($params as $key => $value) {
-                if($first) {
+            foreach ($params as $key => $value) {
+                if ($first) {
                     $url .= '?' . self::nohtml($key) . '=' . self::nohtml($value);
                 } else {
                     $url .= '&' . self::nohtml($key) . '=' . self::nohtml($value);

@@ -5,7 +5,8 @@ namespace Ffcms\Core\Notify;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Object;
 
-class Message {
+class Message
+{
     protected $data;
 
     /**
@@ -31,7 +32,7 @@ class Message {
     {
         $output = null;
         if (Object::isArray($group)) {
-            foreach($group as $row) {
+            foreach ($group as $row) {
                 if (Object::isArray($this->data[$row])) {
                     if ($output === null) {
                         $output = $this->data[$row];

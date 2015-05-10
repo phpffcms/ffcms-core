@@ -3,8 +3,10 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Object;
 
-abstract class NativeGenerator {
+abstract class NativeGenerator
+{
 
     /**
      * Make data "safe" - all dangerous html/js/etc will be removed
@@ -36,13 +38,13 @@ abstract class NativeGenerator {
      */
     public static function applyProperty($property = null)
     {
-        if (!is_array($property) || count($property) < 1) {
+        if (!Object::isArray($property) || count($property) < 1) {
             return null;
         }
 
         $build = null;
-        foreach($property as $p => $v) {
-            if($v === null) {
+        foreach ($property as $p => $v) {
+            if ($v === null) {
                 $build .= ' ' . self::nohtml($p);
             } else {
                 $build .= ' ' . self::nohtml($p) . '="' . self::nohtml($v) . '"';

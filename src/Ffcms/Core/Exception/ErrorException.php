@@ -5,7 +5,8 @@ namespace Ffcms\Core\Exception;
 use Ffcms\Core\App;
 use Ffcms\Core\Template\Variables;
 
-class ErrorException {
+class ErrorException
+{
 
     public function __construct($message = null)
     {

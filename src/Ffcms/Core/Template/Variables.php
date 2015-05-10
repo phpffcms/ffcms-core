@@ -43,8 +43,7 @@ class Variables
         if (!Object::isArray($array)) {
             return;
         }
-        foreach ($array as $var => $value)
-        {
+        foreach ($array as $var => $value) {
             $this->globalVars[$var] = Object::isString($value) ? App::$Security->strip_tags($value) : $value;
         }
     }

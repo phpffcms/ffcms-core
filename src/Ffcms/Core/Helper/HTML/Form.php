@@ -4,6 +4,7 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\File;
+use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
@@ -74,15 +75,15 @@ class Form extends NativeGenerator
     {
         $propertyString = null;
         $selectOptions = [];
-        if (is_array($property['options'])) {
+        if (Object::isArray($property['options'])) {
             $selectOptions = $property['options'];
         }
 
         // jquery validation quick-build some rules
         $rules = $this->model->getValidationRule($name);
         if (count($rules) > 0) {
-            foreach ($rules as $rule_name=>$rule_value) {
-                switch($rule_name) {
+            foreach ($rules as $rule_name => $rule_value) {
+                switch ($rule_name) {
                     case 'required':
                         $property['required'] = null;
                         break;
@@ -111,7 +112,7 @@ class Form extends NativeGenerator
                 // hook DOM model
                 $response = '<input type="hidden" value="0" name="' . self::nohtml($name) . '" />';
                 $response .= '<input type="checkbox" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString
-                    . ' value="1"'. ($value == 1 ? ' checked' : null) .' />';
+                    . ' value="1"' . ($value == 1 ? ' checked' : null) . ' />';
                 //$response = '<input type="checkbox" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString
                 //    . ($value != 0 ? ' checked' : null) . ' />';
                 break;
@@ -159,7 +160,7 @@ class Form extends NativeGenerator
         if ($validate) {
             App::$Alias->afterBody[] = '<script>$().ready(function() { $("#' . $this->name . '").validate(); });</script>';
             App::$Alias->customJS[] = '/vendor/bower/jquery-validation/dist/jquery.validate.min.js';
-            if(App::$Request->getLanguage() !== 'en') {
+            if (App::$Request->getLanguage() !== 'en') {
                 $localeFile = '/vendor/bower/jquery-validation/src/localization/messages_' . App::$Request->getLanguage() . '.js';
                 if (File::exist($localeFile)) {
                     App::$Alias->customJS[] = $localeFile;

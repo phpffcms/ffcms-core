@@ -15,7 +15,7 @@ class Normalize
         $splitPath = explode('/', $path);
 
         $outputPath = [];
-        foreach($splitPath as $index => $part) {
+        foreach ($splitPath as $index => $part) {
             if ($part === '.' || String::length(trim($part)) < 1) {
                 continue;
             }

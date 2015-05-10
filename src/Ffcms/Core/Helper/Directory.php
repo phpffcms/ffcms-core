@@ -48,7 +48,7 @@ class Directory
             return false;
         }
 
-        foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $dir) {
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $dir) {
             $dir->isFile() ? @unlink($dir->getPathname()) : @rmdir($dir->getPathname());
         }
         return @rmdir($path);
