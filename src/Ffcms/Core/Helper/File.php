@@ -33,7 +33,8 @@ class File
      */
     public static function exist($path)
     {
-        return file_exists($path) && is_readable($path);
+        $path = Normalize::diskFullPath($path);
+        return (file_exists($path) && is_readable($path));
     }
 
     /**

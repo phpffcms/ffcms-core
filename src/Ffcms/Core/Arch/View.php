@@ -7,6 +7,7 @@ use Ffcms\Core\Helper\String;
 use Ffcms\Core\Exception\ErrorException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\App;
+use Ffcms\Core\Template\Variables;
 use Ffcms\Core\Traits\DynamicGlobal;
 
 class View {
@@ -32,7 +33,7 @@ class View {
     {
         // build current viewer's path theme - full dir path
         $themeAll = App::$Property->get('theme');
-        $this->currentViewPath = root . '/Apps/View/' . workground . '/' . $themeAll[workground];
+        $this->currentViewPath = root . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
         try {
             if(!file_exists($this->currentViewPath)) {
                 throw new \Exception('Could not load app views: ' . $this->currentViewPath);
@@ -104,7 +105,7 @@ class View {
             new ErrorException($e);
         }
 
-        $controller_name = String::substr($call_controller, String::length('Apps\\Controller\\' . workground . '\\'));
+        $controller_name = String::substr($call_controller, String::length('Apps\\Controller\\' . env_name . '\\'));
         $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view) . '.php';
 
         try {
@@ -151,7 +152,7 @@ class View {
     public function buildGlobal()
     {
         $global = new \stdClass();
-        foreach(App::$Response->getGlobals() as $var => $value) {
+        foreach(Variables::instance()->getGlobalsObject() as $var => $value) {
             $global->$var = $value;
         }
         return $global;
@@ -175,7 +176,7 @@ class View {
                 continue;
             }
             if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
-                $item = App::$Alias->scriptUrl . $item;
+                $item = App::$Alias->scriptUrl . '/' . $item;
             }
             $output[] = $item;
         }

@@ -22,7 +22,7 @@ class Url extends NativeGenerator {
             return App::$Alias->baseUrl;
         }
 
-        $url = App::$Alias->baseUrl . strtolower(self::nohtml($controller)) . '/' . strtolower(self::nohtml($action)) . '/';
+        $url = App::$Alias->baseUrl . '/' . strtolower(self::nohtml($controller)) . '/' . strtolower(self::nohtml($action)) . '/';
         if ($id !== null) {
             $url .= self::nohtml($id) . '/';
         }

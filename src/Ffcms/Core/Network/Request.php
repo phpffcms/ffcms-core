@@ -2,127 +2,107 @@
 
 namespace Ffcms\Core\Network;
 
-use Ffcms\Core\App;
+use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
+use Symfony\Component\HttpFoundation\Request as FoundationRequest;
+use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
+use Ffcms\Core\App;
 
-/**
- * Class Request
- * Class to work with input website data - request params and headers.
- * @package Core\Network
- */
-class Request
+class Request extends FoundationRequest
 {
 
-    protected static $pathway;
-    protected static $controller;
-    protected static $action;
-    protected static $id;
-    protected static $add;
+    protected $language;
 
-    protected static $language;
+    // fast access for controller building
+    protected $controller;
+    protected $action;
+    protected $argumentId;
+    protected $argumentAdd;
 
-
-    public $baseDomain;
-    public $baseUrl;
-    public $scriptUrl;
-
-    public function __construct()
+    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
     {
-        // preparing url
-        $raw_uri = urldecode($_SERVER['REQUEST_URI']);
-        if ($get_pos = strpos($raw_uri, '?')) {
-            $raw_uri = substr($raw_uri, 0, $get_pos);
-        }
-        $pathway = ltrim($raw_uri, '/');
+        parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+        $this->afterInitialize();
+    }
 
-        // set default url's
-        $this->baseDomain = $_SERVER['SERVER_NAME'];
-        $this->baseUrl = $this->scriptUrl = static::getProtocol() . '://' . $this->baseDomain . App::$Property->get('basePath');
-        // interface additional for base url
-        if (defined('workground') && workground !== 'Front') {
-            $this->baseUrl .= strtolower(workground) . '/';
+    /**
+     * Sets the parameters for this request.
+     *
+     * This method also re-initializes all properties.
+     *
+     * @param array  $query      The GET parameters
+     * @param array  $request    The POST parameters
+     * @param array  $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array  $cookies    The COOKIE parameters
+     * @param array  $files      The FILES parameters
+     * @param array  $server     The SERVER parameters
+     * @param string $content    The raw body data
+     *
+     * @api
+     */
+    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    {
+        parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+
+        $basePath = trim(App::$Property->get('basePath'), '/');
+        if ($basePath !== null && String::length($basePath) > 0) {
+            $basePath = '/' . $basePath;
         }
 
-        $language_undefined = false;
-        $mean_pathway = App::$Property->get('basePath');
-        if (workground !== 'Front') {
-            $mean_pathway .= '/' . strtolower(workground);
+        if (!defined('env_no_uri') || env_no_uri === false) {
+            $basePath .= '/' . strtolower(env_name);
         }
-        if (App::$Property->get('multiLanguage')) { // does multilang enabled?
-            foreach (App::$Property->get('languages') as $lang) { // extract current language from pathway
-                $build_pathway = ltrim($mean_pathway . '/' . $lang, '/');
-                if (String::startsWith($build_pathway, $pathway)) { // compare "required" and real paths to detect language
-                    self::$language = $lang;
-                    $mean_pathway = $build_pathway; // is "ok" test, let use this pathway
+
+        // we never try to use path's without friendly url's
+        $this->basePath = $this->baseUrl = $basePath;
+    }
+
+    protected function afterInitialize()
+    {
+        if (App::$Property->get('multiLanguage')) { // multi-language is enabled?
+            foreach (App::$Property->get('languages') as $lang) {
+                if (String::startsWith('/' . $lang, $this->getPathInfo())) {
+                    $this->language = $lang;
                 }
             }
-            if (self::$language === null) { // language is not defined? mark to redirect
-                $language_undefined = true;
-            } else {
-                // add language to baseUrl
-                $this->baseUrl .= self::$language . '/';
+            // language still not defined?!
+            if ($this->language === null) {
+                $userLang = App::$Property->get('baseLanguage');
+                if (Object::isArray($this->getLanguages()) && count($this->getLanguages()) > 0) {
+                    $userLang = array_shift($this->getLanguages());
+                }
+
+                $response = new Redirect($this->getSchemeAndHttpHost() . '/' . $userLang);
+                $response->send();
+                exit();
             }
-        } else { // set current language from configs
-            self::$language = App::$Property->get('singleLanguage');
-        }
-        // set worker pathway
-        self::$pathway = ltrim(String::substr($pathway, String::length(ltrim($mean_pathway, '/'))), '/');
-
-        // if language is required and undefined - redirect to basic lang version
-        if ($language_undefined === true) {
-            Response::aloneRedirect($this->baseUrl . App::$Property->get('baseLanguage') . '/', true);
         }
 
-        $uri_split = explode('/', self::$pathway);
+        $pathway = $this->getPathInfo(); // calculated depend of language
+        $pathArray = explode('/', $pathway);
 
-        // write mvc request data
-        self::$controller = strtolower($uri_split[0]);
-        self::$action = strtolower($uri_split[1]);
-        self::$id = strtolower($uri_split[2]);
-        self::$add = strtolower($uri_split[3]);
+        $this->controller = ucfirst(strtolower($pathArray[1]));
+        $this->action = ucfirst(strtolower($pathArray[2]));
+        $this->argumentId = strtolower($pathArray[3]);
+        $this->argumentAdd = strtolower($pathArray[4]);
 
-        if (self::$action == null) {
-            self::$action = 'index';
+        if ($this->action == null) { // null || ""
+            $this->action = 'index';
         }
 
-        if (self::$controller == null || self::$pathway == null) {
+        if ($this->controller == null) {
             $defaultRoute = App::$Property->get('siteIndex');
-            list(self::$controller, self::$action) = explode('::', trim($defaultRoute, '/'));
+            list($this->controller, $this->action) = explode('::', trim($defaultRoute, '/'));
         }
     }
 
-    /**
-     * Get request based protocol type (http/https)
-     * @return string
-     */
-    public static function getProtocol()
+    public function getPathInfo()
     {
-        $proto = 'http';
-        $cf_proxy = json_decode($_SERVER['HTTP_CF_VISITOR']);
-        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1)
-            || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'
-            || isset($_SERVER['HTTP_CF_VISITOR']) && $cf_proxy->{'scheme'} == 'https') {
-            $proto = 'https';
-        }
-        return $proto;
+        return $this->language === null ? parent::getPathInfo() : String::substr(parent::getPathInfo(), String::length($this->language)+1);
     }
 
-    /**
-     * Get current pathway as string
-     * @return string
-     */
-    public static function getPathway()
-    {
-        return self::$pathway;
-    }
-
-    /**
-     * Get current language
-     * @return string|null
-     */
-    public static function getLanguage()
-    {
-        return self::$language;
+    public function getLanguage() {
+        return $this->language;
     }
 
     /**
@@ -131,7 +111,7 @@ class Request
      */
     public function getController()
     {
-        return ucfirst(strtolower(self::$controller));
+        return $this->controller;
     }
 
     /**
@@ -140,7 +120,7 @@ class Request
      */
     public function getAction()
     {
-        return ucfirst(strtolower(self::$action));
+        return $this->action;
     }
 
     /**
@@ -149,7 +129,7 @@ class Request
      */
     public function getID()
     {
-        return strtolower(self::$id);
+        return $this->argumentId;
     }
 
     /**
@@ -158,26 +138,7 @@ class Request
      */
     public function getAdd()
     {
-        return strtolower(self::$add);
+        return $this->argumentAdd;
     }
 
-    /**
-     * Get data from global $_POST with $key. Like $_POST[$key]
-     * @param string|null $key
-     * @return string|null
-     */
-    public function post($key = null)
-    {
-        return $key === null ? $_POST : $_POST[$key];
-    }
-
-    /**
-     * Get data from global $_GET with $key according urldecode(). Like urldecode($_GET[$key])
-     * @param string $key
-     * @return string|null
-     */
-    public function get($key = null)
-    {
-        return $key === null ? $_GET : urldecode($_GET[$key]);
-    }
 }

@@ -12,6 +12,6 @@ class EmptyException extends Controller
         parent::__construct();
         $this->response = $m;
         $this->title = App::$Translate->translate('Not founded: 404');
-        App::$Response->setHeader(404);
+        App::$Response->setStatusCode(404);
     }
 }

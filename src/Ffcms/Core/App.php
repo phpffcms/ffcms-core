@@ -71,7 +71,7 @@ class App {
         // init dynamic classes and make access point
         self::$Property = new Property();
         self::$Debug = new Debug();
-        self::$Request = new Request();
+        self::$Request = Request::createFromGlobals();
         self::$Security = new Security();
         self::$Response = new Response();
         self::$View = new View();
@@ -87,16 +87,16 @@ class App {
     public static function display()
     {
         try {
-            $controller_path = '/Apps/Controller/' . workground . '/' . self::$Request->getController() . '.php';
-            if(File::exist(root . $controller_path)) {
+            $controller_path = '/Apps/Controller/' . env_name . '/' . self::$Request->getController() . '.php';
+            if (File::exist(root . $controller_path)) {
                 include_once(root . $controller_path);
-                $cname = 'Apps\\Controller\\' . workground . '\\' . self::$Request->getController();
-                if(class_exists($cname)) {
+                $cname = 'Apps\\Controller\\' . env_name . '\\' . self::$Request->getController();
+                if (class_exists($cname)) {
                     $load = new $cname;
                     $actionName = 'action' . ucfirst(self::$Request->getAction());
-                    if(method_exists($cname, $actionName)) {
-                        if(self::$Request->getID() !== null) {
-                            if(self::$Request->getAdd() !== null) {
+                    if (method_exists($cname, $actionName)) {
+                        if (self::$Request->getID() !== null) {
+                            if (self::$Request->getAdd() !== null) {
                                 $load->$actionName(self::$Request->getID(), self::$Request->getAdd());
                             } else {
                                 $load->$actionName(self::$Request->getID());
@@ -114,7 +114,7 @@ class App {
             } else {
                 throw new \Exception('Controller not founded: {root}' . $controller_path);
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             self::$Debug->addException($e);
             new EmptyException('Unable to find this URL');
         }

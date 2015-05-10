@@ -3,6 +3,7 @@
 namespace Ffcms\Core\I18n;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\String;
 
 class Translate {
@@ -30,8 +31,8 @@ class Translate {
      */
     public function get($index, $text, array $params)
     {
-        if(App::$Request->getLanguage() != App::$Property->get('baseLanguage')) {
-            if($index !== null && !in_array($index, $this->indexes)) {
+        if(App::$Request->getLanguage() !== App::$Property->get('baseLanguage')) {
+            if($index !== null && !Arr::in($index, $this->indexes)) {
                 $this->cached = array_merge($this->cached, $this->load($index));
                 $this->indexes[] = $index;
             }
@@ -57,7 +58,7 @@ class Translate {
     public function translate($text, array $params = [])
     {
         $index = null;
-        $namespace = 'Apps\\Controller\\' . workground . '\\';
+        $namespace = 'Apps\\Controller\\' . env_name . '\\';
         foreach(debug_backtrace() as $caller)
         {
             if(String::startsWith($namespace, $caller['class'])) {
@@ -69,7 +70,7 @@ class Translate {
 
     protected function load($index)
     {
-        $file = root . '/I18n/' . workground . '/' . App::$Request->getLanguage() . '/' . $index . '.php';
+        $file = root . '/I18n/' . env_name . '/' . App::$Request->getLanguage() . '/' . $index . '.php';
         if (!file_exists($file) || !is_readable($file)) {
             return [];
         }

@@ -89,7 +89,13 @@ class Model
 
     protected final function validateRecursive($field_name, $filter_name, $filter_argv, $html = false)
     {
-        $field_value = App::$Request->post($field_name);
+        // check if we got it from POST request
+        if (App::$Request->getMethod() !== 'POST') {
+            return false;
+        }
+
+        $field_value = App::$Request->get($field_name);
+
         if (!$html && !Object::isArray($field_value)) {
             $field_value = App::$Security->strip_tags($field_value);
         } else {

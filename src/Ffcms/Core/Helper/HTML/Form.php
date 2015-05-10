@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
@@ -159,7 +160,10 @@ class Form extends NativeGenerator
             App::$Alias->afterBody[] = '<script>$().ready(function() { $("#' . $this->name . '").validate(); });</script>';
             App::$Alias->customJS[] = '/vendor/bower/jquery-validation/dist/jquery.validate.min.js';
             if(App::$Request->getLanguage() !== 'en') {
-                App::$Alias->customJS[] = '/vendor/bower/jquery-validation/src/localization/messages_' . App::$Request->getLanguage() . '.js';
+                $localeFile = '/vendor/bower/jquery-validation/src/localization/messages_' . App::$Request->getLanguage() . '.js';
+                if (File::exist($localeFile)) {
+                    App::$Alias->customJS[] = $localeFile;
+                }
             }
         }
     }

@@ -72,24 +72,27 @@ class Alias {
         $this->currentViewPath = App::$View->currentViewPath;
 
         // make alias for baseUrl, script url and domain
-        $this->baseDomain = App::$Request->baseDomain;
-        $this->baseUrl = App::$Request->baseUrl;
-        $this->scriptUrl = App::$Request->scriptUrl;
+        $this->baseDomain = App::$Request->getHost();
+        $this->scriptUrl = App::$Request->getSchemeAndHttpHost();
+        $this->baseUrl = $this->scriptUrl;
+        if (App::$Request->getLanguage() !== null) {
+            $this->baseUrl .= '/' . App::$Request->getLanguage();
+        }
 
         // build vendor libs alias
-        $this->vendor['js']['jquery']['url'] = $this->scriptUrl . 'vendor/bower/jquery/dist/jquery.min.js';
+        $this->vendor['js']['jquery']['url'] = $this->scriptUrl . '/vendor/bower/jquery/dist/jquery.min.js';
         $this->vendor['js']['jquery']['path'] = root . '/vendor/bower/jquery/dist/jquery.min.js';
-        $this->vendor['css']['bootstrap']['url'] = $this->scriptUrl . 'vendor/bower/bootstrap/dist/css/bootstrap.min.css';
+        $this->vendor['css']['bootstrap']['url'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
         $this->vendor['css']['bootstrap']['path'] = root . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
-        $this->vendor['js']['bootstrap']['url'] = $this->scriptUrl . 'vendor/bower/bootstrap/dist/js/bootstrap.min.js';
+        $this->vendor['js']['bootstrap']['url'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
         $this->vendor['js']['bootstrap']['path'] = root . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
-        $this->vendor['css']['fa']['url'] = $this->scriptUrl . 'vendor/bower/components-font-awesome/css/font-awesome.min.css';
+        $this->vendor['css']['fa']['url'] = $this->scriptUrl . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
         $this->vendor['css']['fa']['path'] = root . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
-        $this->vendor['js']['jquery-ui']['url'] = $this->scriptUrl . 'vendor/bower/jquery-ui/jquery-ui.min.js';
+        $this->vendor['js']['jquery-ui']['url'] = $this->scriptUrl . '/vendor/bower/jquery-ui/jquery-ui.min.js';
         $this->vendor['js']['jquery-ui']['path'] = root . '/vendor/bower/jquery-ui/jquery-ui.min.js';
 
         $themeAll = App::$Property->get('theme');
-        $this->currentViewUrl = $this->scriptUrl . 'Apps/View/' . workground . '/' . $themeAll[workground];
+        $this->currentViewUrl = $this->scriptUrl . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
     }
 
 

@@ -62,7 +62,7 @@ class Listing extends NativeGenerator {
             if ($item['type'] === 'text') {
                 $items .= ($item['html'] ? self::safe($item['text']) : self::nohtml($item['text']));
             } elseif ($item['type'] === 'link') {
-                $link = App::$Alias->baseUrl;
+                $link = App::$Alias->baseUrl . '/';
                 if (Object::isArray($item['link'])) {
                     $link .= trim($item['link'][0], '/'); // controller/action
                     if (null !== $item['link'][1]) {

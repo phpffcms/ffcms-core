@@ -6,6 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Traits\DynamicGlobal;
+use Ffcms\Core\Template\Variables;
 
 class Controller {
 
@@ -58,33 +59,40 @@ class Controller {
     protected final function build($layout)
     {
         $body = $this->response;
-        if (App::$Response->errorString !== null) {
-            $body = App::$Response->errorString;
+        if (Variables::instance()->getError() !== null) {
+            $body = Variables::instance()->getError();
         }
-        $global = App::$Response->buildGlobal();
-        App::$Debug->bar->getCollector('config')->setData(['Global Vars' => (array)App::$Response->getGlobals()]);
-        @include_once($layout);
+        $global = Variables::instance()->getGlobalsObject();
+        App::$Debug->bar->getCollector('config')->setData(['Global Vars' => Variables::instance()->getGlobalsArray()]);
+        //App::$Response->send();
+        ob_start();
+        include_once($layout);
+        $content = ob_get_contents();
+        ob_end_clean();
+        App::$Response->setContent($content);
+        App::$Response->send();
     }
 
     public function after() {}
 
     /**
      * Set single global variable
-     * @param $var
-     * @param $value
+     * @param string $var
+     * @param string $value
+     * @param bool $html
      */
-    public function setGlobalVar($var, $value)
+    public function setGlobalVar($var, $value, $html = false)
     {
-        App::$Response->setGlobal($var, $value);
+        Variables::instance()->setGlobal($var, $value, $html);
     }
 
     /**
      * Set global variables as array key=>value
      * @param $array
      */
-    public function setGlobalVarArray($array)
+    public function setGlobalVarArray(array $array)
     {
-        App::$Response->setGlobalArray($array);
+        Variables::instance()->setGlobalArray($array);
     }
 
 }
