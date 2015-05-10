@@ -44,7 +44,7 @@ class Form extends NativeGenerator
      * @param null|array $property
      * @param null|string $helper
      * @param null|string $structure
-     * @return mixed
+     * @return null|string
      */
     public function field($object, $type, $property = null, $helper = null, $structure = null)
     {
