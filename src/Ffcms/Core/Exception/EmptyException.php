@@ -7,6 +7,9 @@ use Ffcms\Core\Arch\Controller;
 
 class EmptyException extends Controller
 {
+    /**
+     * @param string $m
+     */
     public function __construct($m = null)
     {
         parent::__construct();

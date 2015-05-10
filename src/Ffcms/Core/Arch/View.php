@@ -133,6 +133,9 @@ class View
         return $this->renderSandbox($viewPath, $params);
     }
 
+    /**
+     * @param string $path
+     */
     protected function renderSandbox($path, $params = [])
     {
         // render defaults params

@@ -115,7 +115,7 @@ class String
 
     /**
      * Search entery's in string $where by string $what
-     * @param $what
+     * @param string $what
      * @param $where
      * @return bool
      */
