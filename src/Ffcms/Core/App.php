@@ -58,11 +58,6 @@ class App
      */
     public static $Translate;
 
-    /**
-     * @var \Ffcms\Core\Notify\Message
-     */
-    public static $Message;
-
 
     /**
      * Load entry point for another logic
@@ -77,7 +72,6 @@ class App
         self::$Response = new Response();
         self::$View = new View();
         self::$Translate = new Translate();
-        self::$Message = new Message();
         self::$Alias = new Alias();
     }
 

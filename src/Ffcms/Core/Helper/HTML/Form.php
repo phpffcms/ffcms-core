@@ -3,38 +3,44 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
+use Ffcms\Core\Arch\Model;
 
 class Form extends NativeGenerator
 {
-    protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item%</div></div>';
-    protected $structureCheckbox = '<div class="form-group"><div class="col-md-9 col-md-offset-3"><div class="checkbox"><label>%item% %label%</label></div></div></div>';
+    protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item% <p class="help-block">%help%</p></div></div>';
+    protected $structureCheckbox = '<div class="form-group"><div class="col-md-9 col-md-offset-3"><div class="checkbox"><label>%item% %label%</label></div><p class="help-block">%help%</p></div></div>';
     protected $name;
-    /** @var  \Ffcms\Core\Arch\Model */
+    /** @var Model */
     protected $model;
 
 
-    public function __construct($elements)
+    public function __construct(Model $model, array $property = null, array $structure = null)
     {
-        if (String::length($elements['structure']) > 0) {
-            $this->structure = $elements['structure'];
-        }
-        if (String::length($elements['name']) > 0) {
-            $this->name = App::$Security->strip_tags($elements['name']);
-        } else {
-            $this->name = String::randomLatin(rand(6, 12));
+        $this->model = $model;
+        $this->name = $model->getFormName();
+
+        // set custom html build structure form fields
+        if (Object::isArray($structure)) {
+            if (String::length($structure['base']) > 0) {
+                $this->structure = $structure['base'];
+            }
+            if (String::length($structure['checkbox']) > 0) {
+                $this->structureCheckbox = $structure['checkbox'];
+            }
+
         }
 
-        if (is_object($elements['model'])) {
-            $this->model = $elements['model'];
+        if ($property['method'] === null) {
+            $property['method'] = 'GET';
         }
 
-        $elements['property']['id'] = $this->name; // define form id
-
-        echo '<form' . self::applyProperty($elements['property']) . '>';
+        $property['id'] = $this->name; // define form id
+        echo '<form' . self::applyProperty($property) . '>';
     }
 
     /**
@@ -98,42 +104,59 @@ class Form extends NativeGenerator
         }
 
         unset($property['options']);
-        $propertyString = self::applyProperty($property);
         $response = null;
+
+        // standard property's def
+        $property['name'] = $this->name . '[' . $name . ']';
+        $property['id'] = $this->name . '-' . $name;
+        if ($value !== null) {
+            $property['value'] = $value;
+        }
+
         switch ($type) {
             case 'inputPassword':
-                $response = '<input type="password" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString . ' />';
+                $property['type'] = 'password';
+                unset($property['value']);
+                $response = self::buildSingleTag('input', $property);
                 break;
             case 'textarea':
-                $response = '<textarea name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString . '>'
-                    . self::nohtml($value) . '</textarea>';
+                unset($property['value']);
+                $response = self::buildContainerTag('textarea', $property, $value);
                 break;
             case 'checkbox':
                 // hook DOM model
-                $response = '<input type="hidden" value="0" name="' . self::nohtml($name) . '" />';
-                $response .= '<input type="checkbox" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString
-                    . ' value="1"' . ($value == 1 ? ' checked' : null) . ' />';
-                //$response = '<input type="checkbox" name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString
-                //    . ($value != 0 ? ' checked' : null) . ' />';
+                $response = self::buildSingleTag('input', ['type' => 'hidden', 'value' => '0', 'name' => $property['name']]); // hidden 0 elem
+                $property['type'] = 'checkbox';
+                if ($value == 1) {
+                    $property['checked'] = null; // set boolean attribute, maybe = "checked" is better
+                }
+                $response .= self::buildSingleTag('input', $property);
                 break;
             case 'select':
                 if (count($selectOptions) < 1) {
-                    $response = 'no options';
+                    $response = 'Form select ' . self::nohtml($name) . ' have no options';
                 } else {
-                    $response = '<select name="' . self::nohtml($name) . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString . '>';
-                    foreach ($selectOptions as $option) {
-                        $response .= '<option' . ($option == $value ? ' selected' : null) . '>' . self::nohtml($option) . '</option>';
+                    unset($property['value']);
+
+                    $buildOpt = null;
+                    foreach ($selectOptions as $opt) {
+                        $optionProperty = [];
+                        if ($opt == $value) {
+                            $optionProperty['selected'] = null; // def boolean attribute html5
+                        }
+                        $buildOpt .= self::buildContainerTag('option', $optionProperty, $opt);
                     }
-                    $response .= '</select>';
+
+                    $response = self::buildContainerTag('select', $property, $buildOpt, true);
                 }
                 break;
             case 'inputEmail':
-                $response = '<input type="email" name="' . self::nohtml($name) . '" value="' . self::nohtml($value)
-                    . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString . ' />';
+                $property['type'] = 'email';
+                $response = self::buildSingleTag('input', $property);
                 break;
             default:
-                $response = '<input type="text" name="' . self::nohtml($name) . '" value="' . self::nohtml($value)
-                    . '" id="' . self::nohtml($this->name) . '-' . self::nohtml($name) . '"' . $propertyString . ' />';
+                $property['type'] = 'text';
+                $response = self::buildSingleTag('input', $property);
                 break;
         }
         return $response;
@@ -147,16 +170,20 @@ class Form extends NativeGenerator
      */
     public function submitButton($title, array $property = [])
     {
-        return '<input type="submit" name="submit" value="' . self::nohtml($title) . '"' . self::applyProperty($property) . ' />';
+        $property['type'] = 'submit';
+        $property['name'] = $this->name . '[submit]';
+        $property['value'] = $title;
+        return self::buildSingleTag('input', $property);
     }
 
     /**
      * Finish current form.
+     * @param bool $validate
      */
     public function finish($validate = true)
     {
         echo '</form>';
-        // validation ;)
+        // pre-validate form fields based on model rules and jquery.validation
         if ($validate) {
             App::$Alias->afterBody[] = '<script>$().ready(function() { $("#' . $this->name . '").validate(); });</script>';
             App::$Alias->customJS[] = '/vendor/bower/jquery-validation/dist/jquery.validate.min.js';

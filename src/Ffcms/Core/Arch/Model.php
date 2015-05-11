@@ -13,6 +13,7 @@ class Model
     use DynamicGlobal;
 
     public $wrongFields = [];
+    protected $formName;
 
     public final function __construct()
     {
@@ -64,7 +65,6 @@ class Model
             if ($rule[0] === null || $rule[1] === null) {
                 continue;
             }
-            $validate = false;
             if (Object::isArray($rule[0])) {
                 $validate_foreach = true;
                 foreach ($rule[0] as $field_name) {
@@ -83,7 +83,7 @@ class Model
 
         foreach ($this->wrongFields as $property) {
             $this->{$property} = App::$Security->strip_tags($default_property[$property]);
-            App::$Message->set('global', 'warning', App::$Translate->get('Default', 'Field %field% was completed incorrectly', ['field' => $property]));
+            //App::$Message->set('global', 'warning', App::$Translate->get('Default', 'Field %field% was completed incorrectly', ['field' => $property]));
         }
 
         return $success;
@@ -96,7 +96,7 @@ class Model
             return false;
         }
 
-        $field_value = App::$Request->get($field_name);
+        $field_value = $this->getInput($field_name);
 
         if (!$html && !Object::isArray($field_value)) {
             $field_value = App::$Security->strip_tags($field_value);
@@ -187,4 +187,42 @@ class Model
 
         return $response;
     }
+
+    /**
+     * Form default name (used in field building)
+     * @return string
+     */
+    public function getFormName()
+    {
+        if (null === $this->formName) {
+            $cname = get_class($this);
+            $this->formName = 'Form' . substr($cname, strrpos($cname, '\\')+1);
+        }
+
+        return $this->formName;
+    }
+
+    /**
+     * Check if form submited
+     * @return bool
+     */
+    public function isPostSubmit()
+    {
+        if (App::$Request->getMethod() !== 'POST') {
+            return false;
+        }
+
+        return null !== $this->getInput('submit');
+    }
+
+    /**
+     * Get input params GET/POST/PUT method
+     * @param string $param
+     * @return string|null
+     */
+    public function getInput($param)
+    {
+        return App::$Request->get($this->getFormName() . '[' . $param . ']', null, true);
+    }
+
 }

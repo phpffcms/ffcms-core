@@ -31,11 +31,12 @@ abstract class NativeGenerator
     }
 
     /**
-     * Build property for html element from array
+     * Build property for html element from array.
+     * IMPORTANT: $property can be null-string (some times this happend's) - do not remove NULL!!
      * @param array $property
      * @return null|string
      */
-    public static function applyProperty($property = null)
+    public static function applyProperty(array $property = null)
     {
         if (!Object::isArray($property) || count($property) < 1) {
             return null;
@@ -50,6 +51,34 @@ abstract class NativeGenerator
             }
         }
         return $build;
+    }
+
+    /**
+     * Fast building single tag based on property's array
+     * @param string $tagName
+     * @param array $property
+     * @return string
+     */
+    public static function buildSingleTag($tagName, array $property)
+    {
+        return '<' . self::nohtml($tagName) . self::applyProperty($property) . '/>';
+    }
+
+    /**
+     * Fast building container type tag based on property's and value
+     * @param string $tagName
+     * @param array $property
+     * @param null|string $value
+     * @param bool $valueHtml
+     * @return string
+     */
+    public static function buildContainerTag($tagName, array $property, $value = null, $valueHtml = false)
+    {
+        $tagName = self::nohtml($tagName);
+        if (false === $valueHtml) {
+            $value = self::nohtml($value);
+        }
+        return '<' . $tagName . self::applyProperty($property) . '>' . $value . '</' . $tagName . '>';
     }
 
 
