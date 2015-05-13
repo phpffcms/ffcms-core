@@ -12,7 +12,7 @@ class Model
 {
     use DynamicGlobal;
 
-    public $wrongFields = [];
+    protected $wrongFields;
     protected $formName;
 
     public final function __construct()
@@ -83,7 +83,6 @@ class Model
 
         foreach ($this->wrongFields as $property) {
             $this->{$property} = App::$Security->strip_tags($default_property[$property]);
-            //App::$Message->set('global', 'warning', App::$Translate->get('Default', 'Field %field% was completed incorrectly', ['field' => $property]));
         }
 
         return $success;
@@ -223,6 +222,11 @@ class Model
     public function getInput($param)
     {
         return App::$Request->get($this->getFormName() . '[' . $param . ']', null, true);
+    }
+
+    public function getWrongFields()
+    {
+        return $this->wrongFields;
     }
 
 }

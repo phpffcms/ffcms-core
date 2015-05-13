@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Arch;
 
+use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
@@ -127,7 +128,7 @@ class View
      * @param array $params
      * @return string
      */
-    public function show($viewPath, $params = [])
+    public function show($viewPath, array $params = null)
     {
         $viewPath = $this->currentViewPath . '/' . ltrim($viewPath, '/') . '.php';
         return $this->renderSandbox($viewPath, $params);
@@ -135,13 +136,18 @@ class View
 
     /**
      * @param string $path
+     * @param array $params
+     * @return string
      */
-    protected function renderSandbox($path, $params = [])
+    protected function renderSandbox($path, array $params = null)
     {
         // render defaults params
-        foreach ($params as $key => $value) {
-            $$key = $value;
+        if (Object::isArray($params) && count($params) > 0) {
+            foreach ($params as $key => $value) {
+                $$key = $value;
+            }
         }
+
         $global = self::buildGlobal();
         $self = $this;
         // turn on output buffer
@@ -153,6 +159,10 @@ class View
         return $response;
     }
 
+    /**
+     * Build global variables in stdObject
+     * @return \stdClass
+     */
     public function buildGlobal()
     {
         $global = new \stdClass();
@@ -163,18 +173,20 @@ class View
     }
 
     /**
-     * Display custom JS libs
-     * @return null|string
+     * Show custom code library link
+     * @param string $type - js or css allowed
+     * @return array|null|string
      */
-    public function showCustomJS()
+    public function showCodeLink($type)
     {
-        $js = App::$Alias->customJS;
-        $output = null;
-        if (count($js) < 1) {
+        $items = App::$Alias->getCustomLibraryArray($type);
+        // check if custom library available
+        if (null === $items || !Object::isArray($items) || count($items) < 1) {
             return null;
         }
 
-        foreach ($js as $item) {
+        $output = [];
+        foreach ($items as $item) {
             $item = trim($item, '/');
             if (!String::endsWith('.js', $item)) {
                 continue;
@@ -188,58 +200,32 @@ class View
         $clear = array_unique($output);
         $output = null;
         foreach ($clear as $row) {
-            $output .= '<script src="' . $row . '"></script>' . "\n";
+            if ($type === 'css') {
+                $output .= '<link rel="stylesheet" type="text/css" href="' . $row . '">' . "\n";
+            } elseif ($type === 'js') {
+                $output .= '<script src="' . $row . '"></script>' . "\n";
+            }
         }
 
         return $output;
     }
 
     /**
-     * Display custom CSS libs
+     * Show plain code in template.
+     * @param string $type
      * @return null|string
      */
-    public function showCustomCSS()
+    public function showPlainCode($type)
     {
-        $css = App::$Alias->customCSS;
-        $output = null;
-        if (count($css) < 1) {
+        if (null === App::$Alias->getPlainCode($type) || !Object::isArray(App::$Alias->getPlainCode($type))) {
             return null;
         }
 
-        foreach ($css as $item) {
-            $item = trim($item, '/');
-            if (!String::endsWith('.css', $item)) {
-                continue;
-            }
-            if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
-                $item = App::$Alias->scriptUrl . $item;
-            }
-            $output[] = $item;
-        }
-
-        $clear = array_unique($output);
-        $output = null;
-        foreach ($clear as $row) {
-            $output .= '<link rel="stylesheet" type="text/css" href="' . $row . '">' . "\n";
-        }
-
-        return $output;
-    }
-
-    /**
-     * Display custom code after body main (on before </body> close tag)
-     * @return null|string
-     */
-    public function showAfterBody()
-    {
         $code = null;
-        if (Object::isArray(App::$Alias->afterBody) && count(App::$Alias->afterBody) > 0) {
-            foreach (App::$Alias->afterBody as $row) {
-                $code .= $row . "\n";
-            }
+        foreach (App::$Alias->getPlainCode($type) as $row) {
+            $code .= $row . "\n";
         }
+
         return $code;
     }
-
-
 }

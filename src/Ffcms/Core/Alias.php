@@ -2,6 +2,9 @@
 
 namespace Ffcms\Core;
 
+use Ffcms\Core\Helper\Arr;
+use Ffcms\Core\Helper\Object;
+
 
 /**
  * Class Alias - fast alias for core property's
@@ -42,28 +45,31 @@ class Alias
 
 
     /**
-     * Vendor library paths. Ex: App::$Alias->vendor['js']['jquery']['url']. Available: jquery, bootstrap, fa, jquery-ui
+     * Default vendor library's
      * @var array
      */
-    public $vendor = [];
+    protected $vendorNamedLibrary = [
+        'js' => null,
+        'css' => null
+    ];
 
     /**
-     * Additional variable for custom JS scripts
+     * Custom code library's
      * @var array
      */
-    public $customJS = [];
+    protected $codeCustomLibrary = [
+        'js' => null,
+        'css' => null
+    ];
 
     /**
-     * Additional variable for custom CSS scripts
+     * Custom code storage for templates
      * @var array
      */
-    public $customCSS = [];
-
-    /**
-     * Block with additional code/etc before </body> close tag
-     * @var array
-     */
-    public $afterBody = [];
+    protected $plainCode = [
+        'js' => null,
+        'css' => null
+    ];
 
 
     public function __construct()
@@ -80,19 +86,70 @@ class Alias
         }
 
         // build vendor libs alias
-        $this->vendor['js']['jquery']['url'] = $this->scriptUrl . '/vendor/bower/jquery/dist/jquery.min.js';
-        $this->vendor['js']['jquery']['path'] = root . '/vendor/bower/jquery/dist/jquery.min.js';
-        $this->vendor['css']['bootstrap']['url'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
-        $this->vendor['css']['bootstrap']['path'] = root . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
-        $this->vendor['js']['bootstrap']['url'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
-        $this->vendor['js']['bootstrap']['path'] = root . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
-        $this->vendor['css']['fa']['url'] = $this->scriptUrl . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
-        $this->vendor['css']['fa']['path'] = root . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
-        $this->vendor['js']['jquery-ui']['url'] = $this->scriptUrl . '/vendor/bower/jquery-ui/jquery-ui.min.js';
-        $this->vendor['js']['jquery-ui']['path'] = root . '/vendor/bower/jquery-ui/jquery-ui.min.js';
+        $this->vendorNamedLibrary['js']['jquery'] = $this->scriptUrl . '/vendor/bower/jquery/dist/jquery.min.js';
+        $this->vendorNamedLibrary['css']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
+        $this->vendorNamedLibrary['js']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
+        $this->vendorNamedLibrary['css']['fa'] = $this->scriptUrl . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
+        $this->vendorNamedLibrary['js']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/jquery-ui.min.js';
 
         $themeAll = App::$Property->get('theme');
         $this->currentViewUrl = $this->scriptUrl . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
+    }
+
+    /**
+     * @param string $type
+     * @param string $name
+     * @return string|null
+     */
+    public function getVendor($type, $name)
+    {
+        return $this->vendorNamedLibrary[$type][$name];
+    }
+
+    /**
+     * Set custom library $link by $type
+     * @param string $type
+     * @param string $link
+     */
+    public function setCustomLibrary($type, $link)
+    {
+        $this->codeCustomLibrary[$type][] = $link;
+    }
+
+    /**
+     * Get custom library array by type
+     * @param string $type
+     * @return array|null
+     */
+    public function getCustomLibraryArray($type)
+    {
+        return $this->codeCustomLibrary[$type];
+    }
+
+    /**
+     * @param string $type
+     * @param string $code
+     * @return bool
+     */
+    public function addPlainCode($type, $code)
+    {
+        $allowed = ['css', 'js'];
+        if (!Arr::in($type, $allowed)) {
+            return false;
+        }
+
+        $this->plainCode[$type][] = $code;
+        return true;
+    }
+
+    /**
+     * Get plain code build container as string
+     * @param string $type
+     * @return null|string
+     */
+    public function getPlainCode($type)
+    {
+        return $this->plainCode[$type];
     }
 
 

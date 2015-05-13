@@ -52,7 +52,7 @@ class Controller
             }
         } catch (\Exception $e) {
             App::$Debug->addException($e);
-            new NativeException($e);
+            new NativeException($e->getMessage());
         }
     }
 

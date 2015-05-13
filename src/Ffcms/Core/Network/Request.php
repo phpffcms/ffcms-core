@@ -72,7 +72,7 @@ class Request extends FoundationRequest
                     $userLang = array_shift($this->getLanguages());
                 }
 
-                $response = new Redirect($this->getSchemeAndHttpHost() . '/' . $userLang);
+                $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo());
                 $response->send();
                 exit();
             }
@@ -86,11 +86,11 @@ class Request extends FoundationRequest
         $this->argumentId = strtolower($pathArray[3]);
         $this->argumentAdd = strtolower($pathArray[4]);
 
-        if ($this->action == null) { // null || ""
+        if ($this->action == null) { // can be null or string(0)""
             $this->action = 'index';
         }
 
-        if ($this->controller == null) {
+        if ($this->controller == null) { // can be null or string(0)""
             $defaultRoute = App::$Property->get('siteIndex');
             list($this->controller, $this->action) = explode('::', trim($defaultRoute, '/'));
         }
