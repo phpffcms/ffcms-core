@@ -25,7 +25,7 @@ class Listing extends NativeGenerator
             return null;
         }
 
-        $ulProperties = self::applyProperty($elements['ul']);
+        $ulProperties = self::applyProperty($elements['property']);
 
         $items = null;
         foreach ($elements['items'] as $item) {

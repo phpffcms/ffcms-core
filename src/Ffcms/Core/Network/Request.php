@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Network;
 
+use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
@@ -65,11 +66,18 @@ class Request extends FoundationRequest
                     $this->language = $lang;
                 }
             }
+
             // language still not defined?!
             if ($this->language === null) {
                 $userLang = App::$Property->get('baseLanguage');
-                if (Object::isArray($this->getLanguages()) && count($this->getLanguages()) > 0) {
-                    $userLang = array_shift($this->getLanguages());
+                $browserAccept = $this->getLanguages();
+                if (Object::isArray($browserAccept) && count($browserAccept) > 0) {
+                    foreach ($browserAccept as $bLang) {
+                        if (Arr::in($bLang, App::$Property->get('languages'))) {
+                            $userLang = $bLang;
+                            break; // stop calculating, language is founded in priority
+                        }
+                    }
                 }
 
                 $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo());

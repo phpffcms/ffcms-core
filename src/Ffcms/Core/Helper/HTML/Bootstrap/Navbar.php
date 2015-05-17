@@ -17,7 +17,7 @@ class Navbar extends NativeGenerator
             return null;
         }
 
-        $elements['ul']['class'] .= ' nav';
+        $elements['property']['class'] .= ' nav';
         $elements['nav']['class'] .= ' navbar';
 
         if ($elements['container'] === null) {
@@ -50,24 +50,24 @@ class Navbar extends NativeGenerator
         $leftBuild = null;
         $rightBuild = null;
         if (count($itemsLeft) > 0) {
-            $mainElemLeft = $elements['ul'];
+            $mainElemLeft = $elements['property']; // todo: fix me!!
             $mainElemLeft['id'] .= $ulId;
             $ulId++;
             $leftBuild = Listing::display([
                 'type' => 'ul',
-                'ul' => $mainElemLeft,
+                'property' => $mainElemLeft,
                 'items' => $itemsLeft
             ]);
         }
 
         if (count($itemsRight) > 0) {
-            $mainElemRight = $elements['ul'];
+            $mainElemRight = $elements['property']; // todo: fix me!!
             $mainElemRight['class'] .= ' navbar-right';
             $mainElemRight['id'] .= $ulId;
             $ulId++;
             $rightBuild = Listing::display([
                 'type' => 'ul',
-                'ul' => $mainElemRight,
+                'property' => $mainElemRight,
                 'items' => $itemsRight
             ]);
         }

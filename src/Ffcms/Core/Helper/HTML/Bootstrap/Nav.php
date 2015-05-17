@@ -55,9 +55,17 @@ class Nav extends NativeGenerator
 
         $tabContent .= '</div>';
 
+        if ($elements['property']['class'] !== null) {
+            $elements['property']['class'] = 'nav ' . $elements['property']['class'];
+        } else {
+            $elements['property']['class'] = 'nav';
+        }
+
+        $elements['property']['role'] = 'tablist';
+
         $listing = Listing::display([
             'type' => 'ul',
-            'ul' => ['class' => 'nav ' . $elements['ul'], 'role' => 'tablist'],
+            'property' => $elements['property'],
             'items' => $items
         ]);
 
