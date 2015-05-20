@@ -21,6 +21,6 @@ class NativeException
 
     protected function rawHTML($message = null)
     {
-        return '<!DOCTYPE html><html><head>' . App::$Debug->render->renderHead() . '<title>An error has occurred</title></head><body><div style="width:60%; margin: auto; background-color: #fcc;border: 1px solid #faa; padding: 0.5em 1em;"><h1 style="font-size: 120%">Runtime error</h1><p>' . $message . '</p></div>' . \App::$Debug->render->render() . '</body></html>';
+        return '<!DOCTYPE html><html><head><title>An error has occurred</title></head><body><div style="width:60%; margin: auto; background-color: #fcc;border: 1px solid #faa; padding: 0.5em 1em;"><h1 style="font-size: 120%">Runtime error</h1><p>' . $message . '</p></div></body></html>';
     }
 }

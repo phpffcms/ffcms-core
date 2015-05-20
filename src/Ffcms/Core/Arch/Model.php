@@ -123,7 +123,9 @@ class Model
                 throw new \Exception('Filter "' . $filter_name . '" is not exist');
             }
         } catch (\Exception $e) {
-            App::$Debug->addException($e);
+            if (App::$Debug !== null) {
+                App::$Debug->addException($e);
+            }
         }
         if ($check !== true) { // switch only on fail check.
             $this->wrongFields[] = $field_name;

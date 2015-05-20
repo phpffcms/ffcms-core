@@ -51,7 +51,9 @@ class Controller
                 throw new \Exception('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
             }
         } catch (\Exception $e) {
-            App::$Debug->addException($e);
+            if (App::$Debug !== null) {
+                App::$Debug->addException($e);
+            }
             new NativeException($e->getMessage());
         }
     }
@@ -62,17 +64,31 @@ class Controller
      */
     protected final function build($layout)
     {
+
         $body = $this->response;
         if (Variables::instance()->getError() !== null) {
             $body = Variables::instance()->getError();
         }
         $global = Variables::instance()->getGlobalsObject();
-        App::$Debug->bar->getCollector('config')->setData(['Global Vars' => Variables::instance()->getGlobalsArray()]);
-        //App::$Response->send();
+
+        // pass global data to config viewer
+        if (App::$Debug !== null) {
+            App::$Debug->bar->getCollector('config')->setData(['Global Vars' => Variables::instance()->getGlobalsArray()]);
+        }
+
         ob_start();
         include_once($layout);
         $content = ob_get_contents();
         ob_end_clean();
+
+        // add debug bar
+        if (App::$Debug !== null) {
+            $content = str_replace(
+                ['</body>', '</head>'],
+                [App::$Debug->renderOut() . '</body>', App::$Debug->renderHead() . '</head>'],
+                $content);
+        }
+
         App::$Response->setContent($content);
         App::$Response->send();
     }

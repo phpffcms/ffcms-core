@@ -14,9 +14,18 @@ interface iUser
      * Get user param
      * @param string $param
      * @param null|int $custom_id
-     * @return mixed|null
+     * @param null|string $defaultValue
+     * @return string|null
      */
-    public function get($param, $custom_id = null);
+    public function get($param, $custom_id = null, $defaultValue = null);
+
+    /**
+     * @param $param
+     * @param null|int $custom_id
+     * @param null|string $defaultValue
+     * @return string|null
+     */
+    public function getCustomParam($param, $custom_id = null, $defaultValue = null);
 
     /**
      * Check if current user session is auth
@@ -58,4 +67,16 @@ interface iUser
      * @return bool
      */
     public function getPersonViaEmail($email);
+
+    /**
+     * Get user wall post object
+     * @return object
+     */
+    public function getWall();
+
+    /**
+     * Get user avatar path
+     * @return string
+     */
+    public function getAvatarUrl();
 }

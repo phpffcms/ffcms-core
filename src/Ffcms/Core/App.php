@@ -2,13 +2,14 @@
 
 namespace Ffcms\Core;
 
+use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Network\Request;
 use Ffcms\Core\Network\Response;
 use Ffcms\Core\Arch\View;
-use Ffcms\Core\Notify\Message;
+use Ffcms\Core\Debug\Manager as Debug;
 use Ffcms\Core\Exception\EmptyException;
 
 /**
@@ -44,7 +45,7 @@ class App
     public static $View;
 
     /**
-     * @var \Ffcms\Core\Debug
+     * @var \Ffcms\Core\Debug\Manager|null
      */
     public static $Debug;
 
@@ -58,6 +59,15 @@ class App
      */
     public static $Translate;
 
+    /** @var  \Apps\Model\Basic\User */
+    public static $User;
+
+    /** @var \Symfony\Component\HttpFoundation\Session\Session */
+    public static $Session;
+
+    /** @var \Illuminate\Database\Capsule\Manager */
+    public static $Database;
+
 
     /**
      * Load entry point for another logic
@@ -66,13 +76,38 @@ class App
     {
         // init dynamic classes and make access point
         self::$Property = new Property();
-        self::$Debug = new Debug();
         self::$Request = Request::createFromGlobals();
         self::$Security = new Security();
         self::$Response = new Response();
         self::$View = new View();
         self::$Translate = new Translate();
         self::$Alias = new Alias();
+
+        // build some configurable objects
+        self::buildExtendObject();
+
+        // run debug
+        if (Debug::isEnabled()) {
+            self::$Debug = new Debug();
+        }
+    }
+
+    /**
+     * Build object configuration from config
+     */
+    protected static function buildExtendObject()
+    {
+        $cfgPath = root . '/Private/Config/Object.php';
+        if (!File::exist($cfgPath)) {
+            new NativeException('Object config initializer is not founded in: /Private/Config/Object.php');
+        }
+
+        $objectConfig = include_once($cfgPath);
+        self::$User = $objectConfig['User'];
+        self::$Session = $objectConfig['Session'];
+        self::$Database = $objectConfig['Database'];
+
+        self::$Database->getConnection()->enableQueryLog();
     }
 
     /**

@@ -42,7 +42,9 @@ class View
                 throw new \Exception('Could not load app views: ' . $this->currentViewPath);
             }
         } catch (\Exception $e) {
-            App::$Debug->addException($e);
+            if (App::$Debug !== null) {
+                App::$Debug->addException($e);
+            }
             new NativeException($e);
         }
 
@@ -63,7 +65,9 @@ class View
                     throw new \Exception('New view object not founded: ' . String::replace(root, null, $view_path));
                 }
             } catch (\Exception $e) {
-                App::$Debug->addException($e);
+                if (App::$Debug !== null) {
+                    App::$Debug->addException($e);
+                }
                 new ErrorException($e);
             }
         }
@@ -104,7 +108,9 @@ class View
                 throw new \Exception('On call View->render() not founded caller controller' . $call_log);
             }
         } catch (\Exception $e) {
-            App::$Debug->addException($e);
+            if (App::$Debug !== null) {
+                App::$Debug->addException($e);
+            }
             new ErrorException($e);
         }
 
@@ -116,7 +122,9 @@ class View
                 throw new \Exception('Viewer "' . $view . '" is not founded!');
             }
         } catch (\Exception $e) {
-            App::$Debug->addException($e);
+            if (App::$Debug !== null) {
+                App::$Debug->addException($e);
+            }
             new ErrorException($e);
         }
         return self::renderSandbox($view_path, $params);
