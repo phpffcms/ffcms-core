@@ -11,6 +11,7 @@ use Ffcms\Core\Network\Response;
 use Ffcms\Core\Arch\View;
 use Ffcms\Core\Debug\Manager as Debug;
 use Ffcms\Core\Exception\EmptyException;
+use Ffcms\Core\Cache\MemoryObject;
 
 /**
  * Class App - entry point for applications
@@ -68,6 +69,9 @@ class App
     /** @var \Illuminate\Database\Capsule\Manager */
     public static $Database;
 
+    /** @var \Ffcms\Core\Cache\MemoryObject */
+    public static $Memory;
+
 
     /**
      * Load entry point for another logic
@@ -75,6 +79,7 @@ class App
     public static function build()
     {
         // init dynamic classes and make access point
+        self::$Memory = MemoryObject::instance();
         self::$Property = new Property();
         self::$Request = Request::createFromGlobals();
         self::$Security = new Security();
@@ -83,13 +88,15 @@ class App
         self::$Translate = new Translate();
         self::$Alias = new Alias();
 
-        // build some configurable objects
-        self::buildExtendObject();
 
-        // run debug
-        if (Debug::isEnabled()) {
+        // init debug
+        if (true === self::$Property->get('debug')['all'] ||
+            self::$Request->cookies->get(self::$Property->get('debug')['cookie']['key']) === self::$Property->get('debug')['cookie']['value']) {
             self::$Debug = new Debug();
         }
+
+        // build some configurable objects
+        self::buildExtendObject();
     }
 
     /**
@@ -107,7 +114,9 @@ class App
         self::$Session = $objectConfig['Session'];
         self::$Database = $objectConfig['Database'];
 
-        self::$Database->getConnection()->enableQueryLog();
+        if (self::$Debug !== null) {
+            self::$Database->getConnection()->enableQueryLog();
+        }
     }
 
     /**

@@ -43,7 +43,7 @@ class Nav extends NativeGenerator
                 $item['linkProperty']['role'] = 'tab';
                 $item['linkProperty']['data-toggle'] = 'tab';
 
-                $itemContent = App::$Security->purifier()->purify($item['content']);
+                $itemContent = App::$Security->secureHtml($item['content']);
                 unset($item['content']);
                 $items[] = $item;
 

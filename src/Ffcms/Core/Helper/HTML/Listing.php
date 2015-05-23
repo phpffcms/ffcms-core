@@ -95,7 +95,7 @@ class Listing extends NativeGenerator
                 }
                 $htmlLink = '<a href="' . self::nohtml($link) . '"';
                 $htmlLink .= self::applyProperty($item['linkProperty']);
-                $htmlLink .= '>' . ($item['html'] ? App::$Security->purifier()->purify($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';
+                $htmlLink .= '>' . ($item['html'] ? App::$Security->secureHtml($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';
                 $items .= $htmlLink;
             }
             $items .= '</li>';

@@ -11,6 +11,6 @@ class ErrorException
     public function __construct($message = null)
     {
         App::$Response->setStatusCode(404);
-        Variables::instance()->setError(App::$Security->purifier()->purify($message));
+        Variables::instance()->setError(App::$Security->secureHtml($message));
     }
 }

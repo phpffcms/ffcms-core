@@ -41,7 +41,6 @@ class Manager
     public function renderOut()
     {
         if (!$this->bar->hasCollector('queries')) {
-            $this->addMessage('Database profiling now is started!');
             $timeCollector = null;
             $log = App::$Database->connection()->getQueryLog();
             if ($this->bar->hasCollector('time')) {
@@ -54,13 +53,15 @@ class Manager
     }
 
     /**
-     * Add exception into debug bar
+     * Add exception into debug bar and stop execute
      * @param $e
      * @throws \DebugBar\DebugBarException
      */
     public function addException($e)
     {
-        $this->bar->getCollector('exceptions')->addException($e);
+        if ($e instanceof \Exception) {
+            $this->bar->getCollector('exceptions')->addException($e);
+        }
     }
 
     /**
@@ -71,6 +72,7 @@ class Manager
      */
     public function addMessage($m, $type = 'info')
     {
+        $m = App::$Security->secureHtml($m);
         $mCollector = $this->bar->getCollector('messages');
 
         if (method_exists($mCollector, $type)) {
@@ -79,7 +81,7 @@ class Manager
     }
 
     /**
-     * Check if debug bar is enabled
+     * Check if debug bar is enabled. Method called before __construct() is initiated!!
      * @return bool
      */
     public static function isEnabled()

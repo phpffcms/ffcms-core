@@ -16,8 +16,8 @@ abstract class NativeGenerator
      */
     public static function safe($data, $quotes = false)
     {
-        return $quotes ?
-            App::$Security->purifier()->purify($data) : App::$Security->escapeQuotes(App::$Security->purifier()->purify($data));
+        $data = App::$Security->secureHtml($data);
+        return $quotes ? $data : App::$Security->escapeQuotes($data);
     }
 
     /**

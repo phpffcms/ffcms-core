@@ -81,8 +81,11 @@ class Model
             }
         }
 
-        foreach ($this->wrongFields as $property) {
-            $this->{$property} = App::$Security->strip_tags($default_property[$property]);
+        // prevent warnings
+        if (Object::isArray($this->wrongFields) && count($this->wrongFields) > 0) {
+            foreach ($this->wrongFields as $property) {
+                $this->{$property} = App::$Security->strip_tags($default_property[$property]);
+            }
         }
 
         return $success;
@@ -100,7 +103,7 @@ class Model
         if (!$html && !Object::isArray($field_value)) {
             $field_value = App::$Security->strip_tags($field_value);
         } else {
-            $field_value = App::$Security->purifier()->purify($field_value);
+            $field_value = App::$Security->secureHtml($field_value);
         }
 
         $check = false;
@@ -157,7 +160,7 @@ class Model
             if (String::startsWith('_', $var)) { // ignore $_var
                 continue;
             }
-            $this->$var = App::$Security->purifier()->purify($value);
+            $this->$var = App::$Security->secureHtml($value);
         }
         return $this;
     }

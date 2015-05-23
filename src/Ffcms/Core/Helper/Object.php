@@ -70,4 +70,14 @@ class Object
     {
         return false !== filter_var($data, FILTER_VALIDATE_BOOLEAN);
     }
+
+    /**
+     * Check if $data is object
+     * @param $data
+     * @return bool
+     */
+    public static function isObject($data)
+    {
+        return is_object($data);
+    }
 }

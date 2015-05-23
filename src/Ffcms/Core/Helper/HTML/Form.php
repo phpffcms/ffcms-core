@@ -55,6 +55,16 @@ class Form extends NativeGenerator
     public function field($object, $type, $property = null, $helper = null, $structure = null)
     {
         if ($this->model === null) {
+            if (App::$Debug !== null) {
+                App::$Debug->addMessage('Form model is not defined for field name: ' . strip_tags($object));
+            }
+            return null;
+        }
+
+        if (!property_exists($this->model, $object)) {
+            if (App::$Debug !== null) {
+                App::$Debug->addMessage('Form field "' . $object . '" is not defined in model: ' . get_class($this->model), 'error');
+            }
             return null;
         }
 
@@ -179,10 +189,10 @@ class Form extends NativeGenerator
     /**
      * Finish current form.
      * @param bool $validate
+     * @return string
      */
     public function finish($validate = true)
     {
-        echo '</form>';
         // pre-validate form fields based on model rules and jquery.validation
         if ($validate) {
             App::$Alias->addPlainCode('js', '$().ready(function() { $("#' . $this->name . '").validate(); });');
@@ -194,5 +204,6 @@ class Form extends NativeGenerator
                 }
             }
         }
+        return '</form>';
     }
 }

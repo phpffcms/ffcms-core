@@ -4,22 +4,14 @@ namespace Ffcms\Core\Template;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Traits\Singleton;
 
 class Variables
 {
-    protected static $instance;
+    use Singleton;
 
     protected $globalVars;
     protected $globalError;
-
-    public static function instance()
-    {
-        if (null === self::$instance) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-
 
     /**
      * Set global variable for Views
@@ -30,7 +22,7 @@ class Variables
     public function setGlobal($var, $value, $html = false)
     {
         if (Object::isString($value)) {
-            $this->globalVars[$var] = $html ? App::$Security->purifier()->purify($value) : App::$Security->strip_tags($value);
+            $this->globalVars[$var] = $html ? App::$Security->secureHtml($value) : App::$Security->strip_tags($value);
         }
     }
 

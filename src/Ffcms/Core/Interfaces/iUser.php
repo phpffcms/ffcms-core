@@ -13,60 +13,58 @@ interface iUser
     /**
      * Get user param
      * @param string $param
-     * @param null|int $custom_id
      * @param null|string $defaultValue
      * @return string|null
      */
-    public function get($param, $custom_id = null, $defaultValue = null);
+    public function get($param, $defaultValue = null);
 
     /**
      * @param $param
-     * @param null|int $custom_id
      * @param null|string $defaultValue
      * @return string|null
      */
-    public function getCustomParam($param, $custom_id = null, $defaultValue = null);
+    public function getCustomParam($param, $defaultValue = null);
 
     /**
      * Check if current user session is auth
      * @return bool
      */
-    public function isAuth();
+    public static function isAuth();
 
     /**
      * Check if user with $id exist
      * @param int $id
-     * @return bool|int
+     * @return bool
      */
-    public function isExist($id);
+    public static function isExist($id);
 
     /**
      * Get user person all data like a object
-     * @param null|int $custom_id
+     * @param null|int $user_id
      * @return bool|\Illuminate\Support\Collection|null|static
      */
-    public function getPerson($custom_id = null);
+    public static function identity($user_id);
 
     /**
      * Check if use with $email is exist
      * @param string $email
      * @return bool
      */
-    public function isMailExist($email);
+    public static function isMailExist($email);
 
     /**
      * Check if user with $login is exist
      * @param string $login
      * @return bool
      */
-    public function isLoginExist($login);
+    public static function isLoginExist($login);
 
     /**
      * Get user person like a object via email
      * @param string $email
      * @return bool
      */
-    public function getPersonViaEmail($email);
+    public static function getIdentifyViaEmail($email);
 
     /**
      * Get user wall post object

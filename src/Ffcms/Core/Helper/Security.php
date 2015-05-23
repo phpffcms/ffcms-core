@@ -22,11 +22,22 @@ class Security
     }
 
     /**
+     * Get purifier instance
      * @return \HTMLPurifier
      */
-    public function purifier()
+    public function getPurifier()
     {
         return $this->purifier;
+    }
+
+    /**
+     * Secure html code
+     * @param string $data
+     * @return string
+     */
+    public function secureHtml($data)
+    {
+        return $this->purifier->purify($data);
     }
 
     /**
