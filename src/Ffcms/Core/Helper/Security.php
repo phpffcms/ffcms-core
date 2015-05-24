@@ -42,20 +42,25 @@ class Security
 
     /**
      * String html tags and escape quotes
-     * @param string $html
+     * @param string|array $html
      * @param boolean $escapeQuotes
      * @return string
      */
     public function strip_tags($html, $escapeQuotes = true)
     {
+        // recursive usage
+        if (Object::isArray($html)) {
+            foreach ($html as $key=>$value) {
+                $html[$key] = $this->strip_tags($value, $escapeQuotes);
+            }
+            return $html;
+        }
+
         $text = strip_tags($html);
         if ($escapeQuotes) {
             $text = $this->escapeQuotes($text);
         }
-        return $text; // x10 faster
-        /**$cfg = \HTMLPurifier_Config::createDefault();
-         * $cfg->set('HTML.Allowed', '');
-         * return $this->purifier()->purify($html, $cfg); */
+        return $text;
     }
 
     public function escapeQuotes($html)
