@@ -37,6 +37,10 @@ class SimplePagination
 
         $lastPage = ceil($this->total/$this->step); // 6/5 ~ 2 = 0..2
 
+        if ($lastPage <= 1) {
+            return null;
+        }
+
         // prevent hack-boy's any try
         if ($this->page > $lastPage) {
             return null;

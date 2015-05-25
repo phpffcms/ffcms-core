@@ -8,12 +8,12 @@ use Ffcms\Core\Arch\Controller;
 class EmptyException extends Controller
 {
     /**
-     * @param string $m
+     * @param string|null $m
      */
     public function __construct($m = null)
     {
         parent::__construct();
-        $this->response = $m;
+        $this->response = App::$Translate->translate($m);
         $this->title = App::$Translate->translate('Not founded: 404');
         App::$Response->setStatusCode(404);
     }

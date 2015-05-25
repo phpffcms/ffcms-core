@@ -16,14 +16,12 @@ class Variables
     /**
      * Set global variable for Views
      * @param string $var
-     * @param string $value
+     * @param string|array $value
      * @param bool $html
      */
     public function setGlobal($var, $value, $html = false)
     {
-        if (Object::isString($value)) {
-            $this->globalVars[$var] = $html ? App::$Security->secureHtml($value) : App::$Security->strip_tags($value);
-        }
+        $this->globalVars[$var] = $html ? App::$Security->secureHtml($value) : App::$Security->strip_tags($value);
     }
 
     /**

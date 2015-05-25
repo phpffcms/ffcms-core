@@ -81,6 +81,9 @@ class Alias
         $this->baseDomain = App::$Request->getHost();
         $this->scriptUrl = App::$Request->getSchemeAndHttpHost();
         $this->baseUrl = $this->scriptUrl;
+        if (App::$Request->getBasePath() !== null) {
+            $this->baseUrl .= App::$Request->getBasePath();
+        }
         if (App::$Request->getLanguage() !== null) {
             $this->baseUrl .= '/' . App::$Request->getLanguage();
         }
