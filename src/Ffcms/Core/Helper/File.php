@@ -57,4 +57,19 @@ class File
         return @file_put_contents($path, $content, $flags);
     }
 
+    /**
+     * Get file make time in unix timestamp
+     * @param string $path
+     * @return int
+     */
+    public static function mTime($path)
+    {
+        $path = Normalize::diskFullPath($path);
+        if (!self::exist($path)) {
+            return 0;
+        }
+
+        return filemtime($path);
+    }
+
 }

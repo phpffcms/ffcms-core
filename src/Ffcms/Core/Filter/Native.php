@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Filter;
 
+use Ffcms\Core\App;
 use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
@@ -140,6 +141,62 @@ class Native
         }
 
         return $object === $value;
+    }
+
+    /**
+     * @param object $object
+     * @param $value
+     * @return bool
+     */
+    public static function isFile($object, $value)
+    {
+        $all = false;
+        // if string is given
+        if (!Object::isArray($value)) {
+            if ($value === '*') {
+                $all = true;
+            } else {
+                $value = [$value];
+            }
+        }
+
+        // input file is not object?
+        if ($object === null || !Object::isObject($object)) {
+            return false;
+        }
+
+        // get guess file type, based on mime-type
+        $type = $object->guessExtension();
+        if ($type === null) {
+            return false;
+        }
+
+        return $all ? true : Arr::in($type, $value);
+    }
+
+    /**
+     * @param object $object
+     * @param $value
+     * @return bool
+     */
+    public static function sizeFile($object, $value)
+    {
+        if (!Object::isArray($value)) {
+            $value = [0, $value];
+        }
+
+        // input file is not object?
+        if ($object === null || !Object::isObject($object)) {
+            return false;
+        }
+
+        // get file upload size in bytes
+        $realSize = $object->getClientSize();
+        if ($realSize === null) {
+            return false;
+        }
+
+        return $realSize > $value[0] && $realSize <= $value[1];
     }
 
 }

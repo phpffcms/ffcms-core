@@ -164,6 +164,11 @@ class Form extends NativeGenerator
                 $property['type'] = 'email';
                 $response = self::buildSingleTag('input', $property);
                 break;
+            case 'inputFile':
+                $property['type'] = 'file';
+                unset($property['value']);
+                $response = self::buildSingleTag('input', $property);
+                break;
             default:
                 $property['type'] = 'text';
                 $response = self::buildSingleTag('input', $property);

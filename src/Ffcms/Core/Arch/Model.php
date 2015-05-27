@@ -20,9 +20,7 @@ class Model
         $this->before();
     }
 
-    public function before()
-    {
-    }
+    public function before() {}
 
     /**
      * Get label value by variable name
@@ -41,6 +39,15 @@ class Model
      * @return array
      */
     public function setLabels()
+    {
+        return [];
+    }
+
+    /**
+     * Set special type for input data. Example: ['avatar' => 'file', 'login' => 'input']
+     * @return array
+     */
+    public function inputTypes()
     {
         return [];
     }
@@ -98,12 +105,15 @@ class Model
             return false;
         }
 
-        $field_value = $this->getInput($field_name);
-
-        if (!$html && !Object::isArray($field_value)) {
-            $field_value = App::$Security->strip_tags($field_value);
-        } else {
-            $field_value = App::$Security->secureHtml($field_value);
+        // check input data type. Maybe file or input (text)
+        $inputTypes = $this->inputTypes();
+        // sounds like file
+        if ($inputTypes[$field_name] === 'file') {
+            $field_value = $this->getFile($field_name);
+        } else { // sounds like plain post data
+            $field_value = $this->getInput($field_name);
+            // remove or safe use html
+            $field_value = $html ? App::$Security->secureHtml($field_value) : App::$Security->strip_tags($field_value);
         }
 
         $check = false;
@@ -229,6 +239,20 @@ class Model
         return App::$Request->get($this->getFormName() . '[' . $param . ']', null, true);
     }
 
+    /**
+     * Get uploaded file from user via POST request
+     * @param string $param
+     * @return \Symfony\Component\HttpFoundation\File\UploadedFile|null
+     */
+    public function getFile($param)
+    {
+        return App::$Request->files->get($this->getFormName() . '[' . $param . ']', null, true);
+    }
+
+    /**
+     * Get form after-validation wrong fields name
+     * @return array|null
+     */
     public function getWrongFields()
     {
         return $this->wrongFields;
