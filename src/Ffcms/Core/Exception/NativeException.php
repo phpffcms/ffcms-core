@@ -2,20 +2,19 @@
 
 namespace Ffcms\Core\Exception;
 
-use Ffcms\Core\App;
-
-
-class NativeException
+class NativeException extends \Exception
 {
 
-    public function __construct($message = null)
+    public function display()
     {
-        header('HTTP/1.1 404 Not Found');
+
         if (type === 'web') {
-            echo $this->rawHTML($message);
+            header('HTTP/1.1 404 Not Found');
+            echo $this->rawHTML($this->getMessage());
         } else {
-            echo $message;
+            echo $this->getMessage();
         }
+
         die();
     }
 

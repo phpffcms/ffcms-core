@@ -2,7 +2,10 @@
 
 namespace Ffcms\Core;
 
+use Ffcms\Core\Exception\ForbiddenException;
 use Ffcms\Core\Exception\NativeException;
+use Ffcms\Core\Exception\NotFoundException;
+use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\I18n\Translate;
@@ -10,7 +13,6 @@ use Ffcms\Core\Network\Request;
 use Ffcms\Core\Network\Response;
 use Ffcms\Core\Arch\View;
 use Ffcms\Core\Debug\Manager as Debug;
-use Ffcms\Core\Exception\EmptyException;
 use Ffcms\Core\Cache\MemoryObject;
 
 /**
@@ -105,17 +107,21 @@ class App
     protected static function buildExtendObject()
     {
         $cfgPath = root . '/Private/Config/Object.php';
-        if (!File::exist($cfgPath)) {
-            new NativeException('Object config initializer is not founded in: /Private/Config/Object.php');
-        }
+        try {
+            if (!File::exist($cfgPath)) {
+                throw new NativeException('Object config initializer is not founded in: /Private/Config/Object.php');
+            }
 
-        $objectConfig = include_once($cfgPath);
-        self::$User = $objectConfig['User'];
-        self::$Session = $objectConfig['Session'];
-        self::$Database = $objectConfig['Database'];
+            $objectConfig = include_once($cfgPath);
+            self::$User = $objectConfig['User'];
+            self::$Session = $objectConfig['Session'];
+            self::$Database = $objectConfig['Database'];
 
-        if (self::$Debug !== null) {
-            self::$Database->getConnection()->enableQueryLog();
+            if (self::$Debug !== null) {
+                self::$Database->getConnection()->enableQueryLog();
+            }
+        } catch (NativeException $e) {
+            $e->display();
         }
     }
 
@@ -144,18 +150,23 @@ class App
                             $load->$actionName();
                         }
                     } else {
-                        throw new \Exception('Method ' . $actionName . '() not founded in ' . $cname . ' in file {root}' . $controller_path);
+                        throw new NotFoundException('Method "' . $actionName . '()" not founded in "' . $cname . '" in file {root}' . $controller_path);
                     }
                     unset($load);
                 } else {
-                    throw new \Exception('Namespace\\Class - ' . $cname . ' not founded in {root}' . $controller_path);
+                    throw new NotFoundException('Namespace\\Class - ' . $cname . ' not founded in {root}' . $controller_path);
                 }
             } else {
-                throw new \Exception('Controller not founded: {root}' . $controller_path);
+                throw new NotFoundException('Controller not founded: {root}' . $controller_path);
             }
-        } catch (\Exception $e) {
-            self::$Debug->addException($e);
-            new EmptyException('Unable to find this URL');
+        } catch (NotFoundException $e) {
+            $e->display();
+        } catch (ForbiddenException $e) {
+            $e->display();
+        } catch (SyntaxException $e) {
+            $e->display();
+        } catch (NativeException $e) {
+            $e->display();
         }
     }
 

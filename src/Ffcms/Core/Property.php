@@ -21,14 +21,18 @@ class Property
 
     public function __construct()
     {
-        $file = root . '/Private/Config/General.php';
-        if (File::exist($file)) {
+        try {
+            $file = root . '/Private/Config/General.php';
+            if (!File::exist($file)) {
+                throw new NativeException('File /Private/Config/General.php not founded!');
+            }
+
             $cfg = @include_once($file);
             if (Object::isArray($cfg) && count($cfg) > 0) {
                 self::$config = $cfg;
             }
-        } else {
-            new NativeException('File /Private/Config/General.php not founded!');
+        } catch (NativeException $e) {
+            $e->display();
         }
     }
 

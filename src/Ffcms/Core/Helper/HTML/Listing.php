@@ -37,19 +37,22 @@ class Listing extends NativeGenerator
             }
             // sounds like a link, try detect active element
             if ($item['type'] === 'link') {
-                if (!Object::isArray($item['link'])) {
+                if (!Object::isArray($item['link']) && !String::startsWith('http', $item['link'])) {
                     $item['link'] = [$item['link']]; // just controller/action sended, to array
                 }
-                $elementPoint = Url::buildPathway($item['link']);
-                $currentPoint = Url::buildPathwayFromRequest();
-                if ($item['activeClass'] === null) {
-                    $item['activeClass'] = 'active';
-                }
-                // check if it active link for current pathway
-                if ($elementPoint === $currentPoint) {
-                    $item['property']['class'] = String::length($item['property']['class']) > 0
-                        ? $item['activeClass'] . ' ' . $item['property']['class']
-                        : $item['activeClass'];
+
+                if (Object::isArray($item['link'])) {
+                    $elementPoint = Url::buildPathway($item['link']);
+                    $currentPoint = Url::buildPathwayFromRequest();
+                    if ($item['activeClass'] === null) {
+                        $item['activeClass'] = 'active';
+                    }
+                    // check if it active link for current pathway
+                    if ($elementPoint === $currentPoint) {
+                        $item['property']['class'] = String::length($item['property']['class']) > 0
+                            ? $item['activeClass'] . ' ' . $item['property']['class']
+                            : $item['activeClass'];
+                    }
                 }
             }
 

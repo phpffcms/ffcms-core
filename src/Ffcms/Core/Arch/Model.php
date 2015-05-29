@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Filter\Native;
@@ -117,28 +118,22 @@ class Model
         }
 
         $check = false;
-        try {
-            if (String::contains('::', $filter_name)) { // sounds like a callback
-                list($callback_class, $callback_method) = explode('::', $filter_name);
-                $callback_class = '\\' . trim($callback_class, '\\');
-                if (method_exists($callback_class, $callback_method)) {
-                    $check = @$callback_class::$callback_method($field_value, $filter_argv); // callback class::method(name, value);
-                } else {
-                    throw new \Exception('Filter callback execution "' . $field_name . '" is not exist');
-                }
-            } elseif (method_exists('Ffcms\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
-                if ($filter_argv != null) {
-                    $check = Native::$filter_name($field_value, $filter_argv);
-                } else {
-                    $check = Native::$filter_name($field_value);
-                }
+        if (String::contains('::', $filter_name)) { // sounds like a callback
+            list($callback_class, $callback_method) = explode('::', $filter_name);
+            $callback_class = '\\' . trim($callback_class, '\\');
+            if (method_exists($callback_class, $callback_method)) {
+                $check = @$callback_class::$callback_method($field_value, $filter_argv); // callback class::method(name, value);
             } else {
-                throw new \Exception('Filter "' . $filter_name . '" is not exist');
+                throw new SyntaxException('Filter callback execution "' . $field_name . '" is not exist');
             }
-        } catch (\Exception $e) {
-            if (App::$Debug !== null) {
-                App::$Debug->addException($e);
+        } elseif (method_exists('Ffcms\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
+            if ($filter_argv != null) {
+                $check = Native::$filter_name($field_value, $filter_argv);
+            } else {
+                $check = Native::$filter_name($field_value);
             }
+        } else {
+            throw new SyntaxException('Filter "' . $filter_name . '" is not exist');
         }
         if ($check !== true) { // switch only on fail check.
             $this->wrongFields[] = $field_name;

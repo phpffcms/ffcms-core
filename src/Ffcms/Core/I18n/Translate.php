@@ -5,6 +5,7 @@ namespace Ffcms\Core\I18n;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\File;
+use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 
 class Translate
@@ -38,7 +39,8 @@ class Translate
                 $this->cached = array_merge($this->cached, $this->load($index));
                 $this->indexes[] = $index;
             }
-            if (!empty($this->cached[$text])) {
+
+            if ($this->cached !== null && Object::isString($text) && $this->cached[$text] !== null) {
                 $text = $this->cached[$text];
             }
         }

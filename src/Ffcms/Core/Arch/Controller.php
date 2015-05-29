@@ -48,13 +48,10 @@ class Controller
             if (File::exist($layoutPath)) {
                 $this->build($layoutPath);
             } else {
-                throw new \Exception('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
+                throw new NativeException('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
             }
-        } catch (\Exception $e) {
-            if (App::$Debug !== null) {
-                App::$Debug->addException($e);
-            }
-            new NativeException($e->getMessage());
+        } catch (NativeException $e) {
+            $e->display();
         }
     }
 

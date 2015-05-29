@@ -2,11 +2,10 @@
 
 namespace Ffcms\Core\Arch;
 
-use Ffcms\Core\Helper\Arr;
+use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
-use Ffcms\Core\Exception\ErrorException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\App;
 use Ffcms\Core\Template\Variables;
@@ -39,13 +38,10 @@ class View
         $this->currentViewPath = root . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
         try {
             if (!File::exist($this->currentViewPath)) {
-                throw new \Exception('Could not load app views: ' . $this->currentViewPath);
+                throw new NativeException('Could not load app views: ' . $this->currentViewPath);
             }
-        } catch (\Exception $e) {
-            if (App::$Debug !== null) {
-                App::$Debug->addException($e);
-            }
-            new NativeException($e);
+        } catch (NativeException $e) {
+            $e->display();
         }
 
         // built on $view = new View('main', 'index');
@@ -62,13 +58,10 @@ class View
                 if (File::exist($view_path)) {
                     $this->view_object = $view_path;
                 } else {
-                    throw new \Exception('New view object not founded: ' . String::replace(root, null, $view_path));
+                    throw new SyntaxException('New view object not founded: ' . String::replace(root, null, $view_path));
                 }
-            } catch (\Exception $e) {
-                if (App::$Debug !== null) {
-                    App::$Debug->addException($e);
-                }
-                new ErrorException($e);
+            } catch (SyntaxException $e) {
+                $e->display();
             }
         }
     }
@@ -105,13 +98,11 @@ class View
 
         try {
             if (null === $call_controller) {
-                throw new \Exception('On call View->render() not founded caller controller' . $call_log);
+                throw new SyntaxException('On call View->render() not founded caller controller to define viewer name');
             }
-        } catch (\Exception $e) {
-            if (App::$Debug !== null) {
-                App::$Debug->addException($e);
-            }
-            new ErrorException($e);
+        } catch (SyntaxException $e) {
+            $e->display();
+            return null;
         }
 
         $controller_name = String::substr($call_controller, String::length('Apps\\Controller\\' . env_name . '\\'));
@@ -119,13 +110,11 @@ class View
 
         try {
             if (!File::exist($view_path)) {
-                throw new \Exception('Viewer "' . $view . '" is not founded!');
+                throw new SyntaxException('Viewer is not founded: ' . str_replace(root, null, $view_path));
             }
-        } catch (\Exception $e) {
-            if (App::$Debug !== null) {
-                App::$Debug->addException($e);
-            }
-            new ErrorException($e);
+        } catch (SyntaxException $e) {
+            $e->display();
+            return null;
         }
         return self::renderSandbox($view_path, $params);
     }
