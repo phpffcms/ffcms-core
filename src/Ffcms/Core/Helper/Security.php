@@ -18,6 +18,10 @@ class Security
         //$config->set('URI.MakeAbsolute', true);
         $config->set('AutoFormat.AutoParagraph', false);
 
+        // allow use target=_blank for links
+        $def = $config->getHTMLDefinition(true);
+        $def->addAttribute('a', 'target', 'Enum#_blank,_self,_target,_top');
+
         $this->purifier = new \HTMLPurifier($config);
     }
 
@@ -75,7 +79,7 @@ class Security
      */
     public static function password_hash($password)
     {
-        return crypt($password, App::$Property->get('password_salt'));
+        return crypt($password, App::$Property->get('passwordSalt'));
     }
 
 

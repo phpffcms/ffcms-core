@@ -53,4 +53,18 @@ class Directory
         }
         return @rmdir($path);
     }
+
+    public static function scan($path, $mod = GLOB_ONLYDIR)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return false;
+        }
+
+        $pattern = rtrim($path, '/') . '/*';
+        $entry = glob($pattern, $mod);
+
+        return $entry;
+    }
 }

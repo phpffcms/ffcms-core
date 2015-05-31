@@ -43,12 +43,21 @@ class Nav extends NativeGenerator
                 $item['linkProperty']['role'] = 'tab';
                 $item['linkProperty']['data-toggle'] = 'tab';
 
-                $itemContent = App::$Security->secureHtml($item['content']);
+                $itemContent = $item['content'];
                 unset($item['content']);
                 $items[] = $item;
 
                 $tabContent .= '<div role="tabpanel" class="tab-pane' . ($tabIdx === 1 ? ' active' : null) . '" id="' . $elements['tabAnchor'] . $tabIdx . '">';
-                $tabContent .= ($item['htmlContent'] ? self::safe($itemContent) : self::nohtml($itemContent)) . '</div>';
+                if ($item['html'] === true) {
+                    if ($item['!secure'] === true) {
+                        $tabContent .= $itemContent;
+                    } else {
+                        $tabContent .= self::safe($itemContent);
+                    }
+                } else {
+                    $tabContent .= self::nohtml($itemContent);
+                }
+                $tabContent .= '</div>';
                 $tabIdx++;
             }
         }

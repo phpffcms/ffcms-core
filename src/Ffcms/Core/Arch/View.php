@@ -149,7 +149,7 @@ class View
         $self = $this;
         // turn on output buffer
         ob_start();
-        include_once($path);
+        include($path);
         $response = ob_get_contents();
         // turn off buffer
         ob_end_clean();

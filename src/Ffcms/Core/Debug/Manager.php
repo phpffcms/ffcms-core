@@ -5,6 +5,7 @@ namespace Ffcms\Core\Debug;
 use \DebugBar\StandardDebugBar;
 use \DebugBar\DataCollector\ConfigCollector;
 use \Ffcms\Core\App;
+use Ffcms\Core\Helper\Object;
 
 /**
  * Class Debug - display information of debug and collected data in debug bar
@@ -72,6 +73,9 @@ class Manager
      */
     public function addMessage($m, $type = 'info')
     {
+        if (!Object::isString($m) || !Object::isString($type)) {
+            return;
+        }
         $m = App::$Security->secureHtml($m);
         $mCollector = $this->bar->getCollector('messages');
 
@@ -86,7 +90,7 @@ class Manager
      */
     public static function isEnabled()
     {
-        $debugProperty = App::$Property->get('debug');
-        return ($debugProperty['all'] === true || ($debugProperty['owner'] === true && App::$User->isAuth()));
+        return (true === App::$Property->get('debug')['all'] ||
+            App::$Request->cookies->get(App::$Property->get('debug')['cookie']['key']) === App::$Property->get('debug')['cookie']['value']);
     }
 }

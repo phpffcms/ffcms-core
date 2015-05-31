@@ -92,8 +92,7 @@ class App
 
 
         // init debug
-        if (true === self::$Property->get('debug')['all'] ||
-            self::$Request->cookies->get(self::$Property->get('debug')['cookie']['key']) === self::$Property->get('debug')['cookie']['value']) {
+        if (Debug::isEnabled()) {
             self::$Debug = new Debug();
         }
 

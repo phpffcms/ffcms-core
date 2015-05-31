@@ -37,7 +37,7 @@ class Listing extends NativeGenerator
             }
             // sounds like a link, try detect active element
             if ($item['type'] === 'link') {
-                if (!Object::isArray($item['link']) && !String::startsWith('http', $item['link'])) {
+                if (!Object::isArray($item['link']) && !String::startsWith('http', $item['link']) && !String::startsWith('#', $item['link'])) {
                     $item['link'] = [$item['link']]; // just controller/action sended, to array
                 }
 
