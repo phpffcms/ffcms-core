@@ -4,6 +4,7 @@ namespace Ffcms\Core\I18n;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Arr;
+use Ffcms\Core\Helper\Directory;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
@@ -13,8 +14,6 @@ class Translate
 
     protected $cached = [];
     protected $indexes = [];
-
-    protected $makeTranslate = false;
 
     public function __construct()
     {
@@ -78,5 +77,19 @@ class Translate
             return [];
         }
         return require_once($file);
+    }
+
+    /**
+     * Get available languages in the filesystem
+     * @return array
+     */
+    public function getAvailableLangs()
+    {
+        $langs = ['en'];
+        $scan = Directory::scan(root . '/I18n/' . env_name . '/', GLOB_ONLYDIR, true);
+        foreach ($scan as $row) {
+            $langs[] = trim($row, '/');
+        }
+        return $langs;
     }
 }

@@ -54,7 +54,7 @@ class Directory
         return @rmdir($path);
     }
 
-    public static function scan($path, $mod = GLOB_ONLYDIR)
+    public static function scan($path, $mod = GLOB_ONLYDIR, $returnRelative = false)
     {
         $path = Normalize::diskFullPath($path);
 
@@ -64,6 +64,12 @@ class Directory
 
         $pattern = rtrim($path, '/') . '/*';
         $entry = glob($pattern, $mod);
+
+        if ($returnRelative === true) {
+            foreach ($entry as $key => $value) {
+                $entry[$key] = str_replace($path, null, $value);
+            }
+        }
 
         return $entry;
     }

@@ -32,4 +32,31 @@ class Arr
         }
         return call_user_func_array('array_merge', $arguments);
     }
+
+    /**
+     * Get array item by path separated by dots. Example: getByPath('dir.file', ['dir' => ['file' => 'text.txt']]) return "text.txt"
+     * @param string $path
+     * @param array|null $array
+     * @param string $delimiter
+     * @return array|string|null
+     */
+    public static function getByPath($path, array $array = null, $delimiter = '.')
+    {
+        // path of nothing? interest
+        if (count($array) < 1) {
+            return null;
+        }
+
+        // c'mon man, what the f*ck are you doing? ))
+        if (!String::contains($delimiter, $path)) {
+            return $array[$path];
+        }
+
+        $output = $array;
+        $pathArray = explode($delimiter, $path);
+        foreach ($pathArray as $key) {
+            $output = $output[$key];
+        }
+        return $output;
+    }
 }

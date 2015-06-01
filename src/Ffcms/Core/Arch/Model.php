@@ -4,6 +4,7 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
+use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Filter\Native;
@@ -92,7 +93,19 @@ class Model
         // prevent warnings
         if (Object::isArray($this->wrongFields) && count($this->wrongFields) > 0) {
             foreach ($this->wrongFields as $property) {
-                $this->{$property} = App::$Security->strip_tags($default_property[$property]);
+                if (String::contains('.', $property)) { // sounds like dot-separated array property
+                    $propertyName = strstr($property, '.', true); // get property name
+                    $propertyArray = trim(strstr($property, '.'), '.'); // get dot-based array path
+
+                    $defaultValue = new DotData($default_property); // load default property
+
+                    $dotData = new DotData($this->{$propertyName}); // load local property variable
+                    $dotData->set($propertyArray, $defaultValue->get($property)); // set to local prop. variable default value
+
+                    $this->{$propertyName} = $dotData->export(); // export to model
+                } else {
+                    $this->{$property} = App::$Security->strip_tags($default_property[$property]); // just set ;)
+                }
             }
         }
 
@@ -138,8 +151,22 @@ class Model
         if ($check !== true) { // switch only on fail check.
             $this->wrongFields[] = $field_name;
         } else {
-            if (property_exists($this, $field_name)) {
-                $this->{$field_name} = $field_value; // refresh model property's from post data
+            $field_set_name = $field_name;
+            // prevent array-type setting
+            if (String::contains('.', $field_set_name)) {
+                $field_set_name = strstr($field_set_name, '.', true);
+            }
+            if (property_exists($this, $field_set_name)) {
+                if ($field_name !== $field_set_name) { // array-based property
+                    $dot_path = trim(strstr($field_name, '.'), '.');
+                    // use dot-data provider to compile output array
+                    $dotData = new DotData($this->{$field_set_name});
+                    $dotData->set($dot_path, $field_value);
+                    // export data from dot-data lib to model property
+                    $this->{$field_set_name} = $dotData->export();
+                } else { // just single property
+                    $this->{$field_name} = $field_value; // refresh model property's from post data
+                }
             }
         }
         return $check;
@@ -231,7 +258,15 @@ class Model
      */
     public function getInput($param)
     {
-        return App::$Request->get($this->getFormName() . '[' . $param . ']', null, true);
+        $objName = $this->getFormName();
+        if (String::contains('.', $param)) {
+            foreach (explode('.', $param) as $item) {
+                $objName .= '[' . $item . ']';
+            }
+        } else {
+            $objName .= '[' . $param . ']';
+        }
+        return App::$Request->get($objName, null, true);
     }
 
     /**
@@ -241,7 +276,15 @@ class Model
      */
     public function getFile($param)
     {
-        return App::$Request->files->get($this->getFormName() . '[' . $param . ']', null, true);
+        $fileName = $this->getFormName();
+        if (String::contains('.', $param)) {
+            foreach (explode('.', $param) as $obj) {
+                $fileName .= '[' . $obj . ']';
+            }
+        } else {
+            $fileName .= '[' . $param . ']';
+        }
+        return App::$Request->files->get($fileName, null, true);
     }
 
     /**

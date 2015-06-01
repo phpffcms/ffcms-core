@@ -14,6 +14,7 @@ class Form extends NativeGenerator
 {
     protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item% <p class="help-block">%help%</p></div></div>';
     protected $structureCheckbox = '<div class="form-group"><div class="col-md-9 col-md-offset-3"><div class="checkbox"><label>%item% %label%</label></div><p class="help-block">%help%</p></div></div>';
+    protected $structureCheckboxes = '<div class="checkbox"><label>%item%</label></div>';
     protected $name;
     /** @var Model */
     protected $model;
@@ -32,7 +33,9 @@ class Form extends NativeGenerator
             if (String::length($structure['checkbox']) > 0) {
                 $this->structureCheckbox = $structure['checkbox'];
             }
-
+            if (String::length($structure['checkboxes']) > 0) {
+                $this->structureCheckboxes = $structure['checkboxes'];
+            }
         }
 
         if ($property['method'] === null) {
@@ -61,7 +64,13 @@ class Form extends NativeGenerator
             return null;
         }
 
-        if (!property_exists($this->model, $object)) {
+        // can be dots separated object
+        $propertyName = $object;
+        if (String::contains('.', $propertyName)) {
+            $propertyName = strstr($propertyName, '.', true);
+        }
+
+        if (!property_exists($this->model, $propertyName)) {
             if (App::$Debug !== null) {
                 App::$Debug->addMessage('Form field "' . $object . '" is not defined in model: ' . get_class($this->model), 'error');
             }
@@ -74,11 +83,18 @@ class Form extends NativeGenerator
             } else {
                 $structure = $this->structure;
             }
+            // structureCheckboxes is apply'd to each items in builder later
         }
 
-        $labelFor = $this->name . '-' . $object;
+        $labelFor = $this->name . '-' . $propertyName;
         $labelText = $this->model->getLabel($object);
-        $itemValue = $this->model->{$object};
+        $itemValue = $this->model->{$propertyName};
+        // sounds like a dot-separated $object
+        if ($propertyName !== $object) {
+            $nesting = trim(strstr($object, '.'), '.');
+            $labelFor .= '-' . String::replace('.', '-', $nesting);
+            $itemValue = Arr::getByPath($nesting, $itemValue);
+        }
         $itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
         return String::replace(
             ['%name%', '%label%', '%item%', '%help%'],
@@ -116,11 +132,22 @@ class Form extends NativeGenerator
         unset($property['options']);
         $response = null;
 
-        // standard property's def
-        $property['name'] = $this->name . '[' . $name . ']';
-        $property['id'] = $this->name . '-' . $name;
+        // standard property data definition
+        $property['name'] = $property['id'] = $this->name; // form global name
         if ($value !== null) {
             $property['value'] = $value;
+        }
+
+        // sounds like a array-path based
+        if (String::contains('.', $name)) {
+            $splitedName = explode('.', $name);
+            foreach($splitedName as $nameKey) {
+                $property['name'] .= '[' . $nameKey . ']';
+                $property['id'] .= '-' . $nameKey;
+            }
+        } else { // standard property's definition - add field name
+            $property['name'] .= '[' . $name . ']';
+            $property['id'] .= '-' . $name;
         }
 
         switch ($type) {
@@ -133,7 +160,7 @@ class Form extends NativeGenerator
                 unset($property['value']);
                 $response = self::buildContainerTag('textarea', $property, $value);
                 break;
-            case 'checkbox':
+            case 'checkbox': // single checkbox for ON or OFF" value
                 // hook DOM model
                 $response = self::buildSingleTag('input', ['type' => 'hidden', 'value' => '0', 'name' => $property['name']]); // hidden 0 elem
                 $property['type'] = 'checkbox';
@@ -141,6 +168,29 @@ class Form extends NativeGenerator
                     $property['checked'] = null; // set boolean attribute, maybe = "checked" is better
                 }
                 $response .= self::buildSingleTag('input', $property);
+                break;
+            case 'checkboxes':
+                if (!Object::isArray($selectOptions)) {
+                    if (App::$Debug !== null) {
+                        App::$Debug->addMessage('Checkboxes field ' . $name . ' field have no options', 'warning');
+                    }
+                    break;
+                }
+                $property['type'] = 'checkbox';
+                $property['name'] .= '[]';
+                unset($property['value'], $property['id']);
+
+                $buildCheckboxes = null;
+                foreach ($selectOptions as $opt) {
+                    if (Arr::in($opt, $value)) {
+                        $property['checked'] = null;
+                    }
+                    $property['value'] = $opt;
+                    // apply structured checkboxes style for each item
+                    $buildCheckboxes .= String::replace('%item%' , self::buildSingleTag('input', $property) . self::nohtml($opt), $this->structureCheckboxes);
+                }
+
+                $response = $buildCheckboxes;
                 break;
             case 'select':
                 if (count($selectOptions) < 1) {
