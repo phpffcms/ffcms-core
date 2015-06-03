@@ -164,9 +164,11 @@ class Form extends NativeGenerator
                 // hook DOM model
                 $response = self::buildSingleTag('input', ['type' => 'hidden', 'value' => '0', 'name' => $property['name']]); // hidden 0 elem
                 $property['type'] = 'checkbox';
-                if ($value == 1) {
+                if ($value === 1 || $value === true || $value === '1') {
                     $property['checked'] = null; // set boolean attribute, maybe = "checked" is better
                 }
+                unset($property['required']);
+                $property['value'] = '1';
                 $response .= self::buildSingleTag('input', $property);
                 break;
             case 'checkboxes':

@@ -38,6 +38,22 @@ class File
     }
 
     /**
+     * Check is file writable
+     * @param string $path
+     * @return bool
+     */
+    public static function writable($path)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return false;
+        }
+
+        return is_writable($path);
+    }
+
+    /**
      * @param string $path
      * @param null|string $content
      * @param null|int $flags

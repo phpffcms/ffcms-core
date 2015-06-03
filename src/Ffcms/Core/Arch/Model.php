@@ -5,6 +5,7 @@ namespace Ffcms\Core\Arch;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Dflydev\DotAccessData\Data as DotData;
+use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\Filter\Native;
@@ -14,8 +15,8 @@ class Model
 {
     use DynamicGlobal;
 
-    protected $wrongFields;
-    protected $formName;
+    protected $_wrongFields;
+    protected $_formName;
 
     public final function __construct()
     {
@@ -33,7 +34,7 @@ class Model
     {
         $labels = $this->setLabels();
 
-        return ($labels[$param] == null ? String::splitCamelCase($param) : $labels[$param]);
+        return ($labels[$param] == null ? String::replace('.', ' ', String::splitCamelCase($param)) : $labels[$param]);
     }
 
     /**
@@ -63,11 +64,7 @@ class Model
         $rules = $this->setRules();
         $success = true; // set is success
 
-        $default_property = [];
-        $reflection = new \ReflectionClass($this);
-        foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $obj) {
-            $default_property[$obj->getName()] = $obj->getValue($this);
-        }
+        $default_property = $this->getAllProperties();
 
         foreach ($rules as $rule) {
             // 0 = name, 1 = filter name, 2 = filter value
@@ -91,8 +88,8 @@ class Model
         }
 
         // prevent warnings
-        if (Object::isArray($this->wrongFields) && count($this->wrongFields) > 0) {
-            foreach ($this->wrongFields as $property) {
+        if (Object::isArray($this->_wrongFields) && count($this->_wrongFields) > 0) {
+            foreach ($this->_wrongFields as $property) {
                 if (String::contains('.', $property)) { // sounds like dot-separated array property
                     $propertyName = strstr($property, '.', true); // get property name
                     $propertyArray = trim(strstr($property, '.'), '.'); // get dot-based array path
@@ -106,6 +103,13 @@ class Model
                 } else {
                     $this->{$property} = App::$Security->strip_tags($default_property[$property]); // just set ;)
                 }
+                // add message about wrong fields. $property is not
+                $propertyLabel = $property;
+                if ($this->getLabel($property) !== null) {
+                    $propertyLabel = $this->getLabel($property);
+                }
+                App::$Session->start();
+                App::$Session->getFlashBag()->add('warning', __('Field "%field%" is incorrect', ['field' => $propertyLabel]));
             }
         }
 
@@ -131,7 +135,10 @@ class Model
         }
 
         $check = false;
-        if (String::contains('::', $filter_name)) { // sounds like a callback
+        // maybe no filter required?
+        if ($filter_name === 'used') {
+            $check = true;
+        } elseif (String::contains('::', $filter_name)) { // sounds like a callback
             list($callback_class, $callback_method) = explode('::', $filter_name);
             $callback_class = '\\' . trim($callback_class, '\\');
             if (method_exists($callback_class, $callback_method)) {
@@ -149,7 +156,7 @@ class Model
             throw new SyntaxException('Filter "' . $filter_name . '" is not exist');
         }
         if ($check !== true) { // switch only on fail check.
-            $this->wrongFields[] = $field_name;
+            $this->_wrongFields[] = $field_name;
         } else {
             $field_set_name = $field_name;
             // prevent array-type setting
@@ -161,7 +168,7 @@ class Model
                     $dot_path = trim(strstr($field_name, '.'), '.');
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
-                    $dotData->set($dot_path, $field_value);
+                    $dotData->set($dot_path, $field_value);// todo: check me!!! bug here
                     // export data from dot-data lib to model property
                     $this->{$field_set_name} = $dotData->export();
                 } else { // just single property
@@ -197,6 +204,23 @@ class Model
         return $this;
     }
 
+
+    /**
+     * Get all properties for current model in key=>value array
+     * @return array|null
+     */
+    public function getAllProperties()
+    {
+        $properties = null;
+        foreach ($this as $property => $value) {
+            if (String::startsWith('_', $property)) {
+                continue;
+            }
+            $properties[$property] = $value;
+        }
+        return $properties;
+    }
+
     /**
      * Get validation rules for field
      * @param string $field
@@ -230,12 +254,12 @@ class Model
      */
     public function getFormName()
     {
-        if (null === $this->formName) {
+        if (null === $this->_formName) {
             $cname = get_class($this);
-            $this->formName = 'Form' . substr($cname, strrpos($cname, '\\')+1);
+            $this->_formName = 'Form' . substr($cname, strrpos($cname, '\\')+1);
         }
 
-        return $this->formName;
+        return $this->_formName;
     }
 
     /**
@@ -293,7 +317,7 @@ class Model
      */
     public function getWrongFields()
     {
-        return $this->wrongFields;
+        return $this->_wrongFields;
     }
 
 }

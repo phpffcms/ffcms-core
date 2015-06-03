@@ -11,14 +11,21 @@ use Ffcms\Core\Template\Variables;
  */
 trait DynamicGlobal
 {
-
-    protected $data;
-
+    /**
+     * Set global variable for magic callback on MVC apps $this->var = value
+     * @param $var
+     * @param $value
+     */
     public final function __set($var, $value)
     {
         Variables::instance()->setGlobal($var, $value);
     }
 
+    /**
+     * Get variable from MVC model on magic callback $this->var
+     * @param $var
+     * @return mixed
+     */
     public final function __get($var)
     {
         $globals = Variables::instance()->getGlobalsArray();

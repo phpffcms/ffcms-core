@@ -36,11 +36,15 @@ class Security
 
     /**
      * Secure html code
-     * @param string $data
+     * @param string|array $data
      * @return string
      */
     public function secureHtml($data)
     {
+        if (Object::isArray($data)) {
+            return $this->purifier->purifyArray($data);
+        }
+
         return $this->purifier->purify($data);
     }
 
@@ -67,6 +71,61 @@ class Security
         return $text;
     }
 
+    /**
+     * Strip php tags and notations in string.
+     * @param array|string $data
+     * @return array|mixed|string
+     */
+    public function strip_php_tags($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as $key=>$value) {
+                $data[$key] = $this->strip_php_tags($value);
+            }
+            return $data;
+        }
+        return addslashes(htmlspecialchars(strip_tags($data)));
+    }
+
+    /**
+     * Alternative var_export function for php >= 5.4 syntax
+     * @param $var
+     * @param null $indent
+     * @return mixed|string
+     */
+    public function var_export54($var, $indent = null, $guessTypes = false) {
+        switch (gettype($var)) {
+            case 'string':
+                // guess boolean type for "1" and "0"
+                if (true === $guessTypes) {
+                    if ($var === '0' || $var === '') {
+                        return 'false';
+                    } elseif ($var === '1') {
+                        return 'true';
+                    }
+                }
+                return '\'' . $var . '\'';
+            case 'array':
+                $indexed = array_keys($var) === range(0, count($var) - 1);
+                $r = [];
+                foreach ($var as $key => $value) {
+                    $r[] = $indent . "\t"
+                        . ($indexed ? null : $this->var_export54($key, null, $guessTypes) . ' => ')
+                        . $this->var_export54($value, $indent . "\t", $guessTypes);
+                }
+                return "[\n" . implode(",\n", $r) . "\n" . $indent . ']';
+            case 'boolean':
+                return $var ? 'true' : 'false';
+            default:
+                return var_export($var, TRUE);
+        }
+    }
+
+    /**
+     * Escape quotes
+     * @param string $html
+     * @return string
+     */
     public function escapeQuotes($html)
     {
         return String::replace(['"', "'"], '&quot;', $html);

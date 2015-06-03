@@ -61,28 +61,36 @@ class Request extends FoundationRequest
     protected function afterInitialize()
     {
         if (App::$Property->get('multiLanguage')) { // multi-language is enabled?
-            foreach (App::$Property->get('languages') as $lang) {
-                if (String::startsWith('/' . $lang, $this->getPathInfo())) {
-                    $this->language = $lang;
+            // maybe its a language domain alias?
+            if (Object::isArray(App::$Property->get('languageDomainAlias'))) {
+                $domainAlias = App::$Property->get('languageDomainAlias');
+                if ($domainAlias[$this->getHost()] !== null && String::length($domainAlias[$this->getHost()]) > 0) {
+                    $this->language = $domainAlias[$this->getHost()];
                 }
-            }
-
-            // language still not defined?!
-            if ($this->language === null) {
-                $userLang = App::$Property->get('baseLanguage');
-                $browserAccept = $this->getLanguages();
-                if (Object::isArray($browserAccept) && count($browserAccept) > 0) {
-                    foreach ($browserAccept as $bLang) {
-                        if (Arr::in($bLang, App::$Property->get('languages'))) {
-                            $userLang = $bLang;
-                            break; // stop calculating, language is founded in priority
-                        }
+            } else {
+                foreach (App::$Property->get('languages') as $lang) {
+                    if (String::startsWith('/' . $lang, $this->getPathInfo())) {
+                        $this->language = $lang;
                     }
                 }
 
-                $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo());
-                $response->send();
-                exit();
+                // language still not defined?!
+                if ($this->language === null) {
+                    $userLang = App::$Property->get('baseLanguage');
+                    $browserAccept = $this->getLanguages();
+                    if (Object::isArray($browserAccept) && count($browserAccept) > 0) {
+                        foreach ($browserAccept as $bLang) {
+                            if (Arr::in($bLang, App::$Property->get('languages'))) {
+                                $userLang = $bLang;
+                                break; // stop calculating, language is founded in priority
+                            }
+                        }
+                    }
+
+                    $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo());
+                    $response->send();
+                    exit();
+                }
             }
         }
 
@@ -95,10 +103,14 @@ class Request extends FoundationRequest
         $this->argumentAdd = strtolower($pathArray[4]);
 
         if ($this->action == null) { // can be null or string(0)""
-            $this->action = 'index';
+            $this->action = 'Index';
         }
 
-        if ($this->controller == null) { // can be null or string(0)""
+        if ($this->controller == null) {
+            $this->controller = 'Main';
+        }
+
+        if ($this->controller === 'Main' && env_name === 'Front') { // can be null or string(0)""
             $defaultRoute = App::$Property->get('siteIndex');
             list($this->controller, $this->action) = explode('::', trim($defaultRoute, '/'));
         }
