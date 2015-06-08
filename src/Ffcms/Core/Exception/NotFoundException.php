@@ -15,6 +15,9 @@ class NotFoundException extends \Exception
         }
 
         $load = new Controller();
+        if (defined('env_no_layout') && env_no_layout === true) {
+            $load->layout = null;
+        }
         $load->setGlobalVar('title', '404 Not Found');
         $load->response = App::$Translate->get('Default', 'Unable to find this URL', []);
         App::$Response->setStatusCode(404);

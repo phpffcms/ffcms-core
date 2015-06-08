@@ -17,7 +17,7 @@ class Controller
     /**
      * @var string $layout
      */
-    public static $layout = 'main.php';
+    public $layout = 'main';
 
     /**
      * @var string $response
@@ -30,69 +30,59 @@ class Controller
         $this->before();
     }
 
-    public function before()
-    {
-    }
+    public function before() {}
 
     /**
      * Compile output
      */
     public function __destruct()
     {
-        //parent::__destruct();
         // allow use and override after() method
         $this->after();
-        // prepare Layout for this controller
-        $layoutPath = App::$Alias->currentViewPath . '/layout/' . self::$layout;
-        try {
-            if (File::exist($layoutPath)) {
-                $this->build($layoutPath);
-            } else {
-                throw new NativeException('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
-            }
-        } catch (NativeException $e) {
-            $e->display();
-        }
+        $this->make();
     }
 
     /**
      * Build variables and display output html
-     * @param string $layout
      */
-    protected final function build($layout)
+    protected function make()
     {
+        // if layout is not required and this is just standalone app
+        if ($this->layout === null) {
+            $content = $this->response;
+        } else {
+            $layoutPath = App::$Alias->currentViewPath . '/layout/' . $this->layout . '.php';
+            if (!File::exist($layoutPath)) {
+                throw new NativeException('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
+            }
 
-        $body = $this->response;
-        if (Variables::instance()->getError() !== null) {
-            $body = Variables::instance()->getError();
+            $body = $this->response;
+            // pass global data to config viewer
+            if (App::$Debug !== null) {
+                App::$Debug->bar->getCollector('config')->setData(['Global Vars' => Variables::instance()->getGlobalsArray()]);
+            }
+
+            ob_start();
+            include_once($layoutPath);
+            $content = ob_get_contents();
+            ob_end_clean();
+
+            // add debug bar
+            if (App::$Debug !== null) {
+                $content = str_replace(
+                    ['</body>', '</head>'],
+                    [App::$Debug->renderOut() . '</body>', App::$Debug->renderHead() . '</head>'],
+                    $content);
+            }
+
         }
-        $global = Variables::instance()->getGlobalsObject();
 
-        // pass global data to config viewer
-        if (App::$Debug !== null) {
-            App::$Debug->bar->getCollector('config')->setData(['Global Vars' => Variables::instance()->getGlobalsArray()]);
-        }
-
-        ob_start();
-        include_once($layout);
-        $content = ob_get_contents();
-        ob_end_clean();
-
-        // add debug bar
-        if (App::$Debug !== null) {
-            $content = str_replace(
-                ['</body>', '</head>'],
-                [App::$Debug->renderOut() . '</body>', App::$Debug->renderHead() . '</head>'],
-                $content);
-        }
-
+        // display content and layout if exist
         App::$Response->setContent($content);
         App::$Response->send();
     }
 
-    public function after()
-    {
-    }
+    public function after() {}
 
     /**
      * Set single global variable

@@ -11,7 +11,6 @@ class Variables
     use Singleton;
 
     protected $globalVars;
-    protected $globalError;
 
     /**
      * Set global variable for Views
@@ -54,23 +53,5 @@ class Variables
     public function getGlobalsObject()
     {
         return (object)$this->globalVars;
-    }
-
-    /**
-     * Set global error
-     * @param string $text
-     */
-    public function setError($text)
-    {
-        $this->globalError = $text;
-    }
-
-    /**
-     * Get global error. Null = undefined.
-     * @return string|null
-     */
-    public function getError()
-    {
-        return $this->globalError;
     }
 }

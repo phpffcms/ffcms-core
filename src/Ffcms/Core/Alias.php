@@ -94,6 +94,7 @@ class Alias
         $this->vendorNamedLibrary['js']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
         $this->vendorNamedLibrary['css']['fa'] = $this->scriptUrl . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
         $this->vendorNamedLibrary['js']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/jquery-ui.min.js';
+        $this->vendorNamedLibrary['css']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/themes/base/jquery-ui.min.css';
 
         $themeAll = App::$Property->get('theme');
         $this->currentViewUrl = $this->scriptUrl . '/Apps/View/' . env_name . '/' . $themeAll[env_name];

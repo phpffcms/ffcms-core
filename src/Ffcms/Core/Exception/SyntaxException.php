@@ -15,6 +15,9 @@ class SyntaxException extends \Exception
         }
 
         $load = new Controller();
+        if (defined('env_no_layout') && env_no_layout === true) {
+            $load->layout = null;
+        }
         $load->setGlobalVar('title', 'Syntax exception');
         $load->response = '[SyntaxException]: ' . $this->getMessage();
         App::$Response->setStatusCode(403);

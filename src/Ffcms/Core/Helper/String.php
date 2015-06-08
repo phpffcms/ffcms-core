@@ -38,6 +38,39 @@ class String
         return $pharse_suffix === $string;
     }
 
+    /**
+     * Find first entry in $string before $delimiter
+     * @param string $string
+     * @param string $delimiter
+     * @return string
+     */
+    public static function firstIn($string, $delimiter)
+    {
+        return strstr($string, $delimiter, true);
+    }
+
+    /**
+     * Find latest entry in $string after $delimiter
+     * @param string $string
+     * @param string $delimiter
+     * @param bool $withoutDelimiter
+     * @return null|string
+     */
+    public static function lastIn($string, $delimiter, $withoutDelimiter = false)
+    {
+        $pos = strrpos($string, $delimiter);
+        // if entry is not founded return null
+        if (false === $pos) {
+            return null;
+        }
+        // remove delimiter pointer
+        if (true === $withoutDelimiter) {
+            ++$pos;
+        }
+
+        return self::substr($string, $pos);
+    }
+
 
     /**
      * Calculate $string length according UTF-8 encoding
@@ -100,17 +133,6 @@ class String
     public static function replace($needle, $replacement, $haystack)
     {
         return str_replace($needle, $replacement, $haystack);
-        /** Bugged method for (array, array, string)
-         * $needle_len = mb_strlen($needle);
-         * $replacement_len = mb_strlen($replacement);
-         * $pos = mb_strpos($haystack, $needle);
-         * while ($pos !== false)
-         * {
-         * $haystack = mb_substr($haystack, 0, $pos) . $replacement
-         * . mb_substr($haystack, $pos + $needle_len);
-         * $pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
-         * }
-         * return $haystack; */
     }
 
     /**

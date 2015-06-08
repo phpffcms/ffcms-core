@@ -74,6 +74,21 @@ class File
     }
 
     /**
+     * Remove file
+     * @param string $path
+     * @return bool
+     */
+    public static function remove($path)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return false;
+        }
+        return unlink($path);
+    }
+
+    /**
      * Get file make time in unix timestamp
      * @param string $path
      * @return int
@@ -86,6 +101,34 @@ class File
         }
 
         return filemtime($path);
+    }
+
+    /**
+     * Recursive scan directory, based on $path and allowed extensions $ext or without it
+     * @param string $path
+     * @param array $ext
+     * @param $files
+     * @return array
+     */
+    public static function listFiles($path, array $ext = null, &$files = [])
+    {
+        $path = Normalize::diskFullPath($path);
+
+        $dir = opendir($path . '/.');
+        while($item = readdir($dir)) {
+            if (is_file($sub = $path . '/' . $item)) {
+                $item_ext = String::lastIn($item, '.');
+                if ($ext === null || Arr::in($item_ext, $ext)) {
+                    $files[] = $path . DIRECTORY_SEPARATOR . $item;
+                }
+            } else {
+                if ($item !== '.' && $item !== '..') {
+                    self::listFiles($sub, $ext, $files);
+                }
+            }
+        }
+
+        return $files;
     }
 
 }

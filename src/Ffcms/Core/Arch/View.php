@@ -185,9 +185,6 @@ class View
         $output = [];
         foreach ($items as $item) {
             $item = trim($item, '/');
-            if (!String::endsWith('.js', $item)) {
-                continue;
-            }
             if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
                 $item = App::$Alias->scriptUrl . '/' . $item;
             }

@@ -15,6 +15,9 @@ class ForbiddenException extends \Exception
         }
 
         $load = new Controller();
+        if (defined('env_no_layout') && env_no_layout === true) {
+            $load->layout = null;
+        }
         $load->setGlobalVar('title', '403 Forbidden');
         $load->response = App::$Translate->get('Default', 'Access to this page is forbidden', []);
         App::$Response->setStatusCode(403);

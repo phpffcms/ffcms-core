@@ -13,6 +13,7 @@ class Request extends FoundationRequest
 {
 
     protected $language;
+    protected $languageInPath = false;
 
     // fast access for controller building
     protected $controller;
@@ -68,10 +69,17 @@ class Request extends FoundationRequest
                     $this->language = $domainAlias[$this->getHost()];
                 }
             } else {
+                // try to find language in pathway
                 foreach (App::$Property->get('languages') as $lang) {
                     if (String::startsWith('/' . $lang, $this->getPathInfo())) {
                         $this->language = $lang;
+                        $this->languageInPath = true;
                     }
+                }
+
+                // try to find in ?lang get
+                if ($this->language === null && Arr::in($this->query->get('lang'), App::$Property->get('languages'))) {
+                    $this->language = $this->query->get('lang');
                 }
 
                 // language still not defined?!
@@ -116,11 +124,19 @@ class Request extends FoundationRequest
         }
     }
 
+    /**
+     * Get pathway as string
+     * @return string
+     */
     public function getPathInfo()
     {
-        return $this->language === null ? parent::getPathInfo() : String::substr(parent::getPathInfo(), String::length($this->language) + 1);
+        return $this->languageInPath ? String::substr(parent::getPathInfo(), String::length($this->language) + 1) : parent::getPathInfo();
     }
 
+    /**
+     * Get current language
+     * @return string|null
+     */
     public function getLanguage()
     {
         return $this->language;
@@ -146,7 +162,7 @@ class Request extends FoundationRequest
 
     /**
      * Get current $id argument for controller action
-     * @return string
+     * @return string|null
      */
     public function getID()
     {
@@ -155,7 +171,7 @@ class Request extends FoundationRequest
 
     /**
      * Get current $add argument for controller action
-     * @return string
+     * @return string|null
      */
     public function getAdd()
     {
