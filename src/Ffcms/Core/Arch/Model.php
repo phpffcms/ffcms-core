@@ -30,9 +30,9 @@ class Model
      * @param string $param
      * @return mixed
      */
-    public final function getLabel($param)
+    final public function getLabel($param)
     {
-        $labels = $this->setLabels();
+        $labels = $this->labels();
 
         return ($labels[$param] == null ? String::replace('.', ' ', String::splitCamelCase($param)) : $labels[$param]);
     }
@@ -41,7 +41,7 @@ class Model
      * Set attribute labels for model variables
      * @return array
      */
-    public function setLabels()
+    public function labels()
     {
         return [];
     }
@@ -58,10 +58,11 @@ class Model
     /**
      * Validate defined rules in app
      * @return bool
+     * @throws SyntaxException
      */
-    public final function validateRules()
+    public final function validate()
     {
-        $rules = $this->setRules();
+        $rules = $this->rules();
         $success = true; // set is success
 
         $default_property = $this->getAllProperties();
@@ -116,6 +117,15 @@ class Model
         return $success;
     }
 
+    /**
+     * Recursive validation of rules
+     * @param $field_name
+     * @param $filter_name
+     * @param $filter_argv
+     * @param bool $html
+     * @return bool
+     * @throws SyntaxException
+     */
     protected final function validateRecursive($field_name, $filter_name, $filter_argv, $html = false)
     {
         // check if we got it from POST request
@@ -180,10 +190,10 @@ class Model
     }
 
     /**
-     * Set model validation rules
+     * Set of model validation rules
      * @return array
      */
-    public function setRules()
+    public function rules()
     {
         return [];
     }
@@ -228,7 +238,7 @@ class Model
      */
     public final function getValidationRule($field)
     {
-        $rules = $this->setRules();
+        $rules = $this->rules();
         $response = [];
 
         foreach ($rules as $rule) {
@@ -263,10 +273,10 @@ class Model
     }
 
     /**
-     * Check if form submited
+     * Check if model get POST-based request as submit of SEND data
      * @return bool
      */
-    public function isPostSubmit()
+    final public function send()
     {
         if (App::$Request->getMethod() !== 'POST') {
             return false;

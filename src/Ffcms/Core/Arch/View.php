@@ -82,11 +82,10 @@ class View
     /**
      * Render view ONLY from controller interface
      * @param string $view
-     * @param array $params
+     * @param array|null $params
      * @return string
-     * @throws \DebugBar\DebugBarException
      */
-    public function render($view, $params = [])
+    public function render($view, array $params = null)
     {
         $call_log = debug_backtrace();
         $call_controller = null;
@@ -122,7 +121,7 @@ class View
     /**
      * Render viewer anywhere
      * @param string $viewPath
-     * @param array $params
+     * @param array|null $params
      * @return string
      */
     public function show($viewPath, array $params = null)
@@ -133,7 +132,7 @@ class View
 
     /**
      * @param string $path
-     * @param array $params
+     * @param array|null $params
      * @return string
      */
     protected function renderSandbox($path, array $params = null)
