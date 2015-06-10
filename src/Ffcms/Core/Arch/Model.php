@@ -18,7 +18,7 @@ class Model
     protected $_wrongFields;
     protected $_formName;
 
-    public final function __construct()
+    public function __construct()
     {
         $this->before();
     }
@@ -154,7 +154,7 @@ class Model
             if (method_exists($callback_class, $callback_method)) {
                 $check = @$callback_class::$callback_method($field_value, $filter_argv); // callback class::method(name, value);
             } else {
-                throw new SyntaxException('Filter callback execution "' . $field_name . '" is not exist');
+                throw new SyntaxException('Filter callback execution "' . $callback_class . '::' . $callback_method . '" is not exist');
             }
         } elseif (method_exists('Ffcms\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
             if ($filter_argv != null) {

@@ -27,6 +27,10 @@ class Listing extends NativeGenerator
         }
 
         $ulProperties = self::applyProperty($elements['property']);
+        $orderActiveLink = false;
+        if ($elements['activeOrder'] !== null) {
+            $orderActiveLink = $elements['activeOrder'];
+        }
 
         $items = null;
         // foreach elements and build schema
@@ -44,11 +48,31 @@ class Listing extends NativeGenerator
                 if (Object::isArray($item['link'])) {
                     $elementPoint = Url::buildPathway($item['link']);
                     $currentPoint = Url::buildPathwayFromRequest();
+
                     if ($item['activeClass'] === null) {
                         $item['activeClass'] = 'active';
                     }
+
+                    $activeItem = false;
+                    // use special active element order type: controller, action - todo
+                    switch ($orderActiveLink) {
+                        case 'controller':
+                            $elementPoint = String::firstIn($elementPoint, '/');
+                            $activeItem = String::startsWith($elementPoint, $currentPoint);
+                            break;
+                        case 'action':
+                            $elementArray = explode('/', $elementPoint);
+                            $elementPoint = $elementArray[0] . '/' . $elementArray[1];
+                            $activeItem = String::startsWith($elementPoint, $currentPoint);
+                            break;
+                        default:
+                            $activeItem = $elementPoint === $currentPoint;
+                            break;
+                    }
+
+
                     // check if it active link for current pathway
-                    if ($elementPoint === $currentPoint) {
+                    if ($activeItem) {
                         $item['property']['class'] = String::length($item['property']['class']) > 0
                             ? $item['activeClass'] . ' ' . $item['property']['class']
                             : $item['activeClass'];

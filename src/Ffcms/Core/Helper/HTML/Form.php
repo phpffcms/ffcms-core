@@ -199,12 +199,20 @@ class Form extends NativeGenerator
                     $response = 'Form select ' . self::nohtml($name) . ' have no options';
                 } else {
                     unset($property['value']);
-
+                    $optionsKey = $property['optionsKey'] === true;
+                    unset($property['optionsKey']);
                     $buildOpt = null;
-                    foreach ($selectOptions as $opt) {
+                    foreach ($selectOptions as $optIdx => $opt) {
                         $optionProperty = [];
-                        if ($opt == $value) {
-                            $optionProperty['selected'] = null; // def boolean attribute html5
+                        if (true === $optionsKey) { // options with value => text
+                            $optionProperty['value'] = $optIdx;
+                            if ($optIdx == $value) {
+                                $optionProperty['selected'] = null; // def boolean attribute html5
+                            }
+                        } else { // only value option
+                            if ($opt == $value) {
+                                $optionProperty['selected'] = null; // def boolean attribute html5
+                            }
                         }
                         $buildOpt .= self::buildContainerTag('option', $optionProperty, $opt);
                     }
