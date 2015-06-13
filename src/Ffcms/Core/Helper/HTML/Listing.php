@@ -63,6 +63,7 @@ class Listing extends NativeGenerator
                         case 'action':
                             $elementArray = explode('/', $elementPoint);
                             $elementPoint = $elementArray[0] . '/' . $elementArray[1];
+
                             $activeItem = String::startsWith($elementPoint, $currentPoint);
                             break;
                         default:

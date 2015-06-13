@@ -75,6 +75,7 @@ class Nav extends NativeGenerator
         $listing = Listing::display([
             'type' => 'ul',
             'property' => $elements['property'],
+            'activeOrder' => $elements['activeOrder'],
             'items' => $items
         ]);
 

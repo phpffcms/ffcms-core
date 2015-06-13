@@ -178,14 +178,18 @@ class Form extends NativeGenerator
                     }
                     break;
                 }
+
                 $property['type'] = 'checkbox';
                 $property['name'] .= '[]';
                 unset($property['value'], $property['id']);
 
                 $buildCheckboxes = null;
+
                 foreach ($selectOptions as $opt) {
-                    if (Arr::in($opt, $value)) {
+                    if (Object::isArray($value) && Arr::in($opt, $value)) {
                         $property['checked'] = null;
+                    } else {
+                        unset($property['checked']); // remove checked if it setted before
                     }
                     $property['value'] = $opt;
                     // apply structured checkboxes style for each item
@@ -218,6 +222,16 @@ class Form extends NativeGenerator
                     }
 
                     $response = self::buildContainerTag('select', $property, $buildOpt, true);
+                }
+                break;
+            case 'captcha':
+                if (App::$Captcha->isFull()) {
+                    $response = App::$Captcha->get();
+                } else {
+                    $image = App::$Captcha->get();
+                    $response = self::buildSingleTag('img', ['id' => 'src-secure-image', 'src' => $image, 'alt' => 'secure image', 'onClick' => 'this.src=\'' . $image . '&rnd=\'+Math.random()']);
+                    $property['type'] = 'text';
+                    $response .= self::buildSingleTag('input', $property);
                 }
                 break;
             case 'inputEmail':

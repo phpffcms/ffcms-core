@@ -8,6 +8,8 @@ class Date
     const FORMAT_TO_HOUR = 'd.m.Y H:i';
     const FORMAT_TO_SECONDS = 'd.m.Y H:i:s';
 
+    const FORMAT_SQL_TIMESTAMP = 'Y-m-d H:i:s';
+
     /**
      * Try to convert string to date time format
      * @param string $rawDate

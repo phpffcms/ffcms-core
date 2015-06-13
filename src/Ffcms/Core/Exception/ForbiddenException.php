@@ -19,7 +19,11 @@ class ForbiddenException extends \Exception
             $load->layout = null;
         }
         $load->setGlobalVar('title', '403 Forbidden');
-        $load->response = App::$Translate->get('Default', 'Access to this page is forbidden', []);
+        $message = App::$Translate->get('Default', 'Access to this page is forbidden', []);
+        if ($this->getMessage() !== null) {
+            $message = $this->getMessage();
+        }
+        $load->response = $message;
         App::$Response->setStatusCode(403);
     }
 }

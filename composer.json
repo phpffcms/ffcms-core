@@ -18,7 +18,9 @@
     "symfony/http-foundation": "2.6.6",
     "maximebf/debugbar": "1.*",
     "ezyang/htmlpurifier": "4.6.*",
-    "dflydev/dot-access-data": "1.0.*"
+    "dflydev/dot-access-data": "1.0.*",
+    "swiftmailer/swiftmailer": "5.4.*",
+    "gregwar/captcha": "1.*"
   },
   "autoload": {
     "psr-0": { "Ffcms\\": "src/" }

@@ -6,7 +6,7 @@ class Arr
 {
 
     /**
-     * Check is $needle in $haystack. Alias to function in_array()
+     * Check is $needle in $haystack. Alias to function in_array().
      * @param string $needle
      * @param array $haystack
      * @param bool $strict

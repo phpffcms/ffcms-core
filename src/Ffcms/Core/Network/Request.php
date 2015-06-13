@@ -95,7 +95,18 @@ class Request extends FoundationRequest
                         }
                     }
 
-                    $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo());
+                    $queryString = null;
+                    if (count($this->query->all()) > 0) {
+                        $firstQ = true;
+                        foreach ($this->query->all() as $qKey => $qVal) {
+                            $queryString .= $firstQ ? '?' : '&';
+                            $queryString .= $qKey . '=' . $qVal;
+                            $firstQ = false;
+                        }
+
+                    }
+
+                    $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo() . $queryString);
                     $response->send();
                     exit();
                 }

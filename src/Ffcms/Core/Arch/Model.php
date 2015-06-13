@@ -109,7 +109,6 @@ class Model
                 if ($this->getLabel($property) !== null) {
                     $propertyLabel = $this->getLabel($property);
                 }
-                App::$Session->start();
                 App::$Session->getFlashBag()->add('warning', __('Field "%field%" is incorrect', ['field' => $propertyLabel]));
             }
         }
@@ -148,13 +147,33 @@ class Model
         // maybe no filter required?
         if ($filter_name === 'used') {
             $check = true;
-        } elseif (String::contains('::', $filter_name)) { // sounds like a callback
-            list($callback_class, $callback_method) = explode('::', $filter_name);
-            $callback_class = '\\' . trim($callback_class, '\\');
-            if (method_exists($callback_class, $callback_method)) {
-                $check = @$callback_class::$callback_method($field_value, $filter_argv); // callback class::method(name, value);
+        } elseif (String::contains('::', $filter_name)) { // sounds like a callback class::method::method
+            // string to array via delimiter ::
+            $callbackArray = explode('::', $filter_name);
+            // first item is a class name
+            $class = array_shift($callbackArray);
+            // last item its a function
+            $method = array_pop($callbackArray);
+            // left any items? maybe post-static callbacks?
+            if (count($callbackArray) > 0) {
+                foreach ($callbackArray as $obj) {
+                    if (String::startsWith('$', $obj) && property_exists($class, ltrim($obj, '$'))) { // sounds like a variable
+                        $obj = ltrim($obj, '$'); // trim variable symbol '$'
+                        $class = $class::$$obj; // make magic :)
+                    } elseif (method_exists($class, $obj)) { // maybe its a function?
+                        $class = $class::$obj; // call function
+                    } else {
+                        throw new SyntaxException('Filter callback execution failed: ' . $filter_name);
+                    }
+
+                }
+            }
+
+            // check is endpoint method exist
+            if (method_exists($class, $method)) {
+                $check = @$class::$method($field_value, $filter_argv);
             } else {
-                throw new SyntaxException('Filter callback execution "' . $callback_class . '::' . $callback_method . '" is not exist');
+                throw new SyntaxException('Filter callback execution failed: ' . $filter_name);
             }
         } elseif (method_exists('Ffcms\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
             if ($filter_argv != null) {

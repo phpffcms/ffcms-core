@@ -22,47 +22,31 @@ use Ffcms\Core\Cache\MemoryObject;
 class App
 {
 
-    /**
-     * @var \Ffcms\Core\Network\Request
-     */
+    /** @var \Ffcms\Core\Network\Request */
     public static $Request;
 
-    /**
-     * @var \Ffcms\Core\Property
-     */
+    /** @var \Ffcms\Core\Property */
     public static $Property;
 
-    /**
-     * @var \Ffcms\Core\Network\Response
-     */
+    /** @var \Ffcms\Core\Network\Response */
     public static $Response;
 
-    /**
-     * @var \Ffcms\Core\Alias
-     */
+    /** @var \Ffcms\Core\Alias */
     public static $Alias;
 
-    /**
-     * @var \Ffcms\Core\Arch\View
-     */
+    /** @var \Ffcms\Core\Arch\View */
     public static $View;
 
-    /**
-     * @var \Ffcms\Core\Debug\Manager|null
-     */
+    /** @var \Ffcms\Core\Debug\Manager|null */
     public static $Debug;
 
-    /**
-     * @var \Ffcms\Core\Helper\Security
-     */
+    /** @var \Ffcms\Core\Helper\Security */
     public static $Security;
 
-    /**
-     * @var \Ffcms\Core\I18n\Translate
-     */
+    /** @var \Ffcms\Core\I18n\Translate */
     public static $Translate;
 
-    /** @var  \Apps\Model\Basic\User */
+    /** @var \Ffcms\Core\Interfaces\iUser */
     public static $User;
 
     /** @var \Symfony\Component\HttpFoundation\Session\Session */
@@ -74,6 +58,11 @@ class App
     /** @var \Ffcms\Core\Cache\MemoryObject */
     public static $Memory;
 
+    /** @var \Swift_Mailer */
+    public static $Mailer;
+
+    /** @var \Ffcms\Core\Interfaces\iCaptcha */
+    public static $Captcha;
 
     /**
      * Load entry point for another logic
@@ -115,6 +104,8 @@ class App
             self::$User = $objectConfig['User'];
             self::$Session = $objectConfig['Session'];
             self::$Database = $objectConfig['Database'];
+            self::$Mailer = $objectConfig['Mailer'];
+            self::$Captcha = $objectConfig['Captcha'];
 
             if (self::$Debug !== null) {
                 self::$Database->getConnection()->enableQueryLog();

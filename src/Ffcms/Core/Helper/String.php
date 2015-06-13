@@ -151,7 +151,7 @@ class String
      * @param int $length
      * @return string
      */
-    public function randomLatinNumeric($length)
+    public static function randomLatinNumeric($length)
     {
         $ret = 97;
         $out = null;
@@ -186,7 +186,7 @@ class String
             $char = chr($ret + $offset);
             $posibility = rand(0, 1);
             if ($posibility == 1) {
-                // 33% - make upper offset+ret
+                // 50% - make upper offset+ret
                 $out .= strtoupper($char);
             } else {
                 $out .= $char;
