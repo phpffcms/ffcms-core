@@ -56,6 +56,7 @@ class Navbar extends NativeGenerator
             $leftBuild = Listing::display([
                 'type' => 'ul',
                 'property' => $mainElemLeft,
+                'activeOrder' => $elements['activeOrder'],
                 'items' => $itemsLeft
             ]);
         }
@@ -68,6 +69,7 @@ class Navbar extends NativeGenerator
             $rightBuild = Listing::display([
                 'type' => 'ul',
                 'property' => $mainElemRight,
+                'activeOrder' => $elements['activeOrder'],
                 'items' => $itemsRight
             ]);
         }

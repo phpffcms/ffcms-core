@@ -116,10 +116,10 @@ class Request extends FoundationRequest
         $pathway = $this->getPathInfo(); // calculated depend of language
         $pathArray = explode('/', $pathway);
 
-        $this->controller = ucfirst(strtolower($pathArray[1]));
-        $this->action = ucfirst(strtolower($pathArray[2]));
-        $this->argumentId = strtolower($pathArray[3]);
-        $this->argumentAdd = strtolower($pathArray[4]);
+        $this->controller = ucfirst(String::lowerCase($pathArray[1]));
+        $this->action = ucfirst(String::lowerCase($pathArray[2]));
+        $this->argumentId = String::lowerCase($pathArray[3]);
+        $this->argumentAdd = String::lowerCase($pathArray[4]);
 
         if ($this->action == null) { // can be null or string(0)""
             $this->action = 'Index';
@@ -177,7 +177,7 @@ class Request extends FoundationRequest
      */
     public function getID()
     {
-        return $this->argumentId;
+        return urldecode($this->argumentId);
     }
 
     /**
@@ -186,7 +186,7 @@ class Request extends FoundationRequest
      */
     public function getAdd()
     {
-        return $this->argumentAdd;
+        return urldecode($this->argumentAdd);
     }
 
 }

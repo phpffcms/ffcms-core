@@ -83,6 +83,26 @@ class String
     }
 
     /**
+     * Change content to lower case. Analog of strtolower with UTF-8
+     * @param string $string
+     * @return string
+     */
+    public static function lowerCase($string)
+    {
+        return mb_strtolower($string, 'UTF-8');
+    }
+
+    /**
+     * Change content to upper case. Analog of strtoupper with UTF-8
+     * @param string $string
+     * @return string
+     */
+    public static function upperCase($string)
+    {
+        return mb_strtoupper($string, 'UTF-8');
+    }
+
+    /**
      * Split camel case words with glue. camelCaseWords => camel Case Words
      * @param string $string
      * @param string $glue

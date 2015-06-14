@@ -29,7 +29,7 @@ class Url extends NativeGenerator
      */
     public static function buildPathway(array $to)
     {
-        $response = trim(strtolower($to[0]), '/'); // controller/action
+        $response = trim(String::lowerCase($to[0]), '/'); // controller/action
 
         list($controller, $action) = explode('/', $response); // check is it correct
         if ($controller == null || $action == null) {
@@ -37,18 +37,18 @@ class Url extends NativeGenerator
         }
 
         if ($to[1] != null) { // id is not null?
-            $response .= '/' . self::nohtml(strtolower($to[1]));
+            $response .= '/' . urlencode(self::nohtml(String::lowerCase($to[1])));
         }
 
         if ($to[2] != null) { // add is not null?
-            $response .= '/' . self::nohtml(strtolower($to[2]));
+            $response .= '/' . urlencode(self::nohtml(String::lowerCase($to[2])));
         }
 
         if (Object::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
             $first = true;
             foreach ($to[3] as $key=>$value) {
                 $response .= $first ? '?' : '&';
-                $response .= $key . '=' . $value;
+                $response .= urlencode($key) . '=' . urlencode($value);
                 $first = false;
             }
         }
@@ -84,11 +84,10 @@ class Url extends NativeGenerator
         if (!Object::isArray($to)) { // callback magic (:
             $to = [$to];
         }
+        // call Url::to(args)
+        $callbackTo = call_user_func_array([__NAMESPACE__ . '\Url', 'to'], $to);
 
-        $invoke = new \ReflectionMethod(get_class(), 'to');
-        $makeTo = $invoke->invokeArgs(null, $to);
-
-        return '<a href="' . $makeTo . '"' . $compile_property . '>' . $name . '</a>';
+        return '<a href="' . $callbackTo . '"' . $compile_property . '>' . $name . '</a>';
     }
 
     public static function getRemoteContent($url)

@@ -16,14 +16,7 @@ interface iUser
      * @param null|string $defaultValue
      * @return string|null
      */
-    public function get($param, $defaultValue = null);
-
-    /**
-     * @param $param
-     * @param null|string $defaultValue
-     * @return string|null
-     */
-    public function getCustomParam($param, $defaultValue = null);
+    public function getParam($param, $defaultValue = null);
 
     /**
      * Check if current user session is auth
@@ -43,7 +36,7 @@ interface iUser
      * @param null|int $user_id
      * @return bool|\Illuminate\Support\Collection|null|static
      */
-    public static function identity($user_id);
+    public static function identity($user_id = null);
 
     /**
      * Check if use with $email is exist
@@ -73,8 +66,14 @@ interface iUser
     public function getWall();
 
     /**
-     * Get user avatar path
-     * @return string
+     * Get user role data
+     * @return object
      */
-    public function getAvatarUrl();
+    public function getRole();
+
+    /**
+     * Get user profile data. Call like (new User())->Profile->column;
+     * @return object
+     */
+    public function getProfile();
 }

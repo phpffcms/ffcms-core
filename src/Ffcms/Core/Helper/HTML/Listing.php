@@ -66,6 +66,15 @@ class Listing extends NativeGenerator
 
                             $activeItem = String::startsWith($elementPoint, $currentPoint);
                             break;
+                        case 'id':
+                            $elementArray = explode('/', $elementPoint);
+                            $elementPoint = $elementArray[0] . '/' . $elementArray[1];
+                            if (null !== $elementArray[2]) {
+                                $elementPoint .= '/' . $elementArray[2];
+                            }
+
+                            $activeItem = String::startsWith($elementPoint, $currentPoint);
+                            break;
                         default:
                             $activeItem = $elementPoint === $currentPoint;
                             break;
