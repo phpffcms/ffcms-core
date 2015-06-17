@@ -3,6 +3,7 @@
 namespace Ffcms\Core;
 
 use Ffcms\Core\Exception\ForbiddenException;
+use Ffcms\Core\Exception\JsonException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
@@ -154,6 +155,8 @@ class App
         } catch (ForbiddenException $e) {
             $e->display();
         } catch (SyntaxException $e) {
+            $e->display();
+        } catch (JsonException $e) {
             $e->display();
         } catch (NativeException $e) {
             $e->display();

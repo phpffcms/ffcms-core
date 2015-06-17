@@ -243,6 +243,10 @@ class Form extends NativeGenerator
                 unset($property['value']);
                 $response = self::buildSingleTag('input', $property);
                 break;
+            case 'hidden':
+                $property['type'] = 'hidden';
+                $response = self::buildSingleTag('input', $property);
+                break;
             default:
                 $property['type'] = 'text';
                 $response = self::buildSingleTag('input', $property);
