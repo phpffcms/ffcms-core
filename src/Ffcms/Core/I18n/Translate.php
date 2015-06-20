@@ -28,10 +28,10 @@ class Translate
      * Get internalization of current text from i18n
      * @param string $index
      * @param string $text
-     * @param array $params
+     * @param array|null $params
      * @return string
      */
-    public function get($index, $text, array $params)
+    public function get($index, $text, array $params = null)
     {
         if (App::$Request->getLanguage() !== App::$Property->get('baseLanguage')) {
             if ($index !== null && !Arr::in($index, $this->indexes)) {
@@ -44,7 +44,7 @@ class Translate
             }
         }
 
-        if (count($params) > 0) {
+        if (Object::isArray($params) && count($params) > 0) {
             foreach ($params as $var => $value) {
                 $text = String::replace('%' . $var . '%', $value, $text);
             }
