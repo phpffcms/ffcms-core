@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Object;
@@ -20,8 +21,20 @@ class Form extends NativeGenerator
     protected $model;
 
 
-    public function __construct(Model $model, array $property = null, array $structure = null)
+    /**
+     * Build form based on model properties
+     * @param Model $model
+     * @param array $property
+     * @param array $structure
+     * @throws SyntaxException
+     */
+    public function __construct($model, array $property = null, array $structure = null)
     {
+        // prevent white-screen locks when model is not passed or passed wrong
+        if (!$model instanceof Model) {
+            throw new SyntaxException('Bad model type passed in form builder. Check for init: new Form()');
+        }
+
         $this->model = $model;
         $this->name = $model->getFormName();
 
@@ -38,16 +51,18 @@ class Form extends NativeGenerator
             }
         }
 
-        if ($property['method'] === null) {
-            $property['method'] = 'GET';
-        }
+        $property['method'] = $this->model->getSubmitMethod();
 
         $property['id'] = $this->name; // define form id
+        // if action is not defined - define it
+        if (String::likeEmpty($property['action'])) {
+            $property['action'] = App::$Request->getFullUrl();
+        }
         echo '<form' . self::applyProperty($property) . '>';
     }
 
     /**
-     * Display form field. Allowed type: inputText, inputPassword, textarea, checkbox, select
+     * Display form field. Allowed type: text, password, textarea, checkbox, select, checkboxes, file, captcha, email, hidden
      * @param $object
      * @param $type
      * @param null|array $property
@@ -96,6 +111,11 @@ class Form extends NativeGenerator
             $itemValue = Arr::getByPath($nesting, $itemValue);
         }
         $itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
+        // only item if hidden type
+        if ($type === 'hidden') {
+            return $itemBody;
+        }
+
         return String::replace(
             ['%name%', '%label%', '%item%', '%help%'],
             [$labelFor, $labelText, $itemBody, self::nohtml($helper)],
@@ -105,10 +125,15 @@ class Form extends NativeGenerator
 
     protected function dataTypeTag($type, $name, $value = null, $property = null)
     {
+        if (!Object::isArray($property) && $property !== null) {
+            throw new SyntaxException('Property must be passed as array or null! Field: ' . $name);
+        }
+
         $propertyString = null;
         $selectOptions = [];
         if (Object::isArray($property['options'])) {
             $selectOptions = $property['options'];
+            unset($property['options']);
         }
 
         // jquery validation quick-build some rules
@@ -129,8 +154,16 @@ class Form extends NativeGenerator
             }
         }
 
-        unset($property['options']);
         $response = null;
+
+        // get html allow rule from field init
+        $html = false;
+        if ($property['html'] === true) {
+            $html = true;
+        }
+        if (array_key_exists('html', $property)) {
+            unset($property['html']);
+        }
 
         // standard property data definition
         $property['name'] = $property['id'] = $this->name; // form global name
@@ -151,14 +184,14 @@ class Form extends NativeGenerator
         }
 
         switch ($type) {
-            case 'inputPassword':
+            case 'password':
                 $property['type'] = 'password';
                 unset($property['value']);
                 $response = self::buildSingleTag('input', $property);
                 break;
             case 'textarea':
                 unset($property['value']);
-                $response = self::buildContainerTag('textarea', $property, $value);
+                $response = self::buildContainerTag('textarea', $property, $value, $html);
                 break;
             case 'checkbox': // single checkbox for ON or OFF" value
                 // hook DOM model
@@ -234,11 +267,11 @@ class Form extends NativeGenerator
                     $response .= self::buildSingleTag('input', $property);
                 }
                 break;
-            case 'inputEmail':
+            case 'email':
                 $property['type'] = 'email';
                 $response = self::buildSingleTag('input', $property);
                 break;
-            case 'inputFile':
+            case 'file':
                 $property['type'] = 'file';
                 unset($property['value']);
                 $response = self::buildSingleTag('input', $property);
@@ -246,6 +279,10 @@ class Form extends NativeGenerator
             case 'hidden':
                 $property['type'] = 'hidden';
                 $response = self::buildSingleTag('input', $property);
+                break;
+            case 'div':
+                unset($property['value']);
+                $response = self::buildContainerTag('div', $property, $value, $html);
                 break;
             default:
                 $property['type'] = 'text';

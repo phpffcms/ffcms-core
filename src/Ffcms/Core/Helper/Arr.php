@@ -40,10 +40,10 @@ class Arr
      * @param string $delimiter
      * @return array|string|null
      */
-    public static function getByPath($path, array $array = null, $delimiter = '.')
+    public static function getByPath($path, $array = null, $delimiter = '.')
     {
         // path of nothing? interest
-        if (count($array) < 1) {
+        if (!Object::isArray($array) || count($array) < 1) {
             return null;
         }
 
@@ -58,5 +58,22 @@ class Arr
             $output = $output[$key];
         }
         return $output;
+    }
+
+    public static function ploke($key, $array)
+    {
+        if (!Object::isArray($array)) {
+            return [];
+        }
+
+        $output = [];
+        foreach ($array as $item) {
+            $object = $item[$key];
+            if (!self::in($object, $output)) {
+                $output[] = $object;
+            }
+        }
+        return $output;
+
     }
 }

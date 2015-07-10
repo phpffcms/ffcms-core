@@ -7,6 +7,16 @@ class String
 {
 
     /**
+     * Check if string is empty (check null, false and '' values)
+     * @param null $string
+     * @return bool
+     */
+    public static function likeEmpty($string = null)
+    {
+        return $string === null || $string === '' || $string === false;
+    }
+
+    /**
      * Check is $where starts with prefix $string
      * @param string $string
      * @param string $where
@@ -103,6 +113,17 @@ class String
     }
 
     /**
+     * Count string entries of search
+     * @param $string
+     * @param $search
+     * @return int
+     */
+    public static function entryCount($string, $search)
+    {
+        return mb_substr_count($string, $search, 'UTF-8');
+    }
+
+    /**
      * Split camel case words with glue. camelCaseWords => camel Case Words
      * @param string $string
      * @param string $glue
@@ -119,7 +140,8 @@ class String
                         /x';
         $split = preg_split($expression, $string);
         $output = [];
-        for ($i = 0; $i < count($split); ++$i) {
+        $count = count($split);
+        for ($i = 0; $i < $count; ++$i) {
             $word = strtolower($split[$i]);
             if ($i === 0) {
                 $word = ucfirst($word);
@@ -167,6 +189,16 @@ class String
     }
 
     /**
+     * Check if string is valid url address
+     * @param string $string
+     * @return bool
+     */
+    public static function isUrl($string)
+    {
+        return (!filter_var($string, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) === false);
+    }
+
+    /**
      * Pseudo random [A-Za-z0-9] string with defined $length
      * @param int $length
      * @return string
@@ -176,12 +208,12 @@ class String
         $ret = 97;
         $out = null;
         for ($i = 0; $i < $length; $i++) {
-            $offset = rand(0, 15);
+            $offset = mt_rand(0, 15);
             $char = chr($ret + $offset);
-            $posibility = rand(0, 2);
+            $posibility = mt_rand(0, 2);
             if ($posibility == 0) {
                 // 33% - add random numeric
-                $out .= rand(0, 9);
+                $out .= mt_rand(0, 9);
             } elseif ($posibility == 1) {
                 // 33% - make upper offset+ret
                 $out .= strtoupper($char);
@@ -202,9 +234,9 @@ class String
         $ret = 97;
         $out = null;
         for ($i = 0; $i < $length; $i++) {
-            $offset = rand(0, 15);
+            $offset = mt_rand(0, 15);
             $char = chr($ret + $offset);
-            $posibility = rand(0, 1);
+            $posibility = mt_rand(0, 1);
             if ($posibility == 1) {
                 // 50% - make upper offset+ret
                 $out .= strtoupper($char);
@@ -225,5 +257,14 @@ class String
         return filter_var($string, FILTER_VALIDATE_EMAIL) !== false;
     }
 
+    /**
+     * Check is $string sounds like a phone number
+     * @param string $string
+     * @return int
+     */
+    public static function isPhone($string)
+    {
+        return preg_match('/^[+]?([\d]{0,3})?[\(\.\-\s]?([\d]{3})[\)\.\-\s]*([\d]{3})[\.\-\s]?([\d]{4})$/', $string) ? true : false;
+    }
 
 }

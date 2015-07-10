@@ -9,21 +9,25 @@ class Date
     const FORMAT_TO_SECONDS = 'd.m.Y H:i:s';
 
     const FORMAT_SQL_TIMESTAMP = 'Y-m-d H:i:s';
+    const FORMAT_SQL_DATE = 'Y-m-d';
 
     /**
      * Try to convert string to date time format
-     * @param string $rawDate
+     * @param string|int $rawDate
      * @param string $format
-     * @return string
+     * @return string|bool
      */
     public static function convertToDatetime($rawDate, $format = 'd.m.Y')
     {
         if (Object::isLikeInt($rawDate)) { // convert timestamp to date format
             $rawDate = date($format, $rawDate);
         }
-
-        $object = new \DateTime($rawDate);
-        return $object->format($format);
+        try {
+            $object = new \DateTime($rawDate);
+            return $object->format($format);
+        } catch(\Exception $e) {
+            return false;
+        }
     }
 
     /**

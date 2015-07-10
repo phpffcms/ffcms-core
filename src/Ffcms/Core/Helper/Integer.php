@@ -17,6 +17,6 @@ class Integer
     {
         $start = pow(10, $sequence - 1);
         $end = pow(10, $sequence);
-        return rand($start, $end);
+        return mt_rand($start, $end);
     }
 }

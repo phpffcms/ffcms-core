@@ -14,41 +14,46 @@ class Url extends NativeGenerator
      * @param string|null $id
      * @param string|null $add
      * @param array $params
+     * @param bool $encode
      * @return null|string
      */
-    public static function to($controller_action, $id = null, $add = null, array $params = null)
+    public static function to($controller_action, $id = null, $add = null, array $params = null, $encode = true)
     {
-        $pathway = self::buildPathway([$controller_action, $id, $add, $params]);
+        $pathway = self::buildPathway([$controller_action, $id, $add, $params], $encode);
         return App::$Alias->baseUrl . '/' . $pathway;
     }
 
     /**
      * Build pathway from array $to. Example: ['controller/action', 'id', 'add', ['get' => 'value']]
      * @param array $to
+     * @param bool $encode
      * @return string|null
      */
-    public static function buildPathway(array $to)
+    public static function buildPathway(array $to, $encode = true)
     {
         $response = trim(String::lowerCase($to[0]), '/'); // controller/action
 
-        list($controller, $action) = explode('/', $response); // check is it correct
-        if ($controller == null || $action == null) {
+        list($controller, $action) = explode('/', $response);
+        // check if controller and action is defined
+        if (String::likeEmpty($controller) || String::likeEmpty($action)) {
             return null;
         }
 
-        if ($to[1] != null) { // id is not null?
-            $response .= '/' . urlencode(self::nohtml(String::lowerCase($to[1])));
+        // id is defined?
+        if (!String::likeEmpty($to[1])) {
+            $response .= '/' . self::safeUri($to[1], $encode);
         }
 
-        if ($to[2] != null) { // add is not null?
-            $response .= '/' . urlencode(self::nohtml(String::lowerCase($to[2])));
+        // add param is defined?
+        if (!String::likeEmpty($to[2])) {
+            $response .= '/' . self::safeUri($to[2], $encode);
         }
 
         if (Object::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
             $first = true;
             foreach ($to[3] as $key=>$value) {
                 $response .= $first ? '?' : '&';
-                $response .= urlencode($key) . '=' . urlencode($value);
+                $response .= $key . '=' . $value;
                 $first = false;
             }
         }
@@ -74,10 +79,10 @@ class Url extends NativeGenerator
      * Create <a></a> block link
      * @param string|array $to
      * @param string $name
-     * @param array $property
+     * @param array|null $property
      * @return string
      */
-    public static function link($to, $name, $property = [])
+    public static function link($to, $name, array $property = null)
     {
         $compile_property = self::applyProperty($property);
 
@@ -90,6 +95,11 @@ class Url extends NativeGenerator
         return '<a href="' . $callbackTo . '"' . $compile_property . '>' . $name . '</a>';
     }
 
+    /**
+     * Download remote content in string
+     * @param string $url
+     * @return null|string
+     */
     public static function getRemoteContent($url)
     {
         // check is valid url

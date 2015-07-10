@@ -85,12 +85,23 @@ class Manager
     }
 
     /**
+     * Add message debug data to bar
+     * @param $data
+     * @throws \DebugBar\DebugBarException
+     */
+    public function vardump($data)
+    {
+        $this->bar->getCollector('messages')->info($data);
+    }
+
+    /**
      * Check if debug bar is enabled. Method called before __construct() is initiated!!
      * @return bool
      */
     public static function isEnabled()
     {
-        return (true === App::$Property->get('debug')['all'] ||
-            App::$Request->cookies->get(App::$Property->get('debug')['cookie']['key']) === App::$Property->get('debug')['cookie']['value']);
+        $property = App::$Property->get('debug');
+        return (true === $property['all'] ||
+            App::$Request->cookies->get($property['cookie']['key']) === $property['cookie']['value']);
     }
 }

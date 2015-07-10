@@ -8,6 +8,7 @@ use Ffcms\Core\Helper\Directory;
 use Ffcms\Core\Helper\File;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
+use Ffcms\Core\I18n\Lexer;
 
 class Translate
 {
@@ -70,6 +71,11 @@ class Translate
         return $this->get($index, $text, $params);
     }
 
+    /**
+     * Load locale file from local storage
+     * @param string $index
+     * @return array|null
+     */
     protected function load($index)
     {
         $file = root . '/I18n/' . env_name . '/' . App::$Request->getLanguage() . '/' . $index . '.php';
@@ -91,5 +97,14 @@ class Translate
             $langs[] = trim($row, '/');
         }
         return $langs;
+    }
+
+    /**
+     * Get lexer
+     * @return static
+     */
+    public function lexer()
+    {
+        return Lexer::instance();
     }
 }

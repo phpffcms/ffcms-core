@@ -189,4 +189,32 @@ class Request extends FoundationRequest
         return urldecode($this->argumentAdd);
     }
 
+    /**
+     * Get pathway without current controller/action path
+     * @return string
+     */
+    public function getPathWithoutControllerAction()
+    {
+        $path = trim($this->getPathInfo(), '/');
+        $pathArray = explode('/', $path);
+        if ($pathArray[0] === String::lowerCase($this->getController())) {
+            // unset controller
+            array_shift($pathArray);
+            if ($pathArray[0] === String::lowerCase($this->getAction())) {
+                // unset action
+                array_shift($pathArray);
+            }
+        }
+        return trim(implode('/', $pathArray), '/');
+    }
+
+    /**
+     * Get current full request URI
+     * @return string
+     */
+    public function getFullUrl()
+    {
+        return $this->getSchemeAndHttpHost() . $this->getRequestUri();
+    }
+
 }

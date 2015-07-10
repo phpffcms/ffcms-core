@@ -34,7 +34,7 @@ interface iUser
     /**
      * Get user person all data like a object
      * @param null|int $user_id
-     * @return bool|\Illuminate\Support\Collection|null|static
+     * @return static|null
      */
     public static function identity($user_id = null);
 
@@ -57,7 +57,7 @@ interface iUser
      * @param string $email
      * @return bool
      */
-    public static function getIdentifyViaEmail($email);
+    public static function getIdentityViaEmail($email);
 
     /**
      * Get user wall post object

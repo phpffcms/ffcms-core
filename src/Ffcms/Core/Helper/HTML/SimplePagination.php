@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\Helper\Arr;
+use Ffcms\Core\Helper\Object;
 
 /**
  * Class SimplePagination
@@ -116,8 +117,12 @@ class SimplePagination
                 $url[2] = null;
                 break;
         }
-
-        $url[] = ['page' => $page_id];
+        // fix shits ;)
+        if (Object::isArray($url[3])) {
+            $url[3] = Arr::merge($url[3], ['page' => $page_id]);
+        } else {
+            $url[3] = ['page' => $page_id];
+        }
         return $url;
     }
 

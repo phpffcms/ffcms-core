@@ -49,6 +49,12 @@ class Native
         if (Object::isArray($object)) {
             return false;
         }
+
+        // allow empty, validate on required rule
+        if (String::likeEmpty($object)) {
+            return true;
+        }
+
         return Arr::in($object, $handle);
     }
 
@@ -125,7 +131,51 @@ class Native
         if (Object::isArray($object)) {
             return false;
         }
+
+        // allow empty, validate on required rule
+        if (String::likeEmpty($object)) {
+            return true;
+        }
+
         return String::isEmail($object);
+    }
+
+    /**
+     * Filter ['object', 'phone']
+     * @param string $object
+     * @return bool|int
+     */
+    public static function phone($object)
+    {
+        if (Object::isArray($object)) {
+            return false;
+        }
+
+        // allow empty, validate on required rule
+        if (String::likeEmpty($object)) {
+            return true;
+        }
+
+        return String::isPhone($object);
+    }
+
+    /**
+     * Filter ['object', 'url']
+     * @param string $object
+     * @return bool
+     */
+    public static function url($object)
+    {
+        if (Object::isArray($object)) {
+            return false;
+        }
+
+        // allow empty, validate on required rule
+        if (String::likeEmpty($object)) {
+            return true;
+        }
+
+        return String::isUrl($object);
     }
 
     /**
@@ -134,13 +184,67 @@ class Native
      * @param $value
      * @return bool
      */
-    public static function equal($object, $value)
+    public static function equal($object, $value = null)
     {
         if (Object::isArray($object)) {
             return false;
         }
 
         return $object === $value;
+    }
+
+    /**
+     * Direct preg_match expression. Filter ['object', 'direct_match', '/^[A-Z]/*$']
+     * @param $object
+     * @param $value
+     * @return bool|int
+     */
+    public static function direct_match($object, $value)
+    {
+        return self::reg_match($object, $value);
+    }
+
+    /**
+     * Reverse preg_match expression. Filter ['object', 'reverse_match', '/^[A-Z]/*$']
+     * @param $object
+     * @param $value
+     * @return bool
+     */
+    public static function reverse_match($object, $value) {
+        return !self::reg_match($object, $value);
+    }
+
+    /**
+     * Regular expression validation rule ['object', 'reg_match', '/^[A-Z]/*$']
+     * @param $object
+     * @param $value
+     * @return bool|int
+     */
+    public static function reg_match($object, $value)
+    {
+        if (Object::isArray($object)) {
+            return false;
+        }
+
+        if (String::likeEmpty($object)) {
+            return true;
+        }
+
+        return preg_match($value, $object) > 0;
+    }
+
+    /**
+     * Filter ['object', 'intList']
+     * @param string $object
+     * @param $value
+     * @return bool
+     */
+    public static function intList($object, $value)
+    {
+        if (Object::isArray($object)) {
+            return false;
+        }
+        return !preg_match('/[^0-9, ]/', $object);
     }
 
     /**

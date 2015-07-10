@@ -4,6 +4,7 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\String;
 
 abstract class NativeGenerator
 {
@@ -79,6 +80,22 @@ abstract class NativeGenerator
             $value = self::nohtml($value);
         }
         return '<' . $tagName . self::applyProperty($property) . '>' . $value . '</' . $tagName . '>';
+    }
+
+    /**
+     * Make parts of URI safe and usable
+     * @param string $string
+     * @param bool $encode
+     * @return string
+     */
+    public static function safeUri($string, $encode = true)
+    {
+        $string = String::lowerCase($string);
+        $string = self::nohtml($string);
+        if ($encode === true) {
+            $string = urlencode($string);
+        }
+        return $string;
     }
 
 

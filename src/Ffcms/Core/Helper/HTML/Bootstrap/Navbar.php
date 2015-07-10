@@ -26,7 +26,7 @@ class Navbar extends NativeGenerator
 
         $mobileCollapse = self::nohtml($elements['collapseId']);
         if (null === $mobileCollapse) {
-            $mobileCollapse = String::randomLatin(rand(6, 12)) . rand(1, 99);
+            $mobileCollapse = String::randomLatin(mt_rand(6, 12)) . mt_rand(1, 99);
         }
         $ulId = 1;
 

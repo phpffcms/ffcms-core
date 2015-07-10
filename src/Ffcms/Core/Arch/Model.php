@@ -18,6 +18,8 @@ class Model
     protected $_wrongFields;
     protected $_formName;
 
+    private $_sendMethod = 'POST';
+
     public function __construct()
     {
         $this->before();
@@ -33,8 +35,39 @@ class Model
     final public function getLabel($param)
     {
         $labels = $this->labels();
+        $response = null;
+        // maybe array-dotted declaration?
+        if (String::contains('.', $param)) {
+            // not defined for all array-dotted nesting?
+            if (String::likeEmpty($labels[$param])) {
+                // lets set default array label (before first dot-separation)
+                $response = $labels[String::firstIn($param, '.')];
+            } else {
+                $response = $labels[$param];
+            }
+        } else {
+            $response = $labels[$param];
+        }
 
-        return ($labels[$param] == null ? String::replace('.', ' ', String::splitCamelCase($param)) : $labels[$param]);
+        return (String::likeEmpty($response) ? String::replace('.', ' ', String::splitCamelCase($param)) : $response);
+    }
+
+    /**
+     * Set model send method type. Allowed: post, get
+     * @param string $acceptMethod
+     */
+    final public function setSubmitMethod($acceptMethod)
+    {
+        $this->_sendMethod = strtoupper($acceptMethod);
+    }
+
+    /**
+     * Get model submit method. Allowed: post, get
+     * @return string
+     */
+    final public function getSubmitMethod()
+    {
+        return $this->_sendMethod;
     }
 
     /**
@@ -75,13 +108,13 @@ class Model
             if (Object::isArray($rule[0])) {
                 $validate_foreach = true;
                 foreach ($rule[0] as $field_name) {
-                    if (!$this->validateRecursive($field_name, $rule[1], $rule[2], $rule[3])) {
+                    if (!$this->validateRecursive($field_name, $rule[1], $rule[2], $rule[3], $rule[4])) {
                         $validate_foreach = false;
                     }
                 }
                 $validate = $validate_foreach;
             } else {
-                $validate = $this->validateRecursive($rule[0], $rule[1], $rule[2], $rule[3]);
+                $validate = $this->validateRecursive($rule[0], $rule[1], $rule[2], $rule[3], $rule[4]);
             }
             if ($validate === false) {
                 $success = false;
@@ -125,10 +158,10 @@ class Model
      * @return bool
      * @throws SyntaxException
      */
-    protected final function validateRecursive($field_name, $filter_name, $filter_argv, $html = false)
+    protected final function validateRecursive($field_name, $filter_name, $filter_argv, $html = false, $secure = false)
     {
-        // check if we got it from POST request
-        if (App::$Request->getMethod() !== 'POST') {
+        // check if we got it from form defined request method
+        if (App::$Request->getMethod() !== $this->_sendMethod) {
             return false;
         }
 
@@ -140,7 +173,13 @@ class Model
         } else { // sounds like plain post data
             $field_value = $this->getInput($field_name);
             // remove or safe use html
-            $field_value = $html ? App::$Security->secureHtml($field_value) : App::$Security->strip_tags($field_value);
+            if ($html === false) {
+                $field_value = App::$Security->strip_tags($field_value);
+            } else {
+                if ($secure !== true) {
+                    $field_value = App::$Security->secureHtml($field_value);
+                }
+            }
         }
 
         $check = false;
@@ -195,6 +234,10 @@ class Model
             if (property_exists($this, $field_set_name)) {
                 if ($field_name !== $field_set_name) { // array-based property
                     $dot_path = trim(strstr($field_name, '.'), '.');
+                    // prevent throws any exceptions for null and false objects
+                    if (!Object::isArray($this->$field_set_name)) {
+                        $this->$field_set_name = [];
+                    }
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
                     $dotData->set($dot_path, $field_value);// todo: check me!!! bug here
@@ -285,7 +328,7 @@ class Model
     {
         if (null === $this->_formName) {
             $cname = get_class($this);
-            $this->_formName = 'Form' . substr($cname, strrpos($cname, '\\')+1);
+            $this->_formName = substr($cname, strrpos($cname, '\\')+1);
         }
 
         return $this->_formName;
@@ -297,7 +340,7 @@ class Model
      */
     final public function send()
     {
-        if (App::$Request->getMethod() !== 'POST') {
+        if (App::$Request->getMethod() !== $this->_sendMethod) {
             return false;
         }
 

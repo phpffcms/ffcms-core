@@ -28,7 +28,15 @@ class Table extends NativeGenerator
                 foreach ($item as $id => $data) {
                     if (Object::isInt($id)) { // td element
                         $tbody_items .= '<td' . self::applyProperty($data['property']) . '>';
-                        $tbody_items .= $data['html'] ? self::safe($data['text'], true) : self::nohtml($data['text']);
+                        if ($data['html'] === true) {
+                            if ($data['!secure'] === true) {
+                                $tbody_items .= $data['text'];
+                            } else {
+                                $tbody_items .= self::safe($data['text'], true);
+                            }
+                        } else {
+                            $tbody_items .= self::nohtml($data['text']);
+                        }
                         $tbody_items .= '</td>';
                     }
                 }
