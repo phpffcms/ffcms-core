@@ -75,7 +75,7 @@ class Alias
     public function __construct()
     {
         // make alias for view pathway
-        $this->currentViewPath = App::$View->currentViewPath;
+        $this->currentViewPath = App::$View->themePath;
 
         // make alias for baseUrl, script url and domain
         $this->baseDomain = App::$Request->getHost();

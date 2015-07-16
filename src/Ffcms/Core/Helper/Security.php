@@ -141,5 +141,15 @@ class Security
         return crypt($password, App::$Property->get('passwordSalt'));
     }
 
+    /**
+     * Generate simple hash of 8 chars (32bit) for string. This method is NOT SECURE for crypt reason!
+     * @param string $string
+     * @return string
+     */
+    public static function simpleHash($string)
+    {
+        return dechex(crc32($string));
+    }
+
 
 }

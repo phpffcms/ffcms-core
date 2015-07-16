@@ -2,149 +2,198 @@
 
 namespace Ffcms\Core\Arch;
 
+use Ffcms\Core\App;
+use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Helper\Directory;
 use Ffcms\Core\Helper\File;
+use Ffcms\Core\Helper\Normalize;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
-use Ffcms\Core\Exception\NativeException;
-use Ffcms\Core\App;
 use Ffcms\Core\Template\Variables;
 use Ffcms\Core\Traits\DynamicGlobal;
 
 class View
 {
-
     use DynamicGlobal;
 
-    protected $view_object;
-
     /**
-     * Current theme full pathway
+     * Global path for current environment theme
      * @var string
      */
-    public $currentViewPath;
+    public $themePath;
 
+    private $path;
+    private $params;
+
+    private $sourcePath;
 
     /**
-     * Construct object viewer from new View()
-     * @param null|string $controller_name
-     * @param null|string $view_file
-     * @throws \DebugBar\DebugBarException
+     * Lets construct viewer
+     * @throws NativeException
      */
-    public function __construct($controller_name = null, $view_file = null)
+    public function __construct()
     {
-        // build current viewer's path theme - full dir path
-        $themeAll = App::$Property->get('theme');
-        $this->currentViewPath = root . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
-        try {
-            if (!File::exist($this->currentViewPath)) {
-                throw new NativeException('Could not load app views: ' . $this->currentViewPath);
-            }
-        } catch (NativeException $e) {
-            $e->display();
+        // get theme config and build full path
+        $themeConfig = App::$Property->get('theme');
+        $this->themePath = root . DIRECTORY_SEPARATOR . 'Apps' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . env_name . DIRECTORY_SEPARATOR . $themeConfig[env_name];
+
+        // check if theme is available
+        if (!Directory::exist($this->themePath)) {
+            throw new NativeException('Apps theme is not founded: ' . String::replace(root, null, $this->themePath));
         }
 
-        // built on $view = new View('main', 'index');
-        if (null !== $view_file && null !== $controller_name) {
-            if (String::startsWith('Apps\\Controller\\', $controller_name)) {
-                $controller_name = String::substr($controller_name, String::length('Apps\\Controller\\'));
-            }
-            if (String::endsWith('.php', $view_file)) {
-                $view_file = String::substr($view_file, 0, String::length($view_file) - 4);
-            }
+        // get input args and build class properties
+        $args = func_get_args();
+        $this->path = array_shift($args);
+        $this->params = array_shift($args);
+        $this->sourcePath = array_shift($args);
+    }
 
-            $view_path = $this->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view_file) . '.php';
-            try {
-                if (File::exist($view_path)) {
-                    $this->view_object = $view_path;
-                } else {
-                    throw new SyntaxException('New view object not founded: ' . String::replace(root, null, $view_path));
+    /**
+     * Render viewer based on construct or passed params. render($path, $params, $sourcePath)
+     * @return string
+     * @throws NativeException
+     * @throws SyntaxException
+     */
+    public function render()
+    {
+        // get call arguments
+        $arguments = func_get_args();
+
+        // get params from constructor
+        $path = $this->path;
+        $params = $this->params;
+        $source = $this->sourcePath;
+
+        // if path is not defined - try to find it in arguments
+        if ($path === null) {
+            $path = array_shift($arguments);
+        }
+
+        // if arguments is not define - try to find in arguments
+        if ($params === null) {
+            $params = array_shift($arguments);
+        }
+
+        // if directory of caller is not defiend - lets find in argument
+        if ($source === null) {
+            $source = array_shift($arguments);
+        }
+
+        // path still not defined?
+        if ($path === null) {
+            throw new SyntaxException('Viewer is not founded: ' . App::$Security->strip_tags($path));
+        }
+
+        // cleanup from slashes on start/end
+        $path = trim($path, '/\\');
+
+        // lets find available viewer file
+        $path = $this->findViewer($path, $source);
+
+        // return response
+        return $this->renderSandbox($path, $params);
+    }
+
+    /**
+     * Try to find exist viewer full path
+     * @param string $path
+     * @param string|null $source
+     * @return null|string
+     * @throws NativeException
+     */
+    private function findViewer($path, $source = null)
+    {
+        $tmpPath = null;
+
+        // sounds like a relative path for current view theme
+        if (String::contains('/', $path)) {
+            // lets try to get full path for current theme
+            $tmpPath = $path;
+            if (!String::startsWith($this->themePath, $path)) {
+                $tmpPath = Normalize::diskPath($this->themePath . '/' . $path . '.php');
+            }
+        } else { // sounds like a object-depended view call from controller or etc
+            // get stack trace of callbacks
+            $calledLog = debug_backtrace();
+            $calledController = null;
+
+            // lets try to find controller in backtrace
+            foreach ($calledLog as $caller) {
+                if (String::startsWith('Apps\\Controller\\', $caller['class'])) {
+                    $calledController = (string)$caller['class'];
                 }
-            } catch (SyntaxException $e) {
-                $e->display();
+            }
+
+            // depended controller is not founded? Let finish
+            if ($calledController === null) {
+                throw new NativeException('View render is failed: callback controller not founded! Call with relative path: ' . $path);
+            }
+
+            // get controller name
+            $controllerName = String::substr($calledController, String::length('Apps\\Controller\\' . env_name . '\\'));
+            // get full path
+            $tmpPath = $this->themePath . DIRECTORY_SEPARATOR . $controllerName . DIRECTORY_SEPARATOR . $path . '.php';
+        }
+
+        // check if builded view full path is exist
+        if (File::exist($tmpPath)) {
+            return $tmpPath;
+        }
+
+        // hmm, not founded. Lets try to find in caller directory (for widgets, apps packages and other)
+        if ($source !== null) {
+            $tmpPath = Normalize::diskPath($source . DIRECTORY_SEPARATOR . $path . '.php');
+            if (File::exist($tmpPath)) {
+                // add notify for native views
+                if (App::$Debug !== null) {
+                    App::$Debug->addMessage('Render native viewer: ' . String::replace(root, null, $tmpPath), 'info');
+                }
+                return $tmpPath;
             }
         }
+
+        if (App::$Debug !== null) {
+            App::$Debug->addMessage('Viewer not founded on rendering: ' . $path, 'warning');
+        }
+
+        return null;
     }
 
     /**
-     * Return out result of object viewer rendering. Using only with $view = new View('name', 'controller'); $view->out(['a' => 'b']);
-     * @param array $params
-     * @return string
+     * Alias of render
+     * @deprecated
+     * @return string|null
      */
-    public function out($params)
+    public function show()
     {
-        if ($this->view_object === null || !Object::isArray($params)) {
-            return null;
-        }
-        return self::renderSandbox($this->view_object, $params);
+        return call_user_func_array([$this, 'render'], func_get_args());
     }
 
     /**
-     * Render view ONLY from controller interface
-     * @param string $view
-     * @param array|null $params
-     * @return string
-     */
-    public function render($view, array $params = null)
-    {
-        $call_log = debug_backtrace();
-        $call_controller = null;
-        foreach ($call_log as $caller) {
-            if (String::startsWith('Apps\\Controller\\', $caller['class'])) {
-                $call_controller = (string)$caller['class'];
-            }
-        }
-
-        try {
-            if (null === $call_controller) {
-                throw new SyntaxException('On call View->render() not founded caller controller to define viewer name');
-            }
-        } catch (SyntaxException $e) {
-            $e->display();
-            return null;
-        }
-
-        $controller_name = String::substr($call_controller, String::length('Apps\\Controller\\' . env_name . '\\'));
-        $view_path = App::$Alias->currentViewPath . '/' . strtolower($controller_name) . '/' . strtolower($view) . '.php';
-
-        try {
-            if (!File::exist($view_path)) {
-                throw new SyntaxException('Viewer is not founded: ' . str_replace(root, null, $view_path));
-            }
-        } catch (SyntaxException $e) {
-            $e->display();
-            return null;
-        }
-        return self::renderSandbox($view_path, $params);
-    }
-
-    /**
-     * Render viewer anywhere
-     * @param string $viewPath
-     * @param array|null $params
-     * @return string
-     */
-    public function show($viewPath, array $params = null)
-    {
-        $viewPath = $this->currentViewPath . '/' . ltrim($viewPath, '/') . '.php';
-        return $this->renderSandbox($viewPath, $params);
-    }
-
-    /**
+     * Render view in sandbox function
      * @param string $path
      * @param array|null $params
      * @return string
      */
-    protected function renderSandbox($path, array $params = null)
+    protected function renderSandbox($path, $params = null)
     {
-        // render defaults params
+        if ($path === null || !File::exist($path)) {
+            if (App::$Debug !== null) {
+                App::$Debug->addMessage('Viewer is not founded: ' . $path, 'error');
+            }
+            return null;
+        }
+
+        // render defaults params as variables
         if (Object::isArray($params) && count($params) > 0) {
             foreach ($params as $key => $value) {
                 $$key = $value;
             }
         }
 
-        $global = self::buildGlobal();
+        $global = $this->buildGlobal();
         $self = $this;
         // turn on output buffer
         ob_start();
@@ -152,6 +201,11 @@ class View
         $response = ob_get_contents();
         // turn off buffer
         ob_end_clean();
+        // cleanup init params
+        $this->path = null;
+        $this->params = null;
+        $this->sourcePath = null;
+        // return response
         return $response;
     }
 

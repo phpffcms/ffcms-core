@@ -34,7 +34,7 @@ class File
     public static function exist($path)
     {
         $path = Normalize::diskFullPath($path);
-        return (file_exists($path) && is_readable($path));
+        return (file_exists($path) && is_readable($path) && is_file($path));
     }
 
     /**

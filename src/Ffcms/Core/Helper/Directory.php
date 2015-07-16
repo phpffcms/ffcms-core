@@ -15,7 +15,7 @@ class Directory
      */
     public static function exist($path)
     {
-        return File::exist($path);
+        return (file_exists($path) && is_readable($path) && is_dir($path));
     }
 
     /**

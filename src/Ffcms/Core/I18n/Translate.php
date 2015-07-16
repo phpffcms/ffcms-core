@@ -6,6 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Helper\Arr;
 use Ffcms\Core\Helper\Directory;
 use Ffcms\Core\Helper\File;
+use Ffcms\Core\Helper\Normalize;
 use Ffcms\Core\Helper\Object;
 use Ffcms\Core\Helper\String;
 use Ffcms\Core\I18n\Lexer;
@@ -83,6 +84,30 @@ class Translate
             return [];
         }
         return require_once($file);
+    }
+
+    /**
+     * Append translation data from exist full path
+     * @param string $path
+     * @return bool
+     */
+    public function append($path)
+    {
+        $path = Normalize::diskFullPath($path);
+        // check if file exist
+        if (!File::exist($path)) {
+            return false;
+        }
+
+        // load file translations
+        $addTranslation = require_once($path);
+        if (!Object::isArray($addTranslation)) {
+            return false;
+        }
+
+        // merge data
+        $this->cached = Arr::merge($addTranslation, $this->cached);
+        return true;
     }
 
     /**
