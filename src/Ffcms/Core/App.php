@@ -160,6 +160,8 @@ class App
             $e->display();
         } catch (NativeException $e) {
             $e->display();
+        } catch(\Exception $e) { // catch all other exceptions
+            (new NativeException($e->getMessage()))->display();
         }
     }
 

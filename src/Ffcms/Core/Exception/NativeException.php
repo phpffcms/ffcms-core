@@ -4,15 +4,21 @@ namespace Ffcms\Core\Exception;
 
 class NativeException extends \Exception
 {
+    protected $message;
+
+    public function __construct($message = null) {
+        if ($message !== null) {
+            $this->message = $message;
+        }
+    }
 
     public function display()
     {
-
         if (type === 'web') {
             header('HTTP/1.1 404 Not Found');
-            echo $this->rawHTML($this->getMessage());
+            echo $this->rawHTML($this->message);
         } else {
-            echo $this->getMessage();
+            echo $this->message;
         }
 
         die();

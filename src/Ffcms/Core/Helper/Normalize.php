@@ -11,6 +11,11 @@ class Normalize
      */
     public static function diskPath($path)
     {
+        // its full-based path? Lets return real path
+        if (String::startsWith(root, $path)) {
+            return realpath($path);
+        }
+        // else - sounds like relative path
         $path = String::replace('\\', '/', $path);
         $splitPath = explode('/', $path);
 
