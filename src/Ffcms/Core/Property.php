@@ -3,8 +3,8 @@
 namespace Ffcms\Core;
 
 use Ffcms\Core\Exception\NativeException;
-use Ffcms\Core\Helper\File;
-use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\Type\Object;
 
 /**
  * Class Property - work with system configurations

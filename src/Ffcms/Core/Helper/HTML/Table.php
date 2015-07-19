@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
-use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\Type\Object;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
 class Table extends NativeGenerator

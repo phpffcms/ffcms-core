@@ -5,9 +5,9 @@ namespace Ffcms\Core\Arch;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Dflydev\DotAccessData\Data as DotData;
-use Ffcms\Core\Helper\Arr;
-use Ffcms\Core\Helper\Object;
-use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 use Ffcms\Core\Filter\Native;
 use Ffcms\Core\Traits\DynamicGlobal;
 

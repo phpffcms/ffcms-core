@@ -7,7 +7,7 @@ use Ffcms\Core\Exception\JsonException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
-use Ffcms\Core\Helper\File;
+use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Network\Request;

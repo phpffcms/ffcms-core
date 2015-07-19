@@ -2,9 +2,9 @@
 
 namespace Ffcms\Core\Network;
 
-use Ffcms\Core\Helper\Arr;
-use Ffcms\Core\Helper\Object;
-use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
 use Ffcms\Core\App;

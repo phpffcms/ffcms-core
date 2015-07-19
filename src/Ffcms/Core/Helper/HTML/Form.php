@@ -4,11 +4,10 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
-use Ffcms\Core\Helper\Arr;
-use Ffcms\Core\Helper\File;
-use Ffcms\Core\Helper\Object;
-use Ffcms\Core\Helper\String;
-use Ffcms\Core\Helper\HTML\NativeGenerator;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 use Ffcms\Core\Arch\Model;
 
 class Form extends NativeGenerator

@@ -4,6 +4,8 @@ namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 
 class Url extends NativeGenerator
 {

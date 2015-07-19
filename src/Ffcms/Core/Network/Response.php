@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Network;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\Type\String;
 use Symfony\Component\HttpFoundation\Response as FoundationResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse as FoundationRedirect;
 

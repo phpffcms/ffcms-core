@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Template;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\Type\Object;
 use Ffcms\Core\Traits\Singleton;
 
 class Variables

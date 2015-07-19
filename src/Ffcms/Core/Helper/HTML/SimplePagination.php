@@ -2,8 +2,8 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
-use Ffcms\Core\Helper\Arr;
-use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Object;
 
 /**
  * Class SimplePagination

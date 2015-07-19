@@ -3,8 +3,8 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Object;
-use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 
 abstract class NativeGenerator
 {

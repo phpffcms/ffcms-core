@@ -2,6 +2,8 @@
 
 namespace Ffcms\Core\Helper;
 
+use Ffcms\Core\Helper\Type\Object;
+
 class Date
 {
     const FORMAT_TO_DAY = 'd.m.Y';

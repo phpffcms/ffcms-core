@@ -3,10 +3,10 @@
 namespace Ffcms\Core\Helper\HTML\Bootstrap;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Arr;
+use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\HTML\Listing;
-use Ffcms\Core\Helper\Object;
-use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
 class Nav extends NativeGenerator

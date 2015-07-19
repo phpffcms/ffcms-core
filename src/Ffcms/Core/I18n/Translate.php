@@ -3,12 +3,12 @@
 namespace Ffcms\Core\I18n;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Arr;
-use Ffcms\Core\Helper\Directory;
-use Ffcms\Core\Helper\File;
-use Ffcms\Core\Helper\Normalize;
-use Ffcms\Core\Helper\Object;
-use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\FileSystem\Directory;
+use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\FileSystem\Normalize;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 use Ffcms\Core\I18n\Lexer;
 
 class Translate

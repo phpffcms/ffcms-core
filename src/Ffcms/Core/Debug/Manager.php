@@ -5,7 +5,7 @@ namespace Ffcms\Core\Debug;
 use \DebugBar\StandardDebugBar;
 use \DebugBar\DataCollector\ConfigCollector;
 use \Ffcms\Core\App;
-use Ffcms\Core\Helper\Object;
+use Ffcms\Core\Helper\Type\Object;
 
 /**
  * Class Debug - display information of debug and collected data in debug bar

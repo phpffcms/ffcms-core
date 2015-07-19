@@ -12,13 +12,17 @@ class NativeException extends \Exception
         }
     }
 
-    public function display()
+    public function display($message = null)
     {
+        if ($message === null) {
+            $message = $this->message;
+        }
+
         if (type === 'web') {
             header('HTTP/1.1 404 Not Found');
-            echo $this->rawHTML($this->message);
+            echo $this->rawHTML($message);
         } else {
-            echo $this->message;
+            echo $message;
         }
 
         die();

@@ -3,6 +3,8 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 
 class Security
 {

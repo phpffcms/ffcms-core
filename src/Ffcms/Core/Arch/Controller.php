@@ -4,8 +4,8 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
-use Ffcms\Core\Helper\File;
-use Ffcms\Core\Helper\String;
+use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\Type\String;
 use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Template\Variables;
 
