@@ -15,7 +15,12 @@ class Normalize
     {
         // its full-based path? Lets return real path
         if (String::startsWith(root, $path)) {
-            return realpath($path);
+            // fix path collisions if is not exist
+            if (file_exists($path)) {
+                return realpath($path);
+            } else {
+                return $path;
+            }
         }
         // else - sounds like relative path
         $path = String::replace('\\', '/', $path);

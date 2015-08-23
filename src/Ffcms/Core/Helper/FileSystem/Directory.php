@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Helper\FileSystem;
 
+use Ffcms\Core\Helper\Type\String;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -15,6 +16,8 @@ class Directory
      */
     public static function exist($path)
     {
+        $path = Normalize::diskFullPath($path);
+
         return (file_exists($path) && is_readable($path) && is_dir($path));
     }
 
@@ -54,6 +57,13 @@ class Directory
         return @rmdir($path);
     }
 
+    /**
+     * Scan files in directory and return full or relative path
+     * @param string $path
+     * @param int $mod
+     * @param bool|false $returnRelative
+     * @return array|bool
+     */
     public static function scan($path, $mod = GLOB_ONLYDIR, $returnRelative = false)
     {
         $path = Normalize::diskFullPath($path);
@@ -67,10 +77,33 @@ class Directory
 
         if ($returnRelative === true) {
             foreach ($entry as $key => $value) {
-                $entry[$key] = str_replace($path, null, $value);
+                $entry[$key] = trim(str_replace($path, null, $value), '/');
             }
         }
 
         return $entry;
+    }
+
+    /**
+     * Rename directory based only on new name for last element. Example: rename('/var/www/html', 'php') => /var/www/php
+     * @param string $path
+     * @param string $newDirName
+     * @return bool
+     */
+    public static function rename($path, $newDirName)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path) || !is_writable($path)) {
+            return false;
+        }
+
+        $path = rtrim($path, '/');
+        $separatedPath = explode('/', $path);
+        array_pop($separatedPath);
+        $clearPath = implode('/', $separatedPath);
+        @rename($path, $clearPath . '/' . $newDirName);
+
+        return true;
     }
 }
