@@ -61,7 +61,8 @@ class Request extends FoundationRequest
 
     protected function afterInitialize()
     {
-        if (App::$Property->get('multiLanguage')) { // multi-language is enabled?
+        // multi-language is enabled?
+        if (App::$Property->get('multiLanguage')) {
             // maybe its a language domain alias?
             if (Object::isArray(App::$Property->get('languageDomainAlias'))) {
                 $domainAlias = App::$Property->get('languageDomainAlias');
@@ -84,7 +85,7 @@ class Request extends FoundationRequest
 
                 // language still not defined?!
                 if ($this->language === null) {
-                    $userLang = App::$Property->get('baseLanguage');
+                    $userLang = App::$Property->get('singleLanguage');
                     $browserAccept = $this->getLanguages();
                     if (Object::isArray($browserAccept) && count($browserAccept) > 0) {
                         foreach ($browserAccept as $bLang) {
@@ -111,6 +112,8 @@ class Request extends FoundationRequest
                     exit();
                 }
             }
+        } else { // multi-language is disabled? Use default language
+            $this->language = App::$Property->get('singleLanguage');
         }
 
         $pathway = $this->getPathInfo(); // calculated depend of language
@@ -142,6 +145,11 @@ class Request extends FoundationRequest
     public function getPathInfo()
     {
         return $this->languageInPath ? String::substr(parent::getPathInfo(), String::length($this->language) + 1) : parent::getPathInfo();
+    }
+
+    public function languageInPath()
+    {
+        return $this->languageInPath;
     }
 
     /**

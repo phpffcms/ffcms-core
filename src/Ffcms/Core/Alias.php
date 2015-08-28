@@ -84,7 +84,7 @@ class Alias
         if (App::$Request->getBasePath() !== null) {
             $this->baseUrl .= App::$Request->getBasePath();
         }
-        if (App::$Request->getLanguage() !== null) {
+        if (App::$Request->languageInPath() && App::$Request->getLanguage() !== null) {
             $this->baseUrl .= '/' . App::$Request->getLanguage();
         }
 

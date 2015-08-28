@@ -27,7 +27,7 @@ class Property
                 throw new NativeException('File /Private/Config/General.php not founded!');
             }
 
-            $cfg = @include_once($file);
+            $cfg = @require($file);
             if (Object::isArray($cfg) && count($cfg) > 0) {
                 self::$config = $cfg;
             }
