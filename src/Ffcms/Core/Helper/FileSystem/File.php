@@ -109,10 +109,11 @@ class File
      * Recursive scan directory, based on $path and allowed extensions $ext or without it
      * @param string $path
      * @param array $ext
+     * @param bool $returnRelative
      * @param $files
      * @return array
      */
-    public static function listFiles($path, array $ext = null, &$files = [])
+    public static function listFiles($path, array $ext = null, $returnRelative = false, &$files = [])
     {
         $path = Normalize::diskFullPath($path);
 
@@ -121,11 +122,15 @@ class File
             if (is_file($sub = $path . '/' . $item)) {
                 $item_ext = String::lastIn($item, '.');
                 if ($ext === null || Arr::in($item_ext, $ext)) {
-                    $files[] = $path . DIRECTORY_SEPARATOR . $item;
+                    if ($returnRelative) {
+                        $files[] = $item;
+                    } else {
+                        $files[] = $path . DIRECTORY_SEPARATOR . $item;
+                    }
                 }
             } else {
                 if ($item !== '.' && $item !== '..') {
-                    self::listFiles($sub, $ext, $files);
+                    self::listFiles($sub, $ext, $returnRelative, $files);
                 }
             }
         }

@@ -98,11 +98,12 @@ class Directory
             return false;
         }
 
-        $path = rtrim($path, '/');
-        $separatedPath = explode('/', $path);
+        $path = rtrim($path, DIRECTORY_SEPARATOR);
+        $separatedPath = explode(DIRECTORY_SEPARATOR, $path);
         array_pop($separatedPath);
-        $clearPath = implode('/', $separatedPath);
-        @rename($path, $clearPath . '/' . $newDirName);
+        $clearPath = implode(DIRECTORY_SEPARATOR, $separatedPath);
+
+        @rename($path, $clearPath . DIRECTORY_SEPARATOR . $newDirName);
 
         return true;
     }
