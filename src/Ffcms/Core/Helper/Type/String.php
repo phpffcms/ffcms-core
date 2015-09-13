@@ -81,6 +81,23 @@ class String
         return self::substr($string, $pos);
     }
 
+    /**
+     * Remove extension from string
+     * @param string $string
+     * @return string
+     */
+    public static function cleanExtension($string)
+    {
+        // no extension in string is founded
+        if (!self::contains('.', $string)) {
+            return $string;
+        }
+
+        $splited = explode('.', $string);
+        array_pop($splited);
+        return implode('.', $splited);
+    }
+
 
     /**
      * Calculate $string length according UTF-8 encoding
