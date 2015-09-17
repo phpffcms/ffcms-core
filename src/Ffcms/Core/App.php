@@ -65,6 +65,9 @@ class App
     /** @var \Ffcms\Core\Interfaces\iCaptcha */
     public static $Captcha;
 
+    /** @var \BasePhpFastCache */
+    public static $Cache;
+
     /**
      * Load entry point for another logic
      */
@@ -79,7 +82,6 @@ class App
         self::$View = new View();
         self::$Translate = new Translate();
         self::$Alias = new Alias();
-
 
         // init debug
         if (Debug::isEnabled()) {
@@ -107,6 +109,7 @@ class App
             self::$Database = $objectConfig['Database'];
             self::$Mailer = $objectConfig['Mailer'];
             self::$Captcha = $objectConfig['Captcha'];
+            self::$Cache = $objectConfig['Cache'];
 
             if (self::$Debug !== null) {
                 self::$Database->getConnection()->enableQueryLog();
