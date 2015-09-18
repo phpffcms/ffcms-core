@@ -107,4 +107,25 @@ class Directory
 
         return true;
     }
+
+    /**
+     * Change chmod recursive inside defined folder
+     * @param string $path
+     * @param int $mod
+     */
+    public static function recursiveChmod($path, $mod = 0777) {
+        $path = Normalize::diskFullPath($path);
+
+        $dir = new \DirectoryIterator($path);
+        foreach ($dir as $item) {
+            // change chmod for folders and files
+            if ($item->isDir() || $item->isFile()) {
+                chmod($item->getPathname(), 0777);
+            }
+            // try to recursive chmod folders
+            if ($item->isDir() && !$item->isDot()) {
+                self::recursiveChmod($item->getPathname(), $mod);
+            }
+        }
+    }
 }
