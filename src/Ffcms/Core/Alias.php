@@ -96,7 +96,7 @@ class Alias
         $this->vendorNamedLibrary['js']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/jquery-ui.min.js';
         $this->vendorNamedLibrary['css']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/themes/base/jquery-ui.min.css';
 
-        $themeAll = App::$Property->get('theme');
+        $themeAll = App::$Properties->get('theme');
         $this->currentViewUrl = $this->scriptUrl . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
     }
 

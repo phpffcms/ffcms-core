@@ -11,9 +11,11 @@ use Ffcms\Core\App;
 
 class Request extends FoundationRequest
 {
-
     protected $language;
     protected $languageInPath = false;
+
+    // special variable for route aliasing
+    protected $aliasPathTarget = false;
 
     // fast access for controller building
     protected $controller;
@@ -46,7 +48,7 @@ class Request extends FoundationRequest
     {
         parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
 
-        $basePath = trim(App::$Property->get('basePath'), '/');
+        $basePath = trim(App::$Properties->get('basePath'), '/');
         if ($basePath !== null && String::length($basePath) > 0) {
             $basePath = '/' . $basePath;
         }
@@ -62,16 +64,17 @@ class Request extends FoundationRequest
     protected function afterInitialize()
     {
         // multi-language is enabled?
-        if (App::$Property->get('multiLanguage')) {
+        if (App::$Properties->get('multiLanguage') === true) {
             // maybe its a language domain alias?
-            if (Object::isArray(App::$Property->get('languageDomainAlias'))) {
-                $domainAlias = App::$Property->get('languageDomainAlias');
-                if ($domainAlias[$this->getHost()] !== null && String::length($domainAlias[$this->getHost()]) > 0) {
+            if (Object::isArray(App::$Properties->get('languageDomainAlias'))) {
+                /** @var array $domainAlias */
+                $domainAlias = App::$Properties->get('languageDomainAlias');
+                if (Object::isArray($domainAlias) && $domainAlias[$this->getHost()] !== null && String::length($domainAlias[$this->getHost()]) > 0) {
                     $this->language = $domainAlias[$this->getHost()];
                 }
             } else {
                 // try to find language in pathway
-                foreach (App::$Property->get('languages') as $lang) {
+                foreach (App::$Properties->get('languages') as $lang) {
                     if (String::startsWith('/' . $lang, $this->getPathInfo())) {
                         $this->language = $lang;
                         $this->languageInPath = true;
@@ -79,17 +82,17 @@ class Request extends FoundationRequest
                 }
 
                 // try to find in ?lang get
-                if ($this->language === null && Arr::in($this->query->get('lang'), App::$Property->get('languages'))) {
+                if ($this->language === null && Arr::in($this->query->get('lang'), App::$Properties->get('languages'))) {
                     $this->language = $this->query->get('lang');
                 }
 
                 // language still not defined?!
                 if ($this->language === null) {
-                    $userLang = App::$Property->get('singleLanguage');
+                    $userLang = App::$Properties->get('singleLanguage');
                     $browserAccept = $this->getLanguages();
                     if (Object::isArray($browserAccept) && count($browserAccept) > 0) {
                         foreach ($browserAccept as $bLang) {
-                            if (Arr::in($bLang, App::$Property->get('languages'))) {
+                            if (Arr::in($bLang, App::$Properties->get('languages'))) {
                                 $userLang = $bLang;
                                 break; // stop calculating, language is founded in priority
                             }
@@ -113,10 +116,33 @@ class Request extends FoundationRequest
                 }
             }
         } else { // multi-language is disabled? Use default language
-            $this->language = App::$Property->get('singleLanguage');
+            $this->language = App::$Properties->get('singleLanguage');
         }
 
-        $pathway = $this->getPathInfo(); // calculated depend of language
+        // calculated depend of language
+        $pathway = $this->getPathInfo();
+
+        // try to find static routing alias
+        /** @var array $aliasMap */
+        $aliasMap = App::$Properties->getAll('Routing');
+        if (Object::isArray($aliasMap) && array_key_exists($pathway, $aliasMap)) {
+            $pathway = $aliasMap[$pathway];
+            $this->aliasPathTarget = $pathway;
+        }
+
+        // check if pathway is the same with target and redirect to source from static routing
+        if (Object::isArray($aliasMap) && Arr::in($this->getPathInfo(), $aliasMap)) {
+            $source = array_search($this->getPathInfo(), $aliasMap);
+            $targetUri = $this->getSchemeAndHttpHost() . $this->getBasePath() . '/';
+            if (App::$Properties->get('multiLanguage') === true) {
+                $targetUri .= $this->language . '/';
+            }
+            $targetUri .= ltrim($source, '/');
+            $response = new Redirect($targetUri);
+            $response->send();
+            exit();
+        }
+
         $pathArray = explode('/', $pathway);
 
         $this->controller = ucfirst(String::lowerCase($pathArray[1]));
@@ -133,8 +159,8 @@ class Request extends FoundationRequest
         }
 
         if ($this->controller === 'Main' && env_name === 'Front') { // can be null or string(0)""
-            $defaultRoute = App::$Property->get('siteIndex');
-            list($this->controller, $this->action) = explode('::', trim($defaultRoute, '/'));
+            $defaultRoute = App::$Properties->get('siteIndex');
+            list($this->controller, $this->action, $this->argumentId, $this->argumentAdd) = explode('::', trim($defaultRoute, '/'));
         }
     }
 
@@ -204,6 +230,9 @@ class Request extends FoundationRequest
     public function getPathWithoutControllerAction()
     {
         $path = trim($this->getPathInfo(), '/');
+        if ($this->aliasPathTarget !== false) {
+            $path = trim($this->aliasPathTarget, '/');
+        }
         $pathArray = explode('/', $path);
         if ($pathArray[0] === String::lowerCase($this->getController())) {
             // unset controller

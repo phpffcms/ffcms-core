@@ -19,7 +19,7 @@ class Translate
 
     public function __construct()
     {
-        if (App::$Request->getLanguage() !== App::$Property->get('baseLanguage')) {
+        if (App::$Request->getLanguage() !== App::$Properties->get('baseLanguage')) {
             $this->cached = $this->load('Default');
             $this->indexes[] = 'Default';
         }
@@ -35,7 +35,7 @@ class Translate
      */
     public function get($index, $text, array $params = null)
     {
-        if (App::$Request->getLanguage() !== App::$Property->get('baseLanguage')) {
+        if (App::$Request->getLanguage() !== App::$Properties->get('baseLanguage')) {
             if ($index !== null && !Arr::in($index, $this->indexes)) {
                 $this->cached = array_merge($this->cached, $this->load($index));
                 $this->indexes[] = $index;

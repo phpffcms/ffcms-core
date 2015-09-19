@@ -100,7 +100,7 @@ class Manager
      */
     public static function isEnabled()
     {
-        $property = App::$Property->get('debug');
+        $property = App::$Properties->get('debug');
         return (true === $property['all'] ||
             App::$Request->cookies->get($property['cookie']['key']) === $property['cookie']['value']);
     }

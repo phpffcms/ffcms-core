@@ -140,7 +140,7 @@ class Security
      */
     public static function password_hash($password)
     {
-        return crypt($password, App::$Property->get('passwordSalt'));
+        return crypt($password, App::$Properties->get('passwordSalt'));
     }
 
     /**

@@ -35,7 +35,7 @@ class View
     public function __construct()
     {
         // get theme config and build full path
-        $themeConfig = App::$Property->get('theme');
+        $themeConfig = App::$Properties->get('theme');
         $this->themePath = root . DIRECTORY_SEPARATOR . 'Apps' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . env_name . DIRECTORY_SEPARATOR . $themeConfig[env_name];
 
         // check if theme is available

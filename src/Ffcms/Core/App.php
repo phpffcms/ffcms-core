@@ -9,6 +9,7 @@ use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Security;
+use Ffcms\Core\Helper\Type\Object;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Network\Request;
 use Ffcms\Core\Network\Response;
@@ -26,8 +27,8 @@ class App
     /** @var \Ffcms\Core\Network\Request */
     public static $Request;
 
-    /** @var \Ffcms\Core\Property */
-    public static $Property;
+    /** @var \Ffcms\Core\Properties */
+    public static $Properties;
 
     /** @var \Ffcms\Core\Network\Response */
     public static $Response;
@@ -75,7 +76,7 @@ class App
     {
         // init dynamic classes and make access point
         self::$Memory = MemoryObject::instance();
-        self::$Property = new Property();
+        self::$Properties = new Properties();
         self::$Request = Request::createFromGlobals();
         self::$Security = new Security();
         self::$Response = new Response();
@@ -94,28 +95,23 @@ class App
 
     /**
      * Build object configuration from config
+     * @throws NativeException
      */
     protected static function buildExtendObject()
     {
-        $cfgPath = root . '/Private/Config/Object.php';
-        try {
-            if (!File::exist($cfgPath)) {
-                throw new NativeException('Object config initializer is not founded in: /Private/Config/Object.php');
-            }
+        $objectConfig = self::$Properties->getAll('object');
+        if ($objectConfig === false || !Object::isArray($objectConfig)) {
+            throw new NativeException('Object configurations is not loaded: /Private/Config/Object.php');
+        }
 
-            $objectConfig = include_once($cfgPath);
-            self::$User = $objectConfig['User'];
-            self::$Session = $objectConfig['Session'];
-            self::$Database = $objectConfig['Database'];
-            self::$Mailer = $objectConfig['Mailer'];
-            self::$Captcha = $objectConfig['Captcha'];
-            self::$Cache = $objectConfig['Cache'];
-
-            if (self::$Debug !== null) {
-                self::$Database->getConnection()->enableQueryLog();
+        foreach ($objectConfig as $object => $instance) {
+            if (property_exists('Ffcms\\Core\\App', $object)) {
+                self::${$object} = $instance();
             }
-        } catch (NativeException $e) {
-            $e->display();
+        }
+
+        if (self::$Debug !== null) {
+            self::$Database->getConnection()->enableQueryLog();
         }
     }
 
