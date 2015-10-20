@@ -128,7 +128,6 @@ class App
             // founded callback injection alias
             if (self::$Request->getCallbackAlias() !== false) {
                 $cName = self::$Request->getCallbackAlias();
-                include (root . '/Apps/Controller/Front/Main.php');
                 if (class_exists($cName)) {
                     $callClass = new $cName;
                 } else {
