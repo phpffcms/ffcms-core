@@ -19,7 +19,7 @@ interface iWidget
     public function display();
 
     /**
-     * Init widget
+     * Special method on "before" run widget
      */
     public function init();
 }

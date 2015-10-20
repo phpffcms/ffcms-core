@@ -16,6 +16,8 @@ class Request extends FoundationRequest
 
     // special variable for route aliasing
     protected $aliasPathTarget = false;
+    // special variable for route callback binding
+    protected $callbackClass = false;
 
     // fast access for controller building
     protected $controller;
@@ -124,7 +126,7 @@ class Request extends FoundationRequest
 
         // try to find static routing alias
         /** @var array $aliasMap */
-        $aliasMap = App::$Properties->getAll('Routing');
+        $aliasMap = App::$Properties->getAll('Routing')['Alias'][env_name];
         if (Object::isArray($aliasMap) && array_key_exists($pathway, $aliasMap)) {
             $pathway = $aliasMap[$pathway];
             $this->aliasPathTarget = $pathway;
@@ -143,6 +145,7 @@ class Request extends FoundationRequest
             exit();
         }
 
+        // define data from pathway
         $pathArray = explode('/', $pathway);
 
         $this->controller = ucfirst(String::lowerCase($pathArray[1]));
@@ -150,12 +153,22 @@ class Request extends FoundationRequest
         $this->argumentId = String::lowerCase($pathArray[3]);
         $this->argumentAdd = String::lowerCase($pathArray[4]);
 
+
         if ($this->action == null) { // can be null or string(0)""
             $this->action = 'Index';
         }
 
-        if ($this->controller == null) {
+        // empty or contains backslashes? set to main
+        if ($this->controller == null || String::contains('\\', $this->controller)) {
             $this->controller = 'Main';
+        }
+
+        // get callback routing map
+        $callbackMap = App::$Properties->getAll('Routing')['Callback'][env_name];
+        $callbackClass = $callbackMap['/' . strtolower($this->controller)];
+        // check if rule for current controller is exist
+        if ($callbackClass !== null) {
+            $this->callbackClass = $callbackClass;
         }
 
         if ($this->controller === 'Main' && env_name === 'Front') { // can be null or string(0)""
@@ -221,6 +234,15 @@ class Request extends FoundationRequest
     public function getAdd()
     {
         return urldecode($this->argumentAdd);
+    }
+
+    /**
+     * Get callback class alias if exist
+     * @return bool|string
+     */
+    public function getCallbackAlias()
+    {
+        return $this->callbackClass;
     }
 
     /**

@@ -10,6 +10,7 @@ use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\String;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Network\Request;
 use Ffcms\Core\Network\Response;
@@ -122,32 +123,51 @@ class App
     public static function display()
     {
         try {
-            $controller_path = '/Apps/Controller/' . env_name . '/' . self::$Request->getController() . '.php';
-            if (File::exist(root . $controller_path)) {
-                include_once(root . $controller_path);
-                $cname = 'Apps\\Controller\\' . env_name . '\\' . self::$Request->getController();
-                if (class_exists($cname)) {
-                    $load = new $cname;
-                    $actionName = 'action' . ucfirst(self::$Request->getAction());
-                    if (method_exists($cname, $actionName)) {
-                        if (self::$Request->getID() !== null) {
-                            if (self::$Request->getAdd() !== null) {
-                                $load->$actionName(self::$Request->getID(), self::$Request->getAdd());
-                            } else {
-                                $load->$actionName(self::$Request->getID());
-                            }
-                        } else {
-                            $load->$actionName();
-                        }
-                    } else {
-                        throw new NotFoundException('Method "' . $actionName . '()" not founded in "' . $cname . '" in file {root}' . $controller_path);
-                    }
-                    unset($load);
+            $callClass = null;
+            $callMethod = 'action' . self::$Request->getAction();
+            // founded callback injection alias
+            if (self::$Request->getCallbackAlias() !== false) {
+                $cName = self::$Request->getCallbackAlias();
+                include (root . '/Apps/Controller/Front/Main.php');
+                if (class_exists($cName)) {
+                    $callClass = new $cName;
                 } else {
-                    throw new NotFoundException('Namespace\\Class - ' . $cname . ' not founded in {root}' . $controller_path);
+                    throw new NotFoundException('Callback alias of class "' . App::$Security->strip_tags($cName) . '" is not founded');
+                }
+            } else { // typical parsing of native apps
+                $cName = '\\Apps\\Controller\\' . env_name . '\\' . self::$Request->getController();
+                $cPath = String::replace('\\', '/', $cName) . '.php';
+
+                // try to load controller
+                if (File::exist($cPath)) {
+                    include_once($cPath);
+                } else {
+                    throw new NotFoundException('Controller not founded: {root}' . $cPath);
+                }
+                // try to initialize class object
+                if (class_exists($cName)) {
+                    $callClass = new $cName;
+                } else {
+                    throw new NotFoundException('App is not founded: "' . $cName . '. Pathway: {root}' . $cPath);
+                }
+            }
+
+            // try to call method of founded callback class
+            if (method_exists($callClass, $callMethod)) {
+                // param "id" is passed
+                if (self::$Request->getID() !== null) {
+                    // param "add" is passed
+                    if (self::$Request->getAdd() !== null) {
+                        $callClass->$callMethod(self::$Request->getID(), self::$Request->getAdd());
+                    } else {
+                        $callClass->$callMethod(self::$Request->getID());
+                    }
+                } else {
+                    // no passed params is founded
+                    $callClass->$callMethod();
                 }
             } else {
-                throw new NotFoundException('Controller not founded: {root}' . $controller_path);
+                throw new NotFoundException('Method "' . $callMethod . '()" not founded in "' . get_class($callClass) . '"');
             }
         } catch (NotFoundException $e) {
             $e->display();

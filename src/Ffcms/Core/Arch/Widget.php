@@ -10,24 +10,22 @@ class Widget implements iWidget
 {
     use DynamicGlobal;
 
+    /** @var string|null */
+    public static $class;
+
     public static function widget(array $params = null)
     {
-        // check if widget class is passed directly
-        if ($params['class'] === null) {
-            $params['class'] = get_called_class();
+        if (self::$class === null) {
+            self::$class = get_called_class();
         }
 
-        // set class object name
-        $className = $params['class'];
-        unset($params['class']);
-
         // check if class exist
-        if (!class_exists($className)) {
-            return 'Error: Widget is not founded: ' . App::$Security->strip_tags($className);
+        if (!class_exists(self::$class)) {
+            return 'Error: Widget is not founded: ' . App::$Security->strip_tags(self::$class);
         }
 
         // init class and pass properties
-        $object = new $className;
+        $object = new self::$class;
         foreach ($params as $property => $value) {
             if (property_exists($object, $property)) {
                 $object->$property = $value;
