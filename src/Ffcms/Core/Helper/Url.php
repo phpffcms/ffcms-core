@@ -42,16 +42,16 @@ class Url extends NativeGenerator
         }
 
         // id is defined?
-        if (!String::likeEmpty($to[1])) {
+        if (isset($to[1]) && !String::likeEmpty($to[1])) {
             $response .= '/' . self::safeUri($to[1], $encode);
         }
 
         // add param is defined?
-        if (!String::likeEmpty($to[2])) {
+        if (isset($to[2]) && !String::likeEmpty($to[2])) {
             $response .= '/' . self::safeUri($to[2], $encode);
         }
 
-        if (Object::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
+        if (isset($to[3]) && Object::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
             $first = true;
             foreach ($to[3] as $key=>$value) {
                 $response .= $first ? '?' : '&';

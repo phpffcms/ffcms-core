@@ -49,7 +49,7 @@ class Listing extends NativeGenerator
                     $elementPoint = Url::buildPathway($item['link']);
                     $currentPoint = Url::buildPathwayFromRequest();
 
-                    if ($item['activeClass'] === null) {
+                    if (!isset($item['activeClass'])) {
                         $item['activeClass'] = 'active';
                     }
 
@@ -91,7 +91,7 @@ class Listing extends NativeGenerator
             }
 
             $items .= '<li';
-            if (count($item['property']) > 0) {
+            if (isset($item['property']) && count($item['property']) > 0) {
                 foreach ($item['property'] as $attr => $value) {
                     $items .= ' ' . $attr . '="' . $value . '"';
                 }
@@ -112,9 +112,12 @@ class Listing extends NativeGenerator
                 } else {
                     $link .= self::nohtml(trim($item['link'], '/'));
                 }
+
                 $htmlLink = '<a href="' . self::nohtml($link) . '"';
-                $htmlLink .= self::applyProperty($item['linkProperty']);
-                $htmlLink .= '>' . ($item['html'] ? App::$Security->secureHtml($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';
+                if (isset($item['linkProperty']) && Object::isArray($item['linkProperty'])) {
+                    $htmlLink .= self::applyProperty($item['linkProperty']);
+                }
+                $htmlLink .= '>' . ((isset($item['html']) && $item['html'] === true ) ? App::$Security->secureHtml($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';
                 $items .= $htmlLink;
             }
             $items .= '</li>';

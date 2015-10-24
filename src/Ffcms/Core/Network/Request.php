@@ -5,6 +5,7 @@ namespace Ffcms\Core\Network;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Object;
 use Ffcms\Core\Helper\Type\String;
+use Predis\Command\StringIncrement;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
 use Ffcms\Core\App;
@@ -123,10 +124,11 @@ class Request extends FoundationRequest
 
         // calculated depend of language
         $pathway = $this->getPathInfo();
+        $routing = App::$Properties->getAll('Routing');
 
         // try to find static routing alias
         /** @var array $aliasMap */
-        $aliasMap = App::$Properties->getAll('Routing')['Alias'][env_name];
+        $aliasMap = $routing['Alias'][env_name];
         if (Object::isArray($aliasMap) && array_key_exists($pathway, $aliasMap)) {
             $pathway = $aliasMap[$pathway];
             $this->aliasPathTarget = $pathway;
@@ -146,13 +148,7 @@ class Request extends FoundationRequest
         }
 
         // define data from pathway
-        $pathArray = explode('/', $pathway);
-
-        $this->controller = ucfirst(String::lowerCase($pathArray[1]));
-        $this->action = ucfirst(String::lowerCase($pathArray[2]));
-        $this->argumentId = String::lowerCase($pathArray[3]);
-        $this->argumentAdd = String::lowerCase($pathArray[4]);
-
+        $this->setPathdata(explode('/', trim($pathway, '/')));
 
         if ($this->action == null) { // can be null or string(0)""
             $this->action = 'Index';
@@ -164,17 +160,41 @@ class Request extends FoundationRequest
         }
 
         // get callback routing map
-        $callbackMap = App::$Properties->getAll('Routing')['Callback'][env_name];
-        $callbackClass = $callbackMap['/' . strtolower($this->controller)];
-        // check if rule for current controller is exist
-        if ($callbackClass !== null) {
-            $this->callbackClass = $callbackClass;
+        $callbackMap = $routing['Callback'][env_name];
+        if (isset($callbackMap[$this->controller])) {
+            $callbackClass = $callbackMap[$this->controller];
+            // check if rule for current controller is exist
+            if ($callbackClass !== null) {
+                $this->callbackClass = $callbackClass;
+            }
+        }
+    }
+
+    /**
+     * Working with path array data
+     * @param array|null $pathArray
+     */
+    private function setPathdata(array $pathArray = null)
+    {
+        if (!Object::isArray($pathArray) || count($pathArray) < 1) {
+            return;
         }
 
-        if ($this->controller === 'Main' && env_name === 'Front') { // can be null or string(0)""
-            $defaultRoute = App::$Properties->get('siteIndex');
-            list($this->controller, $this->action, $this->argumentId, $this->argumentAdd) = explode('::', trim($defaultRoute, '/'));
+        /**
+         * Switch path array as reverse without break point! Caution: drugs inside!
+         */
+        switch (count($pathArray)) {
+            case 4:
+                $this->argumentAdd = String::lowerCase($pathArray[3]);
+            case 3:
+                $this->argumentId = String::lowerCase($pathArray[2]);
+            case 2:
+                $this->action = ucfirst(String::lowerCase($pathArray[1]));
+            case 1:
+                $this->controller = ucfirst(String::lowerCase($pathArray[0]));
+                break;
         }
+        return;
     }
 
     /**

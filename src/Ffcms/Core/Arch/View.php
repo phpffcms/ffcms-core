@@ -121,7 +121,7 @@ class View
 
             // lets try to find controller in backtrace
             foreach ($calledLog as $caller) {
-                if (String::startsWith('Apps\\Controller\\', $caller['class'])) {
+                if (isset($caller['class']) && String::startsWith('Apps\\Controller\\', $caller['class'])) {
                     $calledController = (string)$caller['class'];
                 }
             }
