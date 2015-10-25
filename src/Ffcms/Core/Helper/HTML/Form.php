@@ -157,10 +157,10 @@ class Form extends NativeGenerator
 
         // get html allow rule from field init
         $html = false;
-        if ($property['html'] === true) {
+        if (isset($property['html']) && $property['html'] === true) {
             $html = true;
         }
-        if (array_key_exists('html', $property)) {
+        if (Object::isArray($property) && array_key_exists('html', $property)) {
             unset($property['html']);
         }
 

@@ -203,7 +203,11 @@ class Request extends FoundationRequest
      */
     public function getPathInfo()
     {
-        return $this->languageInPath ? String::substr(parent::getPathInfo(), String::length($this->language) + 1) : parent::getPathInfo();
+        $route = $this->languageInPath ? String::substr(parent::getPathInfo(), String::length($this->language) + 1) : parent::getPathInfo();
+        if (!String::startsWith('/', $route)) {
+            $route = '/' . $route;
+        }
+        return $route;
     }
 
     public function languageInPath()
@@ -263,6 +267,24 @@ class Request extends FoundationRequest
     public function getCallbackAlias()
     {
         return $this->callbackClass;
+    }
+
+    /**
+     * Get static alias of pathway if exist
+     * @return bool
+     */
+    public function getStaticAlias()
+    {
+        return $this->aliasPathTarget;
+    }
+
+    /**
+     * Check if current request is aliased by dynamic or static rule
+     * @return bool
+     */
+    public function isPathInjected()
+    {
+        return $this->callbackClass !== false || $this->aliasPathTarget !== false;
     }
 
     /**
