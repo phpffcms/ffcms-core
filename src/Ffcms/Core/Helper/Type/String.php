@@ -116,7 +116,7 @@ class String
      */
     public static function lowerCase($string)
     {
-        return mb_strtolower($string, 'UTF-8');
+        return mb_strtolower((string)$string, 'UTF-8');
     }
 
     /**
@@ -126,7 +126,7 @@ class String
      */
     public static function upperCase($string)
     {
-        return mb_strtoupper($string, 'UTF-8');
+        return mb_strtoupper((string)$string, 'UTF-8');
     }
 
     /**

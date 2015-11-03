@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
+use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Object;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
@@ -60,8 +61,12 @@ class Table extends NativeGenerator
             $theadItems .= '<thead' . self::applyProperty($elements['thead']['property']) . '>';
             $theadItems .= '<tr>';
             if (Object::isArray($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
-                foreach ($elements['thead']['titles'] as $title) {
-                    $theadItems .= '<th>' . ($title['html'] ? self::safe($title['text'], true) : self::nohtml($title['text'])) . '</th>';
+                foreach ($elements['thead']['titles'] as $order => $title) {
+                    if ($selectOptions !== false && $order+1 === $selectOptions['attachOrder']) {
+                        $title['text'] = self::buildSingleTag('input', ['type' => 'checkbox', 'name' => 'selectAll']) . ' ' . $title['text'];
+                        $title['html'] = true;
+                    }
+                    $theadItems .= self::buildContainerTag('th', [], $title['text'], $title['html']);
                 }
             }
             $theadItems .= '</tr></thead>';
@@ -82,7 +87,28 @@ class Table extends NativeGenerator
             $build .= '</form>';
         }
 
+        if ($selectOptions !== false && Object::isArray($selectOptions)) {
+            self::buildSelectorHtml($selectOptions);
+        }
+
         return $build;
+    }
+
+    /**
+     * Build special js code for select boxes for "select all" button in header
+     * @param array $opt
+     */
+    private static function buildSelectorHtml(array $opt)
+    {
+        $js = '$(function () {
+            var targetSwitchbox = $(\'input[name="' . $opt['input']['name'] . '"]\');
+            $(\'input[name="selectAll"]\').change(function() {
+                $(targetSwitchbox).each(function () {
+                    $(this).prop(\'checked\', !$(this).is(\':checked\'));
+                });
+            });
+        });';
+        App::$Alias->addPlainCode('js', $js);
     }
 
 }
