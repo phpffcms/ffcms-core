@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Helper\FileSystem;
 
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 
 class Normalize
 {
@@ -14,7 +14,7 @@ class Normalize
     public static function diskPath($path)
     {
         // its full-based path? Lets return real path
-        if (String::startsWith(root, $path)) {
+        if (Str::startsWith(root, $path)) {
             // fix path collisions if is not exist
             if (file_exists($path)) {
                 return realpath($path);
@@ -23,12 +23,12 @@ class Normalize
             }
         }
         // else - sounds like relative path
-        $path = String::replace('\\', '/', $path);
+        $path = Str::replace('\\', '/', $path);
         $splitPath = explode('/', $path);
 
         $outputPath = [];
         foreach ($splitPath as $index => $part) {
-            if ($part === '.' || String::length(trim($part)) < 1) {
+            if ($part === '.' || Str::length(trim($part)) < 1) {
                 continue;
             }
 
@@ -50,7 +50,7 @@ class Normalize
     public static function diskFullPath($path)
     {
         $path = self::diskPath($path);
-        if (!String::startsWith(root, $path)) {
+        if (!Str::startsWith(root, $path)) {
             $path = root . DIRECTORY_SEPARATOR . ltrim($path, '\\/');
         }
         return $path;

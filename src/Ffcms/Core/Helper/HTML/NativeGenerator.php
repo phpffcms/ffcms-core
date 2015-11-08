@@ -4,7 +4,7 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 
 abstract class NativeGenerator
 {
@@ -90,7 +90,7 @@ abstract class NativeGenerator
      */
     public static function safeUri($string, $encode = true)
     {
-        $string = String::lowerCase($string);
+        $string = Str::lowerCase($string);
         $string = self::nohtml($string);
         if ($encode === true) {
             $string = urlencode($string);

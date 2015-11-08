@@ -6,7 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\HTML\Listing;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
 class Nav extends NativeGenerator
@@ -23,7 +23,7 @@ class Nav extends NativeGenerator
 
         $tabContent = '<div class="tab-content">';
         if ($elements['tabAnchor'] === null) {
-            $elements['tabAnchor'] = String::randomLatin(mt_rand(6, 12));
+            $elements['tabAnchor'] = Str::randomLatin(mt_rand(6, 12));
         }
 
         $blockProperty = [];
@@ -59,7 +59,7 @@ class Nav extends NativeGenerator
 
                 // mark active tab
                 if ($activeObject === true) {
-                    $item['property']['class'] .= (String::length($item['property']['class']) > 0 ? ' ' : null) . 'active';
+                    $item['property']['class'] .= (Str::length($item['property']['class']) > 0 ? ' ' : null) . 'active';
                 }
 
                 // tab special properties for bootstrap

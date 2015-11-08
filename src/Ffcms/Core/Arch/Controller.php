@@ -5,7 +5,7 @@ namespace Ffcms\Core\Arch;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Template\Variables;
 
@@ -53,7 +53,7 @@ class Controller
         } else {
             $layoutPath = App::$Alias->currentViewPath . '/layout/' . $this->layout . '.php';
             if (!File::exist($layoutPath)) {
-                throw new NativeException('Layout not founded: {root}' . String::replace(root, '', $layoutPath));
+                throw new NativeException('Layout not founded: {root}' . Str::replace(root, '', $layoutPath));
             }
 
             $body = $this->response;

@@ -7,7 +7,7 @@ use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Arch\Model;
 
 class Form extends NativeGenerator
@@ -39,13 +39,13 @@ class Form extends NativeGenerator
 
         // set custom html build structure form fields
         if (Object::isArray($structure)) {
-            if (String::length($structure['base']) > 0) {
+            if (Str::length($structure['base']) > 0) {
                 $this->structure = $structure['base'];
             }
-            if (String::length($structure['checkbox']) > 0) {
+            if (Str::length($structure['checkbox']) > 0) {
                 $this->structureCheckbox = $structure['checkbox'];
             }
-            if (String::length($structure['checkboxes']) > 0) {
+            if (Str::length($structure['checkboxes']) > 0) {
                 $this->structureCheckboxes = $structure['checkboxes'];
             }
         }
@@ -54,7 +54,7 @@ class Form extends NativeGenerator
 
         $property['id'] = $this->name; // define form id
         // if action is not defined - define it
-        if (String::likeEmpty($property['action'])) {
+        if (Str::likeEmpty($property['action'])) {
             $property['action'] = App::$Request->getFullUrl();
         }
         echo '<form' . self::applyProperty($property) . '>';
@@ -80,7 +80,7 @@ class Form extends NativeGenerator
 
         // can be dots separated object
         $propertyName = $object;
-        if (String::contains('.', $propertyName)) {
+        if (Str::contains('.', $propertyName)) {
             $propertyName = strstr($propertyName, '.', true);
         }
 
@@ -106,7 +106,7 @@ class Form extends NativeGenerator
         // sounds like a dot-separated $object
         if ($propertyName !== $object) {
             $nesting = trim(strstr($object, '.'), '.');
-            $labelFor .= '-' . String::replace('.', '-', $nesting);
+            $labelFor .= '-' . Str::replace('.', '-', $nesting);
             $itemValue = Arr::getByPath($nesting, $itemValue);
         }
         $itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
@@ -115,7 +115,7 @@ class Form extends NativeGenerator
             return $itemBody;
         }
 
-        return String::replace(
+        return Str::replace(
             ['%name%', '%label%', '%item%', '%help%'],
             [$labelFor, $labelText, $itemBody, self::nohtml($helper)],
             $structure
@@ -171,7 +171,7 @@ class Form extends NativeGenerator
         }
 
         // sounds like a array-path based
-        if (String::contains('.', $name)) {
+        if (Str::contains('.', $name)) {
             $splitedName = explode('.', $name);
             foreach($splitedName as $nameKey) {
                 $property['name'] .= '[' . $nameKey . ']';
@@ -225,7 +225,7 @@ class Form extends NativeGenerator
                     }
                     $property['value'] = $opt;
                     // apply structured checkboxes style for each item
-                    $buildCheckboxes .= String::replace('%item%' , self::buildSingleTag('input', $property) . self::nohtml($opt), $this->structureCheckboxes);
+                    $buildCheckboxes .= Str::replace('%item%' , self::buildSingleTag('input', $property) . self::nohtml($opt), $this->structureCheckboxes);
                 }
 
                 $response = $buildCheckboxes;

@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Helper\FileSystem;
 
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

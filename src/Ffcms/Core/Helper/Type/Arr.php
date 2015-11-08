@@ -48,7 +48,7 @@ class Arr
         }
 
         // c'mon man, what the f*ck are you doing? ))
-        if (!String::contains($delimiter, $path)) {
+        if (!Str::contains($delimiter, $path)) {
             return $array[$path];
         }
 

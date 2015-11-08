@@ -5,7 +5,7 @@ namespace Ffcms\Core\Helper;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 
 class Url extends NativeGenerator
 {
@@ -33,21 +33,21 @@ class Url extends NativeGenerator
      */
     public static function buildPathway(array $to, $encode = true)
     {
-        $response = trim(String::lowerCase($to[0]), '/'); // controller/action
+        $response = trim(Str::lowerCase($to[0]), '/'); // controller/action
 
         list($controller, $action) = explode('/', $response);
         // check if controller and action is defined
-        if (String::likeEmpty($controller) || String::likeEmpty($action)) {
+        if (Str::likeEmpty($controller) || Str::likeEmpty($action)) {
             return null;
         }
 
         // id is defined?
-        if (isset($to[1]) && !String::likeEmpty($to[1])) {
+        if (isset($to[1]) && !Str::likeEmpty($to[1])) {
             $response .= '/' . self::safeUri($to[1], $encode);
         }
 
         // add param is defined?
-        if (isset($to[2]) && !String::likeEmpty($to[2])) {
+        if (isset($to[2]) && !Str::likeEmpty($to[2])) {
             $response .= '/' . self::safeUri($to[2], $encode);
         }
 

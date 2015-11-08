@@ -5,8 +5,9 @@ namespace Ffcms\Core;
 
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 
 class Properties
 {
@@ -41,7 +42,7 @@ class Properties
         }
 
         // try to load from file
-        $configFile = ucfirst(String::lowerCase($configName)) . '.php';
+        $configFile = ucfirst(Str::lowerCase($configName)) . '.php';
         if (File::exist('/Private/Config/' . $configFile)) {
             $this->data[$configName] = @include(root . '/Private/Config/' . $configFile);
             return true;
@@ -73,7 +74,7 @@ class Properties
         $response = $this->data[$configFile][$configKey];
 
         // try to convert config value by defined parse type
-        $parseType = String::lowerCase($parseType);
+        $parseType = Str::lowerCase($parseType);
         switch ($parseType) {
             case 'int':
             case 'integer':
@@ -107,6 +108,25 @@ class Properties
         }
 
         return $this->data[$configFile];
+    }
+
+    /**
+     * Update configuration data based on key-value array of new data
+     * @param string $configFile
+     * @param array $newData
+     * @return bool
+     */
+    public function updateConfig($configFile, array $newData)
+    {
+        $this->load($configFile);
+        if (!isset($this->data[$configFile])) {
+            return false;
+        }
+
+        $saveData = Arr::merge($this->data[$configFile], $newData);
+        $saveData = '<?php return ' . App::$Security->var_export54($saveData) . ';';
+        File::write('/Private/Config/' . ucfirst(Str::lowerCase($configFile)) . '.php', $saveData);
+        return true;
     }
 
 

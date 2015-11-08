@@ -4,7 +4,7 @@ namespace Ffcms\Core\Helper\HTML\Bootstrap;
 
 use Ffcms\Core\Helper\HTML\Listing;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
@@ -26,7 +26,7 @@ class Navbar extends NativeGenerator
 
         $mobileCollapse = self::nohtml($elements['collapseId']);
         if (null === $mobileCollapse) {
-            $mobileCollapse = String::randomLatin(mt_rand(6, 12)) . mt_rand(1, 99);
+            $mobileCollapse = Str::randomLatin(mt_rand(6, 12)) . mt_rand(1, 99);
         }
         $ulId = 1;
 

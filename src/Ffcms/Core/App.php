@@ -10,7 +10,7 @@ use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Network\Request;
 use Ffcms\Core\Network\Response;
@@ -135,7 +135,7 @@ class App
                 }
             } else { // typical parsing of native apps
                 $cName = '\\Apps\\Controller\\' . env_name . '\\' . self::$Request->getController();
-                $cPath = String::replace('\\', '/', $cName) . '.php';
+                $cPath = Str::replace('\\', '/', $cName) . '.php';
 
                 // try to load controller
                 if (File::exist($cPath)) {

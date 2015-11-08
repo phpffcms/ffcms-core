@@ -4,7 +4,7 @@ namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 
 class Security
 {
@@ -130,7 +130,7 @@ class Security
      */
     public function escapeQuotes($html)
     {
-        return String::replace(['"', "'"], '&quot;', $html);
+        return Str::replace(['"', "'"], '&quot;', $html);
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Helper\FileSystem;
 
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 
 /**
  * Class File - helper to work with files
@@ -120,7 +120,7 @@ class File
         $dir = opendir($path . '/.');
         while($item = readdir($dir)) {
             if (is_file($sub = $path . '/' . $item)) {
-                $item_ext = String::lastIn($item, '.');
+                $item_ext = Str::lastIn($item, '.');
                 if ($ext === null || Arr::in($item_ext, $ext)) {
                     if ($returnRelative) {
                         $files[] = $item;

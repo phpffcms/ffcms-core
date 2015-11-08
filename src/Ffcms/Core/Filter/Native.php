@@ -5,7 +5,7 @@ namespace Ffcms\Core\Filter;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 
 class Native
 {
@@ -21,7 +21,7 @@ class Native
         if (Object::isArray($object)) {
             return false;
         }
-        return String::length($object) >= $length;
+        return Str::length($object) >= $length;
     }
 
     /**
@@ -35,7 +35,7 @@ class Native
         if (Object::isArray($object)) {
             return false;
         }
-        return String::length($object) <= $length;
+        return Str::length($object) <= $length;
     }
 
     /**
@@ -51,7 +51,7 @@ class Native
         }
 
         // allow empty, validate on required rule
-        if (String::likeEmpty($object)) {
+        if (Str::likeEmpty($object)) {
             return true;
         }
 
@@ -118,7 +118,7 @@ class Native
         if (Object::isArray($object)) {
             return count($object) > 0;
         }
-        return String::length($object) > 0;
+        return Str::length($object) > 0;
     }
 
     /**
@@ -133,11 +133,11 @@ class Native
         }
 
         // allow empty, validate on required rule
-        if (String::likeEmpty($object)) {
+        if (Str::likeEmpty($object)) {
             return true;
         }
 
-        return String::isEmail($object);
+        return Str::isEmail($object);
     }
 
     /**
@@ -152,11 +152,11 @@ class Native
         }
 
         // allow empty, validate on required rule
-        if (String::likeEmpty($object)) {
+        if (Str::likeEmpty($object)) {
             return true;
         }
 
-        return String::isPhone($object);
+        return Str::isPhone($object);
     }
 
     /**
@@ -171,11 +171,11 @@ class Native
         }
 
         // allow empty, validate on required rule
-        if (String::likeEmpty($object)) {
+        if (Str::likeEmpty($object)) {
             return true;
         }
 
-        return String::isUrl($object);
+        return Str::isUrl($object);
     }
 
     /**
@@ -226,7 +226,7 @@ class Native
             return false;
         }
 
-        if (String::likeEmpty($object)) {
+        if (Str::likeEmpty($object)) {
             return true;
         }
 

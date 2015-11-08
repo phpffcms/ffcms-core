@@ -8,7 +8,7 @@ use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\FileSystem\Normalize;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\I18n\Lexer;
 
 class Translate
@@ -48,7 +48,7 @@ class Translate
 
         if (Object::isArray($params) && count($params) > 0) {
             foreach ($params as $var => $value) {
-                $text = String::replace('%' . $var . '%', $value, $text);
+                $text = Str::replace('%' . $var . '%', $value, $text);
             }
         }
         return $text;
@@ -65,8 +65,8 @@ class Translate
         $index = null;
         $namespace = 'Apps\\Controller\\' . env_name . '\\';
         foreach (debug_backtrace() as $caller) {
-            if (isset($caller['class']) && String::startsWith($namespace, $caller['class'])) {
-                $index = String::substr((string)$caller['class'], String::length($namespace));
+            if (isset($caller['class']) && Str::startsWith($namespace, $caller['class'])) {
+                $index = Str::substr((string)$caller['class'], Str::length($namespace));
             }
         }
         return $this->get($index, $text, $params);

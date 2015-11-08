@@ -7,7 +7,7 @@ use Ffcms\Core\Exception\SyntaxException;
 use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Filter\Native;
 use Ffcms\Core\Traits\DynamicGlobal;
 
@@ -37,11 +37,11 @@ class Model
         $labels = $this->labels();
         $response = null;
         // maybe array-dotted declaration?
-        if (String::contains('.', $param)) {
+        if (Str::contains('.', $param)) {
             // not defined for all array-dotted nesting?
-            if (String::likeEmpty($labels[$param])) {
+            if (Str::likeEmpty($labels[$param])) {
                 // lets set default array label (before first dot-separation)
-                $response = $labels[String::firstIn($param, '.')];
+                $response = $labels[Str::firstIn($param, '.')];
             } else {
                 $response = $labels[$param];
             }
@@ -49,7 +49,7 @@ class Model
             $response = $labels[$param];
         }
 
-        return (String::likeEmpty($response) ? String::replace('.', ' ', String::splitCamelCase($param)) : $response);
+        return (Str::likeEmpty($response) ? Str::replace('.', ' ', Str::splitCamelCase($param)) : $response);
     }
 
     /**
@@ -124,7 +124,7 @@ class Model
         // prevent warnings
         if (Object::isArray($this->_wrongFields) && count($this->_wrongFields) > 0) {
             foreach ($this->_wrongFields as $property) {
-                if (String::contains('.', $property)) { // sounds like dot-separated array property
+                if (Str::contains('.', $property)) { // sounds like dot-separated array property
                     $propertyName = strstr($property, '.', true); // get property name
                     $propertyArray = trim(strstr($property, '.'), '.'); // get dot-based array path
 
@@ -186,7 +186,7 @@ class Model
         // maybe no filter required?
         if ($filter_name === 'used') {
             $check = true;
-        } elseif (String::contains('::', $filter_name)) { // sounds like a callback class::method::method
+        } elseif (Str::contains('::', $filter_name)) { // sounds like a callback class::method::method
             // string to array via delimiter ::
             $callbackArray = explode('::', $filter_name);
             // first item is a class name
@@ -196,7 +196,7 @@ class Model
             // left any items? maybe post-static callbacks?
             if (count($callbackArray) > 0) {
                 foreach ($callbackArray as $obj) {
-                    if (String::startsWith('$', $obj) && property_exists($class, ltrim($obj, '$'))) { // sounds like a variable
+                    if (Str::startsWith('$', $obj) && property_exists($class, ltrim($obj, '$'))) { // sounds like a variable
                         $obj = ltrim($obj, '$'); // trim variable symbol '$'
                         $class = $class::$$obj; // make magic :)
                     } elseif (method_exists($class, $obj)) { // maybe its a function?
@@ -228,7 +228,7 @@ class Model
         } else {
             $field_set_name = $field_name;
             // prevent array-type setting
-            if (String::contains('.', $field_set_name)) {
+            if (Str::contains('.', $field_set_name)) {
                 $field_set_name = strstr($field_set_name, '.', true);
             }
             if (property_exists($this, $field_set_name)) {
@@ -268,7 +268,7 @@ class Model
     {
         $properties = get_object_vars($this);
         foreach ($properties as $var => $value) {
-            if (String::startsWith('_', $var)) { // ignore $_var
+            if (Str::startsWith('_', $var)) { // ignore $_var
                 continue;
             }
             $this->$var = App::$Security->secureHtml($value);
@@ -285,7 +285,7 @@ class Model
     {
         $properties = null;
         foreach ($this as $property => $value) {
-            if (String::startsWith('_', $property)) {
+            if (Str::startsWith('_', $property)) {
                 continue;
             }
             $properties[$property] = $value;
@@ -355,7 +355,7 @@ class Model
     public function getInput($param)
     {
         $objName = $this->getFormName();
-        if (String::contains('.', $param)) {
+        if (Str::contains('.', $param)) {
             foreach (explode('.', $param) as $item) {
                 $objName .= '[' . $item . ']';
             }
@@ -373,7 +373,7 @@ class Model
     public function getFile($param)
     {
         $fileName = $this->getFormName();
-        if (String::contains('.', $param)) {
+        if (Str::contains('.', $param)) {
             foreach (explode('.', $param) as $obj) {
                 $fileName .= '[' . $obj . ']';
             }

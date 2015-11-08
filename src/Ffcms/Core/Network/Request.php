@@ -4,7 +4,7 @@ namespace Ffcms\Core\Network;
 
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Predis\Command\StringIncrement;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
@@ -52,7 +52,7 @@ class Request extends FoundationRequest
         parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
 
         $basePath = trim(App::$Properties->get('basePath'), '/');
-        if ($basePath !== null && String::length($basePath) > 0) {
+        if ($basePath !== null && Str::length($basePath) > 0) {
             $basePath = '/' . $basePath;
         }
 
@@ -72,13 +72,13 @@ class Request extends FoundationRequest
             if (Object::isArray(App::$Properties->get('languageDomainAlias'))) {
                 /** @var array $domainAlias */
                 $domainAlias = App::$Properties->get('languageDomainAlias');
-                if (Object::isArray($domainAlias) && $domainAlias[$this->getHost()] !== null && String::length($domainAlias[$this->getHost()]) > 0) {
+                if (Object::isArray($domainAlias) && $domainAlias[$this->getHost()] !== null && Str::length($domainAlias[$this->getHost()]) > 0) {
                     $this->language = $domainAlias[$this->getHost()];
                 }
             } else {
                 // try to find language in pathway
                 foreach (App::$Properties->get('languages') as $lang) {
-                    if (String::startsWith('/' . $lang, $this->getPathInfo())) {
+                    if (Str::startsWith('/' . $lang, $this->getPathInfo())) {
                         $this->language = $lang;
                         $this->languageInPath = true;
                     }
@@ -155,7 +155,7 @@ class Request extends FoundationRequest
         }
 
         // empty or contains backslashes? set to main
-        if ($this->controller == null || String::contains('\\', $this->controller)) {
+        if ($this->controller == null || Str::contains('\\', $this->controller)) {
             $this->controller = 'Main';
         }
 
@@ -185,13 +185,13 @@ class Request extends FoundationRequest
          */
         switch (count($pathArray)) {
             case 4:
-                $this->argumentAdd = String::lowerCase($pathArray[3]);
+                $this->argumentAdd = Str::lowerCase($pathArray[3]);
             case 3:
-                $this->argumentId = String::lowerCase($pathArray[2]);
+                $this->argumentId = Str::lowerCase($pathArray[2]);
             case 2:
-                $this->action = ucfirst(String::lowerCase($pathArray[1]));
+                $this->action = ucfirst(Str::lowerCase($pathArray[1]));
             case 1:
-                $this->controller = ucfirst(String::lowerCase($pathArray[0]));
+                $this->controller = ucfirst(Str::lowerCase($pathArray[0]));
                 break;
         }
         return;
@@ -203,8 +203,8 @@ class Request extends FoundationRequest
      */
     public function getPathInfo()
     {
-        $route = $this->languageInPath ? String::substr(parent::getPathInfo(), String::length($this->language) + 1) : parent::getPathInfo();
-        if (!String::startsWith('/', $route)) {
+        $route = $this->languageInPath ? Str::substr(parent::getPathInfo(), Str::length($this->language) + 1) : parent::getPathInfo();
+        if (!Str::startsWith('/', $route)) {
             $route = '/' . $route;
         }
         return $route;
@@ -298,10 +298,10 @@ class Request extends FoundationRequest
             $path = trim($this->aliasPathTarget, '/');
         }
         $pathArray = explode('/', $path);
-        if ($pathArray[0] === String::lowerCase($this->getController())) {
+        if ($pathArray[0] === Str::lowerCase($this->getController())) {
             // unset controller
             array_shift($pathArray);
-            if ($pathArray[0] === String::lowerCase($this->getAction())) {
+            if ($pathArray[0] === Str::lowerCase($this->getAction())) {
                 // unset action
                 array_shift($pathArray);
             }

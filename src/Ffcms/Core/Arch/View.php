@@ -9,7 +9,7 @@ use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\FileSystem\Normalize;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Template\Variables;
 use Ffcms\Core\Traits\DynamicGlobal;
 
@@ -40,7 +40,7 @@ class View
 
         // check if theme is available
         if (!Directory::exist($this->themePath)) {
-            throw new NativeException('Apps theme is not founded: ' . String::replace(root, null, $this->themePath));
+            throw new NativeException('Apps theme is not founded: ' . Str::replace(root, null, $this->themePath));
         }
 
         // get input args and build class properties
@@ -108,10 +108,10 @@ class View
         $tmpPath = null;
 
         // sounds like a relative path for current view theme
-        if (String::contains('/', $path)) {
+        if (Str::contains('/', $path)) {
             // lets try to get full path for current theme
             $tmpPath = $path;
-            if (!String::startsWith($this->themePath, $path)) {
+            if (!Str::startsWith($this->themePath, $path)) {
                 $tmpPath = Normalize::diskPath($this->themePath . '/' . $path . '.php');
             }
         } else { // sounds like a object-depended view call from controller or etc
@@ -121,7 +121,7 @@ class View
 
             // lets try to find controller in backtrace
             foreach ($calledLog as $caller) {
-                if (isset($caller['class']) && String::startsWith('Apps\\Controller\\', $caller['class'])) {
+                if (isset($caller['class']) && Str::startsWith('Apps\\Controller\\', $caller['class'])) {
                     $calledController = (string)$caller['class'];
                 }
             }
@@ -132,7 +132,7 @@ class View
             }
 
             // get controller name
-            $controllerName = String::substr($calledController, String::length('Apps\\Controller\\' . env_name . '\\'));
+            $controllerName = Str::substr($calledController, Str::length('Apps\\Controller\\' . env_name . '\\'));
             // get full path
             $tmpPath = $this->themePath . DIRECTORY_SEPARATOR . $controllerName . DIRECTORY_SEPARATOR . $path . '.php';
         }
@@ -148,7 +148,7 @@ class View
             if (File::exist($tmpPath)) {
                 // add notify for native views
                 if (App::$Debug !== null) {
-                    App::$Debug->addMessage('Render native viewer: ' . String::replace(root, null, $tmpPath), 'info');
+                    App::$Debug->addMessage('Render native viewer: ' . Str::replace(root, null, $tmpPath), 'info');
                 }
                 return $tmpPath;
             }
@@ -238,7 +238,7 @@ class View
         $output = [];
         foreach ($items as $item) {
             $item = trim($item, '/');
-            if (!String::startsWith(App::$Alias->scriptUrl, $item) && !String::startsWith('http', $item)) { // is local without proto and domain
+            if (!Str::startsWith(App::$Alias->scriptUrl, $item) && !Str::startsWith('http', $item)) { // is local without proto and domain
                 $item = App::$Alias->scriptUrl . '/' . $item;
             }
             $output[] = $item;

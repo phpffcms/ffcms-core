@@ -5,7 +5,7 @@ namespace Ffcms\Core\Helper\HTML;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Object;
-use Ffcms\Core\Helper\Type\String;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
 
 /**
@@ -41,7 +41,7 @@ class Listing extends NativeGenerator
             }
             // sounds like a link, try detect active element
             if ($item['type'] === 'link') {
-                if (!Object::isArray($item['link']) && !String::startsWith('http', $item['link']) && !String::startsWith('#', $item['link'])) {
+                if (!Object::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
                     $item['link'] = [$item['link']]; // just controller/action sended, to array
                 }
 
@@ -57,14 +57,14 @@ class Listing extends NativeGenerator
                     // use special active element order type: controller, action - todo
                     switch ($orderActiveLink) {
                         case 'controller':
-                            $elementPoint = String::firstIn($elementPoint, '/');
-                            $activeItem = String::startsWith($elementPoint, $currentPoint);
+                            $elementPoint = Str::firstIn($elementPoint, '/');
+                            $activeItem = Str::startsWith($elementPoint, $currentPoint);
                             break;
                         case 'action':
                             $elementArray = explode('/', $elementPoint);
                             $elementPoint = $elementArray[0] . '/' . $elementArray[1];
 
-                            $activeItem = String::startsWith($elementPoint, $currentPoint);
+                            $activeItem = Str::startsWith($elementPoint, $currentPoint);
                             break;
                         case 'id':
                             $elementArray = explode('/', $elementPoint);
@@ -73,7 +73,7 @@ class Listing extends NativeGenerator
                                 $elementPoint .= '/' . $elementArray[2];
                             }
 
-                            $activeItem = String::startsWith($elementPoint, $currentPoint);
+                            $activeItem = Str::startsWith($elementPoint, $currentPoint);
                             break;
                         default:
                             $activeItem = $elementPoint === $currentPoint;
@@ -83,7 +83,7 @@ class Listing extends NativeGenerator
 
                     // check if it active link for current pathway
                     if ($activeItem) {
-                        $item['property']['class'] = String::length($item['property']['class']) > 0
+                        $item['property']['class'] = Str::length($item['property']['class']) > 0
                             ? $item['activeClass'] . ' ' . $item['property']['class']
                             : $item['activeClass'];
                     }
@@ -105,9 +105,9 @@ class Listing extends NativeGenerator
                 $link = App::$Alias->baseUrl . '/';
                 if (Object::isArray($item['link'])) {
                     $link .= Url::buildPathway($item['link']);
-                } elseif (String::startsWith('http', $item['link'])) {
+                } elseif (Str::startsWith('http', $item['link'])) {
                     $link = self::nohtml($item['link']);
-                } elseif (String::startsWith('#', $item['link'])) { // allow pass #part
+                } elseif (Str::startsWith('#', $item['link'])) { // allow pass #part
                     $link = self::nohtml($item['link']);
                 } else {
                     $link .= self::nohtml(trim($item['link'], '/'));
