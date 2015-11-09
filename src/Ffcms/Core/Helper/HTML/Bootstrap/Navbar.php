@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Helper\HTML\Bootstrap;
 
 use Ffcms\Core\Helper\HTML\Listing;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
@@ -13,7 +13,7 @@ class Navbar extends NativeGenerator
 
     public static function display($elements)
     {
-        if (!Object::isArray($elements) || count($elements['items']) < 1) {
+        if (!Obj::isArray($elements) || count($elements['items']) < 1) {
             return null;
         }
 
@@ -37,7 +37,7 @@ class Navbar extends NativeGenerator
         foreach ($elements['items'] as $item) {
             if (is_string($item)) { // sounds like a static object w/o render request
                 $itemsStatic .= $item;
-            } elseif (Object::isArray($item)) {
+            } elseif (Obj::isArray($item)) {
                 $item['type'] = 'link';
                 if ($item['position'] !== null && $item['position'] === 'right') { // right position item
                     $itemsRight[] = $item;

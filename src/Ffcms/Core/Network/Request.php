@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Network;
 
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Predis\Command\StringIncrement;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
@@ -69,10 +69,10 @@ class Request extends FoundationRequest
         // multi-language is enabled?
         if (App::$Properties->get('multiLanguage') === true) {
             // maybe its a language domain alias?
-            if (Object::isArray(App::$Properties->get('languageDomainAlias'))) {
+            if (Obj::isArray(App::$Properties->get('languageDomainAlias'))) {
                 /** @var array $domainAlias */
                 $domainAlias = App::$Properties->get('languageDomainAlias');
-                if (Object::isArray($domainAlias) && $domainAlias[$this->getHost()] !== null && Str::length($domainAlias[$this->getHost()]) > 0) {
+                if (Obj::isArray($domainAlias) && $domainAlias[$this->getHost()] !== null && Str::length($domainAlias[$this->getHost()]) > 0) {
                     $this->language = $domainAlias[$this->getHost()];
                 }
             } else {
@@ -93,7 +93,7 @@ class Request extends FoundationRequest
                 if ($this->language === null) {
                     $userLang = App::$Properties->get('singleLanguage');
                     $browserAccept = $this->getLanguages();
-                    if (Object::isArray($browserAccept) && count($browserAccept) > 0) {
+                    if (Obj::isArray($browserAccept) && count($browserAccept) > 0) {
                         foreach ($browserAccept as $bLang) {
                             if (Arr::in($bLang, App::$Properties->get('languages'))) {
                                 $userLang = $bLang;
@@ -129,13 +129,13 @@ class Request extends FoundationRequest
         // try to find static routing alias
         /** @var array $aliasMap */
         $aliasMap = $routing['Alias'][env_name];
-        if (Object::isArray($aliasMap) && array_key_exists($pathway, $aliasMap)) {
+        if (Obj::isArray($aliasMap) && array_key_exists($pathway, $aliasMap)) {
             $pathway = $aliasMap[$pathway];
             $this->aliasPathTarget = $pathway;
         }
 
         // check if pathway is the same with target and redirect to source from static routing
-        if (Object::isArray($aliasMap) && Arr::in($this->getPathInfo(), $aliasMap)) {
+        if (Obj::isArray($aliasMap) && Arr::in($this->getPathInfo(), $aliasMap)) {
             $source = array_search($this->getPathInfo(), $aliasMap);
             $targetUri = $this->getSchemeAndHttpHost() . $this->getBasePath() . '/';
             if (App::$Properties->get('multiLanguage') === true) {
@@ -176,7 +176,7 @@ class Request extends FoundationRequest
      */
     private function setPathdata(array $pathArray = null)
     {
-        if (!Object::isArray($pathArray) || count($pathArray) < 1) {
+        if (!Obj::isArray($pathArray) || count($pathArray) < 1) {
             return;
         }
 

@@ -7,7 +7,7 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\FileSystem\Normalize;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\I18n\Lexer;
 
@@ -41,12 +41,12 @@ class Translate
                 $this->indexes[] = $index;
             }
 
-            if ($this->cached !== null && Object::isString($text) && $this->cached[$text] !== null) {
+            if ($this->cached !== null && Obj::isString($text) && $this->cached[$text] !== null) {
                 $text = $this->cached[$text];
             }
         }
 
-        if (Object::isArray($params) && count($params) > 0) {
+        if (Obj::isArray($params) && count($params) > 0) {
             foreach ($params as $var => $value) {
                 $text = Str::replace('%' . $var . '%', $value, $text);
             }
@@ -101,7 +101,7 @@ class Translate
 
         // load file translations
         $addTranslation = require_once($path);
-        if (!Object::isArray($addTranslation)) {
+        if (!Obj::isArray($addTranslation)) {
             return false;
         }
 

@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 abstract class NativeGenerator
@@ -39,7 +39,7 @@ abstract class NativeGenerator
      */
     public static function applyProperty(array $property = null)
     {
-        if (!Object::isArray($property) || count($property) < 1) {
+        if (!Obj::isArray($property) || count($property) < 1) {
             return null;
         }
 

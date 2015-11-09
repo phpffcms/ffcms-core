@@ -6,7 +6,7 @@ namespace Ffcms\Core;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 class Properties
@@ -37,7 +37,7 @@ class Properties
     private function load($configName)
     {
         // check if always loaded
-        if (Object::isArray($this->data) && array_key_exists($configName, $this->data)) {
+        if (Obj::isArray($this->data) && array_key_exists($configName, $this->data)) {
             return true;
         }
 
@@ -123,9 +123,25 @@ class Properties
             return false;
         }
 
-        $saveData = Arr::merge($this->data[$configFile], $newData);
-        $saveData = '<?php return ' . App::$Security->var_export54($saveData) . ';';
-        File::write('/Private/Config/' . ucfirst(Str::lowerCase($configFile)) . '.php', $saveData);
+        $saveData = Arr::mergeRecursive($this->data[$configFile], $newData);
+        return $this->writeConfig('Routing', $saveData);
+    }
+
+    /**
+     * Write configurations data from array to cfg file
+     * @param string $configFile
+     * @param array $data
+     * @return bool
+     */
+    public function writeConfig($configFile, array $data)
+    {
+        $path = '/Private/Config/' . ucfirst(Str::lowerCase($configFile)) . '.php';
+        if (!File::exist($path) || !File::writable($path)) {
+            return false;
+        }
+
+        $saveData = '<?php return ' . App::$Security->var_export54($data) . ';';
+        File::write($path, $saveData);
         return true;
     }
 

@@ -4,6 +4,7 @@ namespace Ffcms\Core\Exception;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Controller;
+use Ffcms\Core\Helper\Type\Str;
 
 class SyntaxException extends \Exception
 {
@@ -19,7 +20,13 @@ class SyntaxException extends \Exception
             $load->layout = null;
         }
         $load->setGlobalVar('title', 'Syntax exception');
-        $load->response = '[SyntaxException]: ' . $this->getMessage();
+
+        $message = $this->getMessage();
+        if (Str::likeEmpty($message)) {
+            $message = 'Unknown syntax exception';
+        }
+
+        $load->response = '[SyntaxException]: ' . $message;
         App::$Response->setStatusCode(403);
     }
 }

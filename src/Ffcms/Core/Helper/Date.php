@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Helper;
 
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 
 class Date
 {
@@ -21,7 +21,7 @@ class Date
      */
     public static function convertToDatetime($rawDate, $format = 'd.m.Y')
     {
-        if (Object::isLikeInt($rawDate)) { // convert timestamp to date format
+        if (Obj::isLikeInt($rawDate)) { // convert timestamp to date format
             $rawDate = date($format, $rawDate);
         }
         try {

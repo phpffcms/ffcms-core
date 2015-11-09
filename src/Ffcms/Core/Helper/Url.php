@@ -4,7 +4,8 @@ namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 class Url extends NativeGenerator
@@ -31,11 +32,37 @@ class Url extends NativeGenerator
      * @param bool $encode
      * @return string|null
      */
-    public static function buildPathway(array $to, $encode = true)
+    public static function buildPathway(array $to = null, $encode = true)
     {
-        $response = trim(Str::lowerCase($to[0]), '/'); // controller/action
+        // if empty passed - let show main page
+        if ($to === null) {
+            return null;
+        }
 
+        $response = trim($to[0], '/'); // controller/action
         list($controller, $action) = explode('/', $response);
+
+        $routing = App::$Properties->getAll('Routing');
+        // sounds like dynamic callback
+        if (Str::startsWith('@', $controller)) {
+            $controller = trim($controller, '@');
+            // search callback in properties
+            if (isset($routing['Callback'][env_name]) && Arr::in($controller, $routing['Callback'][env_name])) {
+                $pathInject = array_search($controller, $routing['Callback'][env_name]);
+                // if path is founded - lets set source
+                if ($pathInject !== false) {
+                    $controller = Str::lowerCase($pathInject);
+                }
+            }
+
+            // if controller still looks like path injection - define last entity like controller name
+            if (Str::contains('\\', $controller)) {
+                $controller = Str::lastIn($controller, '\\', true);
+            }
+
+            $response = $controller . '/' . $action;
+        }
+
         // check if controller and action is defined
         if (Str::likeEmpty($controller) || Str::likeEmpty($action)) {
             return null;
@@ -51,7 +78,15 @@ class Url extends NativeGenerator
             $response .= '/' . self::safeUri($to[2], $encode);
         }
 
-        if (isset($to[3]) && Object::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
+        // try to find static alias
+        if (isset($routing['Alias'][env_name]) && Arr::in('/' . $response, $routing['Alias'][env_name])) {
+            $pathAlias = array_search('/' . $response, $routing['Alias'][env_name]);
+            if ($pathAlias !== false) {
+                $response = Str::lowerCase(trim($pathAlias, '/'));
+            }
+        }
+
+        if (isset($to[3]) && Obj::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
             $first = true;
             foreach ($to[3] as $key=>$value) {
                 $response .= $first ? '?' : '&';
@@ -88,7 +123,7 @@ class Url extends NativeGenerator
     {
         $compile_property = self::applyProperty($property);
 
-        if (!Object::isArray($to)) { // callback magic (:
+        if (!Obj::isArray($to)) { // callback magic (:
             $to = [$to];
         }
         // call Url::to(args)

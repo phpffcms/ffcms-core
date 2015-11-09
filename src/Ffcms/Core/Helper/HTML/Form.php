@@ -6,7 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\FileSystem\File;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Arch\Model;
 
@@ -38,7 +38,7 @@ class Form extends NativeGenerator
         $this->name = $model->getFormName();
 
         // set custom html build structure form fields
-        if (Object::isArray($structure)) {
+        if (Obj::isArray($structure)) {
             if (Str::length($structure['base']) > 0) {
                 $this->structure = $structure['base'];
             }
@@ -124,13 +124,13 @@ class Form extends NativeGenerator
 
     protected function dataTypeTag($type, $name, $value = null, $property = null)
     {
-        if (!Object::isArray($property) && $property !== null) {
+        if (!Obj::isArray($property) && $property !== null) {
             throw new SyntaxException('Property must be passed as array or null! Field: ' . $name);
         }
 
         $propertyString = null;
         $selectOptions = [];
-        if (Object::isArray($property['options'])) {
+        if (Obj::isArray($property['options'])) {
             $selectOptions = $property['options'];
             unset($property['options']);
         }
@@ -160,7 +160,7 @@ class Form extends NativeGenerator
         if (isset($property['html']) && $property['html'] === true) {
             $html = true;
         }
-        if (Object::isArray($property) && array_key_exists('html', $property)) {
+        if (Obj::isArray($property) && array_key_exists('html', $property)) {
             unset($property['html']);
         }
 
@@ -204,7 +204,7 @@ class Form extends NativeGenerator
                 $response .= self::buildSingleTag('input', $property);
                 break;
             case 'checkboxes':
-                if (!Object::isArray($selectOptions)) {
+                if (!Obj::isArray($selectOptions)) {
                     if (App::$Debug !== null) {
                         App::$Debug->addMessage('Checkboxes field ' . $name . ' field have no options', 'warning');
                     }
@@ -218,7 +218,7 @@ class Form extends NativeGenerator
                 $buildCheckboxes = null;
 
                 foreach ($selectOptions as $opt) {
-                    if (Object::isArray($value) && Arr::in($opt, $value)) {
+                    if (Obj::isArray($value) && Arr::in($opt, $value)) {
                         $property['checked'] = null;
                     } else {
                         unset($property['checked']); // remove checked if it setted before

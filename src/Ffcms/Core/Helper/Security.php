@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 class Security
@@ -43,7 +43,7 @@ class Security
      */
     public function secureHtml($data)
     {
-        if (Object::isArray($data)) {
+        if (Obj::isArray($data)) {
             return $this->purifier->purifyArray($data);
         }
 
@@ -59,7 +59,7 @@ class Security
     public function strip_tags($html, $escapeQuotes = true)
     {
         // recursive usage
-        if (Object::isArray($html)) {
+        if (Obj::isArray($html)) {
             foreach ($html as $key=>$value) {
                 $html[$key] = $this->strip_tags($value, $escapeQuotes);
             }

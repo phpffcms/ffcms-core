@@ -4,7 +4,7 @@ namespace Ffcms\Core\Filter;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 class Native
@@ -18,7 +18,7 @@ class Native
      */
     public static function length_min($object, $length)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
         return Str::length($object) >= $length;
@@ -32,7 +32,7 @@ class Native
      */
     public static function length_max($object, $length)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
         return Str::length($object) <= $length;
@@ -46,7 +46,7 @@ class Native
      */
     public static function in($object, array $handle)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
 
@@ -65,7 +65,7 @@ class Native
      */
     public static function string($object)
     {
-        return Object::isString($object);
+        return Obj::isString($object);
     }
 
     /**
@@ -75,7 +75,7 @@ class Native
      */
     public static function arr($object)
     {
-        return Object::isArray($object);
+        return Obj::isArray($object);
     }
 
     /**
@@ -85,7 +85,7 @@ class Native
      */
     public static function int($object)
     {
-        return Object::isLikeInt($object);
+        return Obj::isLikeInt($object);
     }
 
     /**
@@ -95,7 +95,7 @@ class Native
      */
     public static function float($object)
     {
-        return Object::isLikeFloat($object);
+        return Obj::isLikeFloat($object);
     }
 
     /**
@@ -105,7 +105,7 @@ class Native
      */
     public static function boolean($object)
     {
-        return Object::isLikeBoolean($object);
+        return Obj::isLikeBoolean($object);
     }
 
     /**
@@ -115,7 +115,7 @@ class Native
      */
     public static function required($object)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return count($object) > 0;
         }
         return Str::length($object) > 0;
@@ -128,7 +128,7 @@ class Native
      */
     public static function email($object)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
 
@@ -147,7 +147,7 @@ class Native
      */
     public static function phone($object)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
 
@@ -166,7 +166,7 @@ class Native
      */
     public static function url($object)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
 
@@ -186,7 +186,7 @@ class Native
      */
     public static function equal($object, $value = null)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
 
@@ -222,7 +222,7 @@ class Native
      */
     public static function reg_match($object, $value)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
 
@@ -241,7 +241,7 @@ class Native
      */
     public static function intList($object, $value)
     {
-        if (Object::isArray($object)) {
+        if (Obj::isArray($object)) {
             return false;
         }
         return !preg_match('/[^0-9, ]/', $object);
@@ -256,7 +256,7 @@ class Native
     {
         $all = false;
         // if string is given
-        if (!Object::isArray($value)) {
+        if (!Obj::isArray($value)) {
             if ($value === '*') {
                 $all = true;
             } else {
@@ -265,7 +265,7 @@ class Native
         }
 
         // input file is not object?
-        if ($object === null || !Object::isObject($object)) {
+        if ($object === null || !Obj::isObject($object)) {
             return false;
         }
 
@@ -285,12 +285,12 @@ class Native
      */
     public static function sizeFile($object, $value)
     {
-        if (!Object::isArray($value)) {
+        if (!Obj::isArray($value)) {
             $value = [0, $value];
         }
 
         // input file is not object?
-        if ($object === null || !Object::isObject($object)) {
+        if ($object === null || !Obj::isObject($object)) {
             return false;
         }
 

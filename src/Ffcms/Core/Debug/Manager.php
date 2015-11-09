@@ -5,7 +5,7 @@ namespace Ffcms\Core\Debug;
 use \DebugBar\StandardDebugBar;
 use \DebugBar\DataCollector\ConfigCollector;
 use \Ffcms\Core\App;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 
 /**
  * Class Debug - display information of debug and collected data in debug bar
@@ -73,7 +73,7 @@ class Manager
      */
     public function addMessage($m, $type = 'info')
     {
-        if (!Object::isString($m) || !Object::isString($type)) {
+        if (!Obj::isString($m) || !Obj::isString($type)) {
             return;
         }
         $m = App::$Security->secureHtml($m);

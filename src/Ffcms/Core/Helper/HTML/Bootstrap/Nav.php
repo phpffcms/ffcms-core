@@ -5,7 +5,7 @@ namespace Ffcms\Core\Helper\HTML\Bootstrap;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\HTML\Listing;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
@@ -14,7 +14,7 @@ class Nav extends NativeGenerator
 
     public static function display($elements)
     {
-        if (!Object::isArray($elements) || count($elements['items']) < 1) {
+        if (!Obj::isArray($elements) || count($elements['items']) < 1) {
             return null;
         }
 
@@ -28,7 +28,7 @@ class Nav extends NativeGenerator
 
         $blockProperty = [];
         if ($elements['blockProperty'] !== null) {
-            if (Object::isArray($elements['blockProperty'])) {
+            if (Obj::isArray($elements['blockProperty'])) {
                 $blockProperty = $elements['blockProperty'];
             }
             unset($elements['blockProperty']);

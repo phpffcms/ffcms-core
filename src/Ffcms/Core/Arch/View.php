@@ -8,7 +8,7 @@ use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\FileSystem\Normalize;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Template\Variables;
 use Ffcms\Core\Traits\DynamicGlobal;
@@ -187,7 +187,7 @@ class View
         }
 
         // render defaults params as variables
-        if (Object::isArray($params) && count($params) > 0) {
+        if (Obj::isArray($params) && count($params) > 0) {
             foreach ($params as $key => $value) {
                 $$key = $value;
             }
@@ -231,7 +231,7 @@ class View
     {
         $items = App::$Alias->getCustomLibraryArray($type);
         // check if custom library available
-        if (null === $items || !Object::isArray($items) || count($items) < 1) {
+        if (null === $items || !Obj::isArray($items) || count($items) < 1) {
             return null;
         }
 
@@ -264,7 +264,7 @@ class View
      */
     public function showPlainCode($type)
     {
-        if (null === App::$Alias->getPlainCode($type) || !Object::isArray(App::$Alias->getPlainCode($type))) {
+        if (null === App::$Alias->getPlainCode($type) || !Obj::isArray(App::$Alias->getPlainCode($type))) {
             return null;
         }
 

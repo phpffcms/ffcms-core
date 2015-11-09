@@ -25,12 +25,24 @@ class Arr
     {
         $arguments = [];
         foreach (func_get_args() as $key => $val) {
-            if (!Object::isArray($val)) {
+            if (!Obj::isArray($val)) {
                 $val = [];
             }
             $arguments[$key] = $val;
         }
         return call_user_func_array('array_merge', $arguments);
+    }
+
+    public static function mergeRecursive()
+    {
+        $arguments = [];
+        foreach (func_get_args() as $key => $val) {
+            if (!Obj::isArray($val)) {
+                $val = [];
+            }
+            $arguments[$key] = $val;
+        }
+        return call_user_func_array('array_merge_recursive', $arguments);
     }
 
     /**
@@ -43,7 +55,7 @@ class Arr
     public static function getByPath($path, $array = null, $delimiter = '.')
     {
         // path of nothing? interest
-        if (!Object::isArray($array) || count($array) < 1) {
+        if (!Obj::isArray($array) || count($array) < 1) {
             return null;
         }
 
@@ -62,7 +74,7 @@ class Arr
 
     public static function ploke($key, $array)
     {
-        if (!Object::isArray($array)) {
+        if (!Obj::isArray($array)) {
             return [];
         }
 

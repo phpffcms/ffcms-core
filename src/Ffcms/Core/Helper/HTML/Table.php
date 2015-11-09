@@ -4,7 +4,7 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\HTML\NativeGenerator;
 
 class Table extends NativeGenerator
@@ -12,11 +12,11 @@ class Table extends NativeGenerator
 
     public static function display($elements)
     {
-        if (!Object::isArray($elements) || count($elements) < 1) {
+        if (!Obj::isArray($elements) || count($elements) < 1) {
             return null;
         }
 
-        if (!Object::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1) {
+        if (!Obj::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1) {
             return null;
         }
 
@@ -28,13 +28,13 @@ class Table extends NativeGenerator
 
         $tbodyItems = null;
 
-        if (Object::isArray($elements['tbody']) && count($elements['tbody']) > 0) {
+        if (Obj::isArray($elements['tbody']) && count($elements['tbody']) > 0) {
             $tbodyItems .= '<tbody' . self::applyProperty($elements['tbody']['property']) . '>';
             foreach ($elements['tbody']['items'] as $item) {
                 ksort($item); // sort by key
                 $tbodyItems .= '<tr' . self::applyProperty($item['property']) . '>';
                 foreach ($item as $id => $data) {
-                    if (Object::isInt($id)) { // td element
+                    if (Obj::isInt($id)) { // td element
                         $itemText = null;
                         if ($data['html'] === true) {
                             if ($data['!secure'] === true) {
@@ -57,10 +57,10 @@ class Table extends NativeGenerator
         }
 
         $theadItems = null;
-        if (Object::isArray($elements['thead']) && count($elements['thead']) > 0) {
+        if (Obj::isArray($elements['thead']) && count($elements['thead']) > 0) {
             $theadItems .= '<thead' . self::applyProperty($elements['thead']['property']) . '>';
             $theadItems .= '<tr>';
-            if (Object::isArray($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
+            if (Obj::isArray($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
                 foreach ($elements['thead']['titles'] as $order => $title) {
                     if ($selectOptions !== false && $order+1 === $selectOptions['attachOrder']) {
                         $title['text'] = self::buildSingleTag('input', ['type' => 'checkbox', 'name' => 'selectAll']) . ' ' . $title['text'];
@@ -87,7 +87,7 @@ class Table extends NativeGenerator
             $build .= '</form>';
         }
 
-        if ($selectOptions !== false && Object::isArray($selectOptions)) {
+        if ($selectOptions !== false && Obj::isArray($selectOptions)) {
             self::buildSelectorHtml($selectOptions);
         }
 

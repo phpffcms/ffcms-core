@@ -9,7 +9,7 @@ use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Security;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Network\Request;
@@ -101,7 +101,7 @@ class App
     protected static function buildExtendObject()
     {
         $objectConfig = self::$Properties->getAll('object');
-        if ($objectConfig === false || !Object::isArray($objectConfig)) {
+        if ($objectConfig === false || !Obj::isArray($objectConfig)) {
             throw new NativeException('Object configurations is not loaded: /Private/Config/Object.php');
         }
 

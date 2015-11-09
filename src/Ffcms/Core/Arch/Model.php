@@ -6,7 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Filter\Native;
 use Ffcms\Core\Traits\DynamicGlobal;
@@ -105,7 +105,7 @@ class Model
             if ($rule[0] === null || $rule[1] === null) {
                 continue;
             }
-            if (Object::isArray($rule[0])) {
+            if (Obj::isArray($rule[0])) {
                 $validate_foreach = true;
                 foreach ($rule[0] as $field_name) {
                     if (!$this->validateRecursive($field_name, $rule[1], $rule[2], $rule[3], $rule[4])) {
@@ -122,7 +122,7 @@ class Model
         }
 
         // prevent warnings
-        if (Object::isArray($this->_wrongFields) && count($this->_wrongFields) > 0) {
+        if (Obj::isArray($this->_wrongFields) && count($this->_wrongFields) > 0) {
             foreach ($this->_wrongFields as $property) {
                 if (Str::contains('.', $property)) { // sounds like dot-separated array property
                     $propertyName = strstr($property, '.', true); // get property name
@@ -235,7 +235,7 @@ class Model
                 if ($field_name !== $field_set_name) { // array-based property
                     $dot_path = trim(strstr($field_name, '.'), '.');
                     // prevent throws any exceptions for null and false objects
-                    if (!Object::isArray($this->$field_set_name)) {
+                    if (!Obj::isArray($this->$field_set_name)) {
                         $this->$field_set_name = [];
                     }
                     // use dot-data provider to compile output array
@@ -304,7 +304,7 @@ class Model
         $response = [];
 
         foreach ($rules as $rule) {
-            if (Object::isArray($rule[0])) { // 2 or more rules [['field1', 'field2'], 'filter', 'filter_argv']
+            if (Obj::isArray($rule[0])) { // 2 or more rules [['field1', 'field2'], 'filter', 'filter_argv']
                 foreach ($rule[0] as $tfield) {
                     if ($tfield == $field) {
                         $response[$rule[1]] = $rule[2]; // ['min_length' => 1, 'required' => null]

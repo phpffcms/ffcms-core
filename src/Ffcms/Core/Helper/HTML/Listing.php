@@ -4,7 +4,7 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
 
@@ -41,11 +41,11 @@ class Listing extends NativeGenerator
             }
             // sounds like a link, try detect active element
             if ($item['type'] === 'link') {
-                if (!Object::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
+                if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
                     $item['link'] = [$item['link']]; // just controller/action sended, to array
                 }
 
-                if (Object::isArray($item['link'])) {
+                if (Obj::isArray($item['link'])) {
                     $elementPoint = Url::buildPathway($item['link']);
                     $currentPoint = Url::buildPathwayFromRequest();
 
@@ -103,7 +103,7 @@ class Listing extends NativeGenerator
                 $items .= ($item['html'] ? self::safe($item['text']) : self::nohtml($item['text']));
             } elseif ($item['type'] === 'link') { // sounds like link
                 $link = App::$Alias->baseUrl . '/';
-                if (Object::isArray($item['link'])) {
+                if (Obj::isArray($item['link'])) {
                     $link .= Url::buildPathway($item['link']);
                 } elseif (Str::startsWith('http', $item['link'])) {
                     $link = self::nohtml($item['link']);
@@ -114,7 +114,7 @@ class Listing extends NativeGenerator
                 }
 
                 $htmlLink = '<a href="' . self::nohtml($link) . '"';
-                if (isset($item['linkProperty']) && Object::isArray($item['linkProperty'])) {
+                if (isset($item['linkProperty']) && Obj::isArray($item['linkProperty'])) {
                     $htmlLink .= self::applyProperty($item['linkProperty']);
                 }
                 $htmlLink .= '>' . ((isset($item['html']) && $item['html'] === true ) ? App::$Security->secureHtml($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';

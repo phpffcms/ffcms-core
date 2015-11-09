@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Object;
+use Ffcms\Core\Helper\Type\Obj;
 
 /**
  * Class SimplePagination
@@ -118,7 +118,7 @@ class SimplePagination
                 break;
         }
         // fix shits ;)
-        if (Object::isArray($url[3])) {
+        if (Obj::isArray($url[3])) {
             $url[3] = Arr::merge($url[3], ['page' => $page_id]);
         } else {
             $url[3] = ['page' => $page_id];
