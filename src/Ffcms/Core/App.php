@@ -139,7 +139,7 @@ class App
 
                 // try to load controller
                 if (File::exist($cPath)) {
-                    include_once($cPath);
+                    File::inc($cPath, false, true);
                 } else {
                     throw new NotFoundException('Controller not founded: {root}' . $cPath);
                 }

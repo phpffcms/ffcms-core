@@ -87,12 +87,7 @@ class Url extends NativeGenerator
         }
 
         if (isset($to[3]) && Obj::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
-            $first = true;
-            foreach ($to[3] as $key=>$value) {
-                $response .= $first ? '?' : '&';
-                $response .= $key . '=' . $value;
-                $first = false;
-            }
+            $response .= http_build_query($to[3]);
         }
 
         return $response;
@@ -105,7 +100,7 @@ class Url extends NativeGenerator
     public static function buildPathwayFromRequest()
     {
         return self::buildPathway([
-            App::$Request->getController() . '/' . App::$Request->getAction(),
+            Str::lowerCase(App::$Request->getController()) . '/' . Str::lowerCase(App::$Request->getAction()),
             App::$Request->getID(),
             App::$Request->getAdd(),
             App::$Request->query->all()

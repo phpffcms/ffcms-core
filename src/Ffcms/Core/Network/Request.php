@@ -104,13 +104,7 @@ class Request extends FoundationRequest
 
                     $queryString = null;
                     if (count($this->query->all()) > 0) {
-                        $firstQ = true;
-                        foreach ($this->query->all() as $qKey => $qVal) {
-                            $queryString .= $firstQ ? '?' : '&';
-                            $queryString .= $qKey . '=' . $qVal;
-                            $firstQ = false;
-                        }
-
+                        $queryString = http_build_query($this->query->all());
                     }
 
                     $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo() . $queryString);

@@ -90,6 +90,29 @@ class File
         return unlink($path);
     }
 
+
+    /**
+     * Alternative of functions include, require, include_once and etc in 1 function
+     * @param string $path
+     * @param bool|false $return
+     * @param bool|false $once
+     * @return bool|mixed
+     */
+    public static function inc($path, $return = false, $once = false)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return false;
+        }
+
+        if ($return === true) {
+            return $once === true ? require_once($path) : require $path;
+        } else {
+            ($once == true) ? require_once($path) : require $path;
+        }
+    }
+
     /**
      * Get file make time in unix timestamp
      * @param string $path
