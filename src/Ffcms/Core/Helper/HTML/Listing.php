@@ -54,7 +54,7 @@ class Listing extends NativeGenerator
                     }
 
                     $activeItem = false;
-                    // use special active element order type: controller, action - todo
+                    // use special active element order type: controller, action
                     switch ($orderActiveLink) {
                         case 'controller':
                             $elementPoint = Str::firstIn($elementPoint, '/');
@@ -62,9 +62,12 @@ class Listing extends NativeGenerator
                             break;
                         case 'action':
                             $elementArray = explode('/', $elementPoint);
-                            $elementPoint = $elementArray[0] . '/' . $elementArray[1];
-
-                            $activeItem = Str::startsWith($elementPoint, $currentPoint);
+                            if (!Str::contains('/', $elementPoint) || count($elementArray) < 2) {
+                                $activeItem = $elementPoint === $currentPoint;
+                            } else {
+                                $elementPoint = $elementArray[0] . '/' . $elementArray[1];
+                                $activeItem = Str::startsWith($elementPoint, $currentPoint);
+                            }
                             break;
                         case 'id':
                             $elementArray = explode('/', $elementPoint);

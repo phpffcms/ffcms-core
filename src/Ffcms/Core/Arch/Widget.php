@@ -6,7 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Interfaces\iWidget;
 use Ffcms\Core\Traits\DynamicGlobal;
 
-class Widget implements iWidget
+abstract class Widget implements iWidget
 {
     use DynamicGlobal;
 
