@@ -89,12 +89,12 @@ class Alias
         }
 
         // build vendor libs alias
-        $this->vendorNamedLibrary['js']['jquery'] = $this->scriptUrl . '/vendor/bower/jquery/dist/jquery.min.js';
-        $this->vendorNamedLibrary['css']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
-        $this->vendorNamedLibrary['js']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
-        $this->vendorNamedLibrary['css']['fa'] = $this->scriptUrl . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
-        $this->vendorNamedLibrary['js']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/jquery-ui.min.js';
-        $this->vendorNamedLibrary['css']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/themes/base/jquery-ui.min.css';
+        $this->vendorNamedLibrary['js']['jquery'] = $this->scriptUrl . '/vendor/bower/bower-asset/jquery/dist/jquery.min.js';
+        $this->vendorNamedLibrary['css']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bower-asset/bootstrap/dist/css/bootstrap.min.css';
+        $this->vendorNamedLibrary['js']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bower-asset/bootstrap/dist/js/bootstrap.min.js';
+        $this->vendorNamedLibrary['css']['fa'] = $this->scriptUrl . '/vendor/bower/bower-asset/components-font-awesome/css/font-awesome.min.css';
+        $this->vendorNamedLibrary['js']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/bower-asset/jquery-ui/jquery-ui.min.js';
+        $this->vendorNamedLibrary['css']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/bower-asset/jquery-ui/themes/base/jquery-ui.min.css';
 
         $themeAll = App::$Properties->get('theme');
         $this->currentViewUrl = $this->scriptUrl . '/Apps/View/' . env_name . '/' . $themeAll[env_name];

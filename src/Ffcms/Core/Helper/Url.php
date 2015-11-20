@@ -87,7 +87,7 @@ class Url extends NativeGenerator
         }
 
         if (isset($to[3]) && Obj::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
-            $response .= http_build_query($to[3]);
+            $response .= '?' . http_build_query($to[3]);
         }
 
         return $response;

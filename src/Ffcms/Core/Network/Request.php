@@ -104,7 +104,7 @@ class Request extends FoundationRequest
 
                     $queryString = null;
                     if (count($this->query->all()) > 0) {
-                        $queryString = http_build_query($this->query->all());
+                        $queryString = '?' . http_build_query($this->query->all());
                     }
 
                     $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo() . $queryString);
@@ -188,6 +188,7 @@ class Request extends FoundationRequest
                 $this->controller = ucfirst(Str::lowerCase($pathArray[0]));
                 break;
         }
+
         return;
     }
 

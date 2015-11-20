@@ -125,6 +125,7 @@ class App
         try {
             $callClass = null;
             $callMethod = 'action' . self::$Request->getAction();
+
             // founded callback injection alias
             if (self::$Request->getCallbackAlias() !== false) {
                 $cName = self::$Request->getCallbackAlias();
@@ -154,9 +155,9 @@ class App
             // try to call method of founded callback class
             if (method_exists($callClass, $callMethod)) {
                 // param "id" is passed
-                if (self::$Request->getID() !== null) {
+                if (!Str::likeEmpty(self::$Request->getID())) {
                     // param "add" is passed
-                    if (self::$Request->getAdd() !== null) {
+                    if (!Str::likeEmpty(self::$Request->getAdd())) {
                         $callClass->$callMethod(self::$Request->getID(), self::$Request->getAdd());
                     } else {
                         $callClass->$callMethod(self::$Request->getID());

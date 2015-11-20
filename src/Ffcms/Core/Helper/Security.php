@@ -15,6 +15,7 @@ class Security
     public function __construct()
     {
         $config = \HTMLPurifier_Config::createDefault();
+        $config->set('Cache.SerializerPath', root . '/Private/Cache/HTMLPurifier/');
         //$config->set('HTML.Allowed', 'p,b,a[href],i');
         //$config->set('URI.Base', 'http://www.example.com');
         //$config->set('URI.MakeAbsolute', true);
