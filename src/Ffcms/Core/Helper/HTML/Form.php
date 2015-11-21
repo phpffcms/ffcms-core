@@ -315,9 +315,9 @@ class Form extends NativeGenerator
         // pre-validate form fields based on model rules and jquery.validation
         if ($validate) {
             App::$Alias->addPlainCode('js', '$().ready(function() { $("#' . $this->name . '").validate(); });');
-            App::$Alias->setCustomLibrary('js', '/vendor/bower/bower-asset/jquery-validation/dist/jquery.validate.min.js');
+            App::$Alias->setCustomLibrary('js', '/vendor/bower/jquery-validation/dist/jquery.validate.min.js');
             if (App::$Request->getLanguage() !== 'en') {
-                $localeFile = '/vendor/bower/bower-asset/jquery-validation/src/localization/messages_' . App::$Request->getLanguage() . '.js';
+                $localeFile = '/vendor/bower/jquery-validation/src/localization/messages_' . App::$Request->getLanguage() . '.js';
                 if (File::exist($localeFile)) {
                     App::$Alias->setCustomLibrary('js', $localeFile);
                 }
