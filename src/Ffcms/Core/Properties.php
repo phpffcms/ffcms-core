@@ -139,8 +139,7 @@ class Properties
         if (!File::exist($path) || !File::writable($path)) {
             return false;
         }
-
-        $saveData = '<?php return ' . App::$Security->var_export54($data) . ';';
+        $saveData = '<?php return ' . Arr::var_export54($data) . ';';
         File::write($path, $saveData);
         return true;
     }

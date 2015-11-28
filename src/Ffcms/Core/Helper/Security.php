@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
@@ -92,36 +93,13 @@ class Security
 
     /**
      * Alternative var_export function for php >= 5.4 syntax
+     * @deprecated
      * @param $var
      * @param null $indent
      * @return mixed|string
      */
     public function var_export54($var, $indent = null, $guessTypes = false) {
-        switch (gettype($var)) {
-            case 'string':
-                // guess boolean type for "1" and "0"
-                if (true === $guessTypes) {
-                    if ($var === '0' || $var === '') {
-                        return 'false';
-                    } elseif ($var === '1') {
-                        return 'true';
-                    }
-                }
-                return '\'' . $var . '\'';
-            case 'array':
-                $indexed = array_keys($var) === range(0, count($var) - 1);
-                $r = [];
-                foreach ($var as $key => $value) {
-                    $r[] = $indent . "\t"
-                        . ($indexed ? null : $this->var_export54($key, null, $guessTypes) . ' => ')
-                        . $this->var_export54($value, $indent . "\t", $guessTypes);
-                }
-                return "[\n" . implode(",\n", $r) . "\n" . $indent . ']';
-            case 'boolean':
-                return $var ? 'true' : 'false';
-            default:
-                return var_export($var, TRUE);
-        }
+        return Arr::var_export54($var, $indent, $guessTypes);
     }
 
     /**
@@ -136,6 +114,8 @@ class Security
 
     /**
      * Crypt password secure with Blow fish crypt algo (defined in salt)
+     * Blow fish crypt example: crypt('somedata', '$2a$07$usesomesillystringfor$'), where $2a$07$ - definition of algo,
+     * usesomesillystringfor - is salt (must be 21 or more chars), $ - end caret. Output: $2a$07$usesomesillystringfor.sUeCOxyFvckc3xgq1Kzqq90gLrrIVjq
      * @param string $password
      * @return string
      */

@@ -72,6 +72,12 @@ class Arr
         return $output;
     }
 
+    /**
+     * Extract from multi-array elements by key to single-level array
+     * @param string $key
+     * @param array $array
+     * @return array
+     */
     public static function ploke($key, $array)
     {
         if (!Obj::isArray($array)) {
@@ -87,5 +93,39 @@ class Arr
         }
         return $output;
 
+    }
+
+    /**
+     * Alternative var_export function for php >= 5.4 syntax
+     * @param $var
+     * @param null $indent
+     * @return mixed|string
+     */
+    public static  function var_export54($var, $indent = null, $guessTypes = false) {
+        switch (gettype($var)) {
+            case 'string':
+                // guess boolean type for "1" and "0"
+                if (true === $guessTypes) {
+                    if ($var === '0' || $var === '') {
+                        return 'false';
+                    } elseif ($var === '1') {
+                        return 'true';
+                    }
+                }
+                return '\'' . $var . '\'';
+            case 'array':
+                $indexed = array_keys($var) === range(0, count($var) - 1);
+                $r = [];
+                foreach ($var as $key => $value) {
+                    $r[] = $indent . "\t"
+                        . ($indexed ? null : self::var_export54($key, null, $guessTypes) . ' => ')
+                        . self::var_export54($value, $indent . "\t", $guessTypes);
+                }
+                return "[\n" . implode(",\n", $r) . "\n" . $indent . ']';
+            case 'boolean':
+                return $var ? 'true' : 'false';
+            default:
+                return var_export($var, TRUE);
+        }
     }
 }
