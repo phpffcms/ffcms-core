@@ -22,6 +22,22 @@ class Directory
     }
 
     /**
+     * Check if directory is writable
+     * @param string $path
+     * @return bool
+     */
+    public static function writable($path)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return false;
+        }
+
+        return (is_dir($path) && is_writable($path));
+    }
+
+    /**
      * Create directory with recursive support.
      * @param string $path
      * @param int $chmod

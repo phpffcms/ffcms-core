@@ -117,11 +117,15 @@ class Security
      * Blow fish crypt example: crypt('somedata', '$2a$07$usesomesillystringfor$'), where $2a$07$ - definition of algo,
      * usesomesillystringfor - is salt (must be 21 or more chars), $ - end caret. Output: $2a$07$usesomesillystringfor.sUeCOxyFvckc3xgq1Kzqq90gLrrIVjq
      * @param string $password
+     * @param string|null $salt
      * @return string
      */
-    public static function password_hash($password)
+    public static function password_hash($password, $salt = null)
     {
-        return crypt($password, App::$Properties->get('passwordSalt'));
+        if ($salt === null || !Obj::isString($salt) || Str::length($salt) < 1) {
+            $salt = App::$Properties->get('passwordSalt');
+        }
+        return crypt($password, $salt);
     }
 
     /**

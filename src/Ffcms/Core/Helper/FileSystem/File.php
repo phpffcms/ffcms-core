@@ -40,6 +40,15 @@ class File
     }
 
     /**
+     * Alias for exist method
+     * @param string $path
+     * @return bool
+     */
+    public static function readable($path) {
+        return self::exist($path);
+    }
+
+    /**
      * Check is file writable
      * @param string $path
      * @return bool
@@ -53,6 +62,22 @@ class File
         }
 
         return is_writable($path);
+    }
+
+    /**
+     * Check is file executable
+     * @param string $path
+     * @return bool
+     */
+    public static function executable($path)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return false;
+        }
+
+        return is_executable($path);
     }
 
     /**
