@@ -86,7 +86,7 @@ class App
         self::$Alias = new Alias();
 
         // init debug
-        if (Debug::isEnabled()) {
+        if (Debug::isEnabled() && !defined('nodebug')) {
             self::$Debug = new Debug();
         }
 

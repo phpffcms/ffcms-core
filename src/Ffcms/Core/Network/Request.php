@@ -72,7 +72,7 @@ class Request extends FoundationRequest
             if (Obj::isArray(App::$Properties->get('languageDomainAlias'))) {
                 /** @var array $domainAlias */
                 $domainAlias = App::$Properties->get('languageDomainAlias');
-                if (Obj::isArray($domainAlias) && $domainAlias[$this->getHost()] !== null && Str::length($domainAlias[$this->getHost()]) > 0) {
+                if (Obj::isArray($domainAlias) && !Str::likeEmpty($domainAlias[$this->getHost()])) {
                     $this->language = $domainAlias[$this->getHost()];
                 }
             } else {

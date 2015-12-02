@@ -100,13 +100,13 @@ class Translate
         }
 
         // load file translations
-        $addTranslation = require_once($path);
+        $addTranslation = require($path);
         if (!Obj::isArray($addTranslation)) {
             return false;
         }
 
         // merge data
-        $this->cached = Arr::merge($addTranslation, $this->cached);
+        $this->cached = Arr::merge($this->cached, $addTranslation);
         return true;
     }
 
