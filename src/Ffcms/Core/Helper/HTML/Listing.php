@@ -83,6 +83,23 @@ class Listing extends NativeGenerator
                             break;
                     }
 
+                    // if defined active on pathways lets try to find equals
+                    if (isset($item['activeOn']) && Obj::isArray($item['activeOn'])) {
+                        foreach ($item['activeOn'] as $activeUri) {
+                            $activeUri = trim($activeUri, '/');
+                            if (Str::endsWith('*', $activeUri)) {
+                                $activeUri = rtrim($activeUri, '*');
+                                if (Str::startsWith($activeUri, $currentPoint)) {
+                                    $activeItem = true;
+                                }
+                            } else {
+                                if ($activeUri === $currentPoint) {
+                                    $activeItem = true;
+                                }
+                            }
+                        }
+                    }
+
 
                     // check if it active link for current pathway
                     if ($activeItem) {

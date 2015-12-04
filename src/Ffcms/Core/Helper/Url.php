@@ -38,8 +38,7 @@ class Url extends NativeGenerator
         if ($to === null) {
             return null;
         }
-
-        $response = trim($to[0], '/'); // controller/action
+        $response = Str::lowerCase(trim($to[0], '/')); // controller/action
         list($controller, $action) = explode('/', $response);
 
         $routing = App::$Properties->getAll('Routing');
