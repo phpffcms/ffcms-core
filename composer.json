@@ -14,13 +14,13 @@
   ],
   "require": {
     "php": ">=5.4",
-    "illuminate/database": "5.*",
-    "symfony/http-foundation": "2.6.6",
-    "maximebf/debugbar": "1.*",
-    "ezyang/htmlpurifier": "4.6.*",
-    "dflydev/dot-access-data": "1.0.*",
-    "swiftmailer/swiftmailer": "5.4.*",
-    "gregwar/captcha": "1.*"
+    "illuminate/database": "5.*@stable",
+    "symfony/http-foundation": "2.8@stable",
+    "maximebf/debugbar": "1.*@stable",
+    "ezyang/htmlpurifier": "4.6.*@stable",
+    "dflydev/dot-access-data": "1.0.*@stable",
+    "swiftmailer/swiftmailer": "5.4.*@stable",
+    "gregwar/captcha": "1.*@stable"
   },
   "autoload": {
     "psr-0": { "Ffcms\\": "src/" }
