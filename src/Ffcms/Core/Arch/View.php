@@ -36,7 +36,12 @@ class View
     {
         // get theme config and build full path
         $themeConfig = App::$Properties->get('theme');
-        $this->themePath = root . DIRECTORY_SEPARATOR . 'Apps' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . env_name . DIRECTORY_SEPARATOR . $themeConfig[env_name];
+        $this->themePath = root . DIRECTORY_SEPARATOR . 'Apps' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . env_name;
+        if (isset($themeConfig[env_name]) && Str::length($themeConfig[env_name]) > 0) {
+            $this->themePath .=  DIRECTORY_SEPARATOR . $themeConfig[env_name];
+        } else {
+            $this->themePath .= DIRECTORY_SEPARATOR . 'default';
+        }
 
         // check if theme is available
         if (!Directory::exist($this->themePath)) {

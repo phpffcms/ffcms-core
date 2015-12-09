@@ -70,12 +70,17 @@ class App
     /** @var \BasePhpFastCache */
     public static $Cache;
 
+    private $services;
+
+
     /**
-     * Load entry point for another logic
+     * Prepare entry-point services
+     * @param array|null $services
+     * @throws NativeException
      */
-    public static function build()
+    public static function init(array $services = null)
     {
-        // init dynamic classes and make access point
+        // initialize default services - used in all apps type
         self::$Memory = MemoryObject::instance();
         self::$Properties = new Properties();
         self::$Request = Request::createFromGlobals();
@@ -85,42 +90,47 @@ class App
         self::$Translate = new Translate();
         self::$Alias = new Alias();
 
-        // init debug
-        if (Debug::isEnabled() && !defined('nodebug')) {
+        // check if debug is enabled and available for current session
+        if (isset($services['Debug']) && $services['Debug'] === true && Debug::isEnabled() === true) {
             self::$Debug = new Debug();
         }
 
-        // build some configurable objects
-        self::buildExtendObject();
+        $objects = App::$Properties->getAll('object');
+        // pass dynamic initialization
+        self::dynamicServicePrepare($services, $objects);
     }
 
     /**
-     * Build object configuration from config
+     * Prepare dynamic services from object anonymous functions
+     * @param array|null $services
+     * @param null $objects
      * @throws NativeException
      */
-    protected static function buildExtendObject()
+    private static function dynamicServicePrepare(array $services = null, $objects = null)
     {
-        $objectConfig = self::$Properties->getAll('object');
-        if ($objectConfig === false || !Obj::isArray($objectConfig)) {
+        // check if object configuration is passed
+        if (!Obj::isArray($objects)) {
             throw new NativeException('Object configurations is not loaded: /Private/Config/Object.php');
         }
 
-        foreach ($objectConfig as $object => $instance) {
-            if (property_exists('Ffcms\\Core\\App', $object)) {
-                self::${$object} = $instance();
+        // each all objects as service_name => service_instance()
+        foreach ($objects as $name => $instance) {
+            // check if definition of object is exist and services list contains it or is null to auto build
+            if (property_exists(get_called_class(), $name) && $instance instanceof \Closure && (isset($services[$name]) || $services === null)) {
+                if ($services[$name] === true || $services === null) { // initialize from configs
+                    self::${$name} = $instance();
+                } elseif (is_callable($services[$name])) { // raw initialization from App::run()
+                    self::${$name} = $services[$name]();
+                }
             }
-        }
-
-        if (self::$Debug !== null) {
-            self::$Database->getConnection()->enableQueryLog();
         }
     }
 
     /**
-     * Display content after build
+     * Run applications and display output
      * @throws \DebugBar\DebugBarException
      */
-    public static function display()
+    public static function run()
     {
         try {
             $callClass = null;
@@ -135,7 +145,7 @@ class App
                     throw new NotFoundException('Callback alias of class "' . App::$Security->strip_tags($cName) . '" is not founded');
                 }
             } else { // typical parsing of native apps
-                $cName = '\\Apps\\Controller\\' . env_name . '\\' . self::$Request->getController();
+                $cName = '\Apps\Controller\\' . env_name . '\\' . self::$Request->getController();
                 $cPath = Str::replace('\\', '/', $cName) . '.php';
 
                 // try to load controller
@@ -154,17 +164,23 @@ class App
 
             // try to call method of founded callback class
             if (method_exists($callClass, $callMethod)) {
+                $response = null;
                 // param "id" is passed
                 if (!Str::likeEmpty(self::$Request->getID())) {
                     // param "add" is passed
                     if (!Str::likeEmpty(self::$Request->getAdd())) {
-                        $callClass->$callMethod(self::$Request->getID(), self::$Request->getAdd());
+                        $response = $callClass->$callMethod(self::$Request->getID(), self::$Request->getAdd());
                     } else {
-                        $callClass->$callMethod(self::$Request->getID());
+                        $response = $callClass->$callMethod(self::$Request->getID());
                     }
                 } else {
                     // no passed params is founded
-                    $callClass->$callMethod();
+                    $response = $callClass->$callMethod();
+                }
+
+                // work with returned response data
+                if ($response !== null && Obj::isString($response) && method_exists($callClass, 'setResponse')) {
+                    $callClass->setResponse($response);
                 }
             } else {
                 throw new NotFoundException('Method "' . $callMethod . '()" not founded in "' . get_class($callClass) . '"');

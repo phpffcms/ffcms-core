@@ -104,4 +104,13 @@ class Controller
         Variables::instance()->setGlobalArray($array);
     }
 
+    /**
+     * Special method to set response of action execution
+     * @param string $response
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+    }
+
 }

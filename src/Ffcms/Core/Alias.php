@@ -4,6 +4,7 @@ namespace Ffcms\Core;
 
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
+use Ffcms\Core\Helper\Type\Str;
 
 
 /**
@@ -97,6 +98,9 @@ class Alias
         $this->vendorNamedLibrary['css']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/themes/base/jquery-ui.min.css';
 
         $themeAll = App::$Properties->get('theme');
+        if (!isset($themeAll[env_name]) || Str::length($themeAll[env_name]) < 1) {
+            $themeAll[env_name] = 'default';
+        }
         $this->currentViewUrl = $this->scriptUrl . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
     }
 
