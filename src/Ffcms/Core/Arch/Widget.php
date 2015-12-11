@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Interfaces\iWidget;
 use Ffcms\Core\Traits\DynamicGlobal;
 
@@ -26,9 +27,11 @@ abstract class Widget implements iWidget
 
         // init class and pass properties
         $object = new self::$class;
-        foreach ($params as $property => $value) {
-            if (property_exists($object, $property)) {
-                $object->$property = $value;
+        if (Obj::isArray($params) && count($params) > 0) {
+            foreach ($params as $property => $value) {
+                if (property_exists($object, $property)) {
+                    $object->$property = $value;
+                }
             }
         }
 

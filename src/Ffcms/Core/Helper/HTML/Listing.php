@@ -120,7 +120,15 @@ class Listing extends NativeGenerator
 
             // sounds like a text, build element
             if ($item['type'] === 'text') {
-                $items .= ($item['html'] ? self::safe($item['text']) : self::nohtml($item['text']));
+                if ($item['html'] === true) {
+                    if ($item['!secure'] === true) {
+                        $items .= $item['text'];
+                    } else {
+                        $items .= self::safe($item['text']);
+                    }
+                } else {
+                    $items .= self::nohtml($item['text']);
+                }
             } elseif ($item['type'] === 'link') { // sounds like link
                 $link = App::$Alias->baseUrl . '/';
                 if (Obj::isArray($item['link'])) {
