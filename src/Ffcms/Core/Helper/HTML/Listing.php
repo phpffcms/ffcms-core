@@ -120,11 +120,11 @@ class Listing extends NativeGenerator
 
             // sounds like a text, build element
             if ($item['type'] === 'text') {
-                if ($item['html'] === true) {
-                    if ($item['!secure'] === true) {
+                if (isset($item['html']) && $item['html'] === true) {
+                    if (isset($item['!secure']) && $item['!secure'] === true) {
                         $items .= $item['text'];
                     } else {
-                        $items .= self::safe($item['text']);
+                        $items .= self::safe($item['text'], true);
                     }
                 } else {
                     $items .= self::nohtml($item['text']);
@@ -145,7 +145,20 @@ class Listing extends NativeGenerator
                 if (isset($item['linkProperty']) && Obj::isArray($item['linkProperty'])) {
                     $htmlLink .= self::applyProperty($item['linkProperty']);
                 }
-                $htmlLink .= '>' . ((isset($item['html']) && $item['html'] === true ) ? App::$Security->secureHtml($item['text']) : App::$Security->strip_tags($item['text'])) . '</a>';
+                $htmlLink .= '>';
+
+                if (isset($item['html']) && $item['html'] === true) {
+                    if (isset($item['!secure']) && $item['!secure'] === true) {
+                        $htmlLink .= $item['text'];
+                    } else {
+                        $htmlLink .= self::safe($item['text'], true);
+                    }
+                } else {
+                    $htmlLink .= self::nohtml($item['text']);
+                }
+
+                $htmlLink .= '</a>';
+
                 $items .= $htmlLink;
             }
             $items .= '</li>';

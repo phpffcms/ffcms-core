@@ -135,6 +135,15 @@ class Alias
     }
 
     /**
+     * Unset custom library's by type
+     * @param $type
+     */
+    public function unsetCustomLibrary($type)
+    {
+        unset($this->codeCustomLibrary[$type]);
+    }
+
+    /**
      * @param string $type
      * @param string $code
      * @return bool

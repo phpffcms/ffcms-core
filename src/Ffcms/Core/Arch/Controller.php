@@ -5,6 +5,7 @@ namespace Ffcms\Core\Arch;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Template\Variables;
@@ -67,9 +68,15 @@ class Controller
             $content = ob_get_contents();
             ob_end_clean();
 
+            // set custom css library's not included on static call
+            $cssIncludeCode = App::$View->showCodeLink('css');
+            if (!Str::likeEmpty($cssIncludeCode)) {
+                $content = Str::replace('</head>', $cssIncludeCode . '</head>', $content);
+            }
+
             // add debug bar
             if (App::$Debug !== null) {
-                $content = str_replace(
+                $content = Str::replace(
                     ['</body>', '</head>'],
                     [App::$Debug->renderOut() . '</body>', App::$Debug->renderHead() . '</head>'],
                     $content);

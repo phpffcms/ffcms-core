@@ -7,7 +7,7 @@ use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Interfaces\iWidget;
 use Ffcms\Core\Traits\DynamicGlobal;
 
-abstract class Widget implements iWidget
+class Widget implements iWidget
 {
     use DynamicGlobal;
 
@@ -16,9 +16,7 @@ abstract class Widget implements iWidget
 
     public static function widget(array $params = null)
     {
-        if (self::$class === null) {
-            self::$class = get_called_class();
-        }
+        self::$class = get_called_class();
 
         // check if class exist
         if (!class_exists(self::$class)) {

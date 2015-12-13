@@ -260,6 +260,9 @@ class View
             }
         }
 
+        // unset used
+        App::$Alias->unsetCustomLibrary($type);
+
         return $output;
     }
 
