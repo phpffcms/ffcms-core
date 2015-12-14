@@ -5,7 +5,6 @@ namespace Ffcms\Core\Arch;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Dflydev\DotAccessData\Data as DotData;
-use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Filter\Native;
@@ -240,7 +239,7 @@ class Model
                     }
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
-                    $dotData->set($dot_path, $field_value);// todo: check me!!! bug here
+                    $dotData->set($dot_path, $field_value); // todo: check me!!! bug here
                     // export data from dot-data lib to model property
                     $this->{$field_set_name} = $dotData->export();
                 } else { // just single property
@@ -328,7 +327,7 @@ class Model
     {
         if (null === $this->_formName) {
             $cname = get_class($this);
-            $this->_formName = substr($cname, strrpos($cname, '\\')+1);
+            $this->_formName = substr($cname, strrpos($cname, '\\') + 1);
         }
 
         return $this->_formName;

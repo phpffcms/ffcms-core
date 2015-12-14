@@ -27,7 +27,7 @@ class Date
         try {
             $object = new \DateTime($rawDate);
             return $object->format($format);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }

@@ -62,7 +62,7 @@ class Table extends NativeGenerator
             $theadItems .= '<tr>';
             if (Obj::isArray($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
                 foreach ($elements['thead']['titles'] as $order => $title) {
-                    if ($selectOptions !== false && $order+1 === $selectOptions['attachOrder']) {
+                    if ($selectOptions !== false && $order + 1 === $selectOptions['attachOrder']) {
                         $title['text'] = self::buildSingleTag('input', ['type' => 'checkbox', 'name' => 'selectAll']) . ' ' . $title['text'];
                         $title['html'] = true;
                     }
