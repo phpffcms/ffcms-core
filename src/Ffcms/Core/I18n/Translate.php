@@ -37,7 +37,7 @@ class Translate
     {
         if (App::$Request->getLanguage() !== App::$Properties->get('baseLanguage')) {
             if ($index !== null && !Arr::in($index, $this->indexes)) {
-                $this->cached = array_merge($this->cached, $this->load($index));
+                $this->cached = Arr::merge($this->cached, $this->load($index));
                 $this->indexes[] = $index;
             }
 

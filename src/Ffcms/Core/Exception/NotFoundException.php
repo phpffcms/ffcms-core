@@ -2,24 +2,16 @@
 
 namespace Ffcms\Core\Exception;
 
-use Ffcms\Core\App;
-use Ffcms\Core\Arch\Controller;
-
-class NotFoundException extends \Exception
+class NotFoundException extends TemplateException
 {
 
     public function display()
     {
-        if (App::$Debug !== null) {
-            App::$Debug->addException($this);
-        }
+        $this->status = 404;
+        $this->title = '404 Not Found';
+        $this->text = 'Unable to find this URL: %e%';
+        $this->tpl = 'notfound';
 
-        $load = new Controller();
-        if (defined('env_no_layout') && env_no_layout === true) {
-            $load->layout = null;
-        }
-        $load->setGlobalVar('title', '404 Not Found');
-        $load->response = App::$Translate->get('Default', 'Unable to find this URL', []);
-        App::$Response->setStatusCode(404);
+        parent::display();
     }
 }
