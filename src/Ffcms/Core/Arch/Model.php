@@ -92,7 +92,7 @@ class Model
      * @return bool
      * @throws SyntaxException
      */
-    public final function validate()
+    final public function validate()
     {
         $rules = $this->rules();
         $success = true; // set is success
@@ -157,7 +157,7 @@ class Model
      * @return bool
      * @throws SyntaxException
      */
-    protected final function validateRecursive($field_name, $filter_name, $filter_argv, $html = false, $secure = false)
+    final protected function validateRecursive($field_name, $filter_name, $filter_argv, $html = false, $secure = false)
     {
         // check if we got it from form defined request method
         if (App::$Request->getMethod() !== $this->_sendMethod) {
@@ -234,8 +234,8 @@ class Model
                 if ($field_name !== $field_set_name) { // array-based property
                     $dot_path = trim(strstr($field_name, '.'), '.');
                     // prevent throws any exceptions for null and false objects
-                    if (!Obj::isArray($this->$field_set_name)) {
-                        $this->$field_set_name = [];
+                    if (!Obj::isArray($this->{$field_set_name})) {
+                        $this->{$field_set_name} = [];
                     }
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
@@ -263,14 +263,14 @@ class Model
      * Export model values for safe-using in HTML pages.
      * @return $this
      */
-    public final function export()
+    final public function export()
     {
         $properties = get_object_vars($this);
         foreach ($properties as $var => $value) {
             if (Str::startsWith('_', $var)) { // ignore $_var
                 continue;
             }
-            $this->$var = App::$Security->secureHtml($value);
+            $this->{$var} = App::$Security->secureHtml($value);
         }
         return $this;
     }
@@ -297,7 +297,7 @@ class Model
      * @param string $field
      * @return array
      */
-    public final function getValidationRule($field)
+    final public function getValidationRule($field)
     {
         $rules = $this->rules();
         $response = [];

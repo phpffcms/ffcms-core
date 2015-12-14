@@ -3,8 +3,10 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
+use Ffcms\Core\Helper\Url;
 
 abstract class NativeGenerator
 {
@@ -45,7 +47,7 @@ abstract class NativeGenerator
 
         $build = null;
         foreach ($property as $p => $v) {
-            if ($v === null) {
+            if ($v === null || $v === false) {
                 $build .= ' ' . self::nohtml($p);
             } else {
                 $build .= ' ' . self::nohtml($p) . '="' . self::nohtml($v) . '"';
@@ -57,10 +59,10 @@ abstract class NativeGenerator
     /**
      * Fast building single tag based on property's array
      * @param string $tagName
-     * @param array $property
+     * @param array|null $property
      * @return string
      */
-    public static function buildSingleTag($tagName, array $property)
+    public static function buildSingleTag($tagName, array $property = null)
     {
         return '<' . self::nohtml($tagName) . self::applyProperty($property) . '/>';
     }
@@ -68,15 +70,15 @@ abstract class NativeGenerator
     /**
      * Fast building container type tag based on property's and value
      * @param string $tagName
-     * @param array $property
+     * @param array|null $property
      * @param null|string $value
      * @param bool $valueHtml
      * @return string
      */
-    public static function buildContainerTag($tagName, array $property, $value = null, $valueHtml = false)
+    public static function buildContainerTag($tagName, array $property = null, $value = null, $valueHtml = false)
     {
         $tagName = self::nohtml($tagName);
-        if (false === $valueHtml) {
+        if ($valueHtml !== true) {
             $value = self::nohtml($value);
         }
         return '<' . $tagName . self::applyProperty($property) . '>' . $value . '</' . $tagName . '>';
@@ -96,6 +98,106 @@ abstract class NativeGenerator
             $string = urlencode($string);
         }
         return $string;
+    }
+
+    /**
+     * Check if uri $source is equal to current uri point with array of $aliases and active $order set
+     * @param null $source
+     * @param array|null $aliases
+     * @param bool $order
+     * @return bool
+     */
+    public static function isCurrentLink($source = null, array $aliases = null, $order = false)
+    {
+        $elementPoint = Url::buildPathway($source);
+        $currentPoint = Url::buildPathwayFromRequest();
+
+        // use special active element order type: controller, action
+        switch ($order) {
+            case 'controller':
+                $elementPoint = Str::firstIn($elementPoint, '/');
+                $active = Str::startsWith($elementPoint, $currentPoint);
+                break;
+            case 'action':
+                $elementArray = explode('/', $elementPoint);
+                if (!Str::contains('/', $elementPoint) || count($elementArray) < 2) {
+                    $active = $elementPoint === $currentPoint;
+                } else {
+                    $elementPoint = $elementArray[0] . '/' . $elementArray[1];
+                    $active = Str::startsWith($elementPoint, $currentPoint);
+                }
+                break;
+            case 'id':
+                $elementArray = explode('/', $elementPoint);
+                $elementPoint = $elementArray[0] . '/' . $elementArray[1];
+                if (null !== $elementArray[2]) {
+                    $elementPoint .= '/' . $elementArray[2];
+                }
+
+                $active = Str::startsWith($elementPoint, $currentPoint);
+                break;
+            default:
+                $active = $elementPoint === $currentPoint;
+                break;
+        }
+
+        // check if current uri equals with aliases
+        if (Obj::isArray($aliases) && count($aliases) > 0) {
+            foreach ($aliases as $activeUri) {
+                $activeUri = trim($activeUri, '/');
+                if (Str::endsWith('*', $activeUri)) {
+                    $activeUri = rtrim($activeUri, '*');
+                    if (Str::startsWith($activeUri, $currentPoint)) {
+                        $active = true;
+                    }
+                } else {
+                    if ($activeUri === $currentPoint) {
+                        $active = true;
+                    }
+                }
+            }
+        }
+
+        return $active;
+    }
+
+    /**
+     * Apply security for string to output as html
+     * @param string|null $object
+     * @param bool $html
+     * @param bool $secure
+     * @return null|string
+     */
+    public static function applyEscape($object = null, $html = false, $secure = false)
+    {
+        $object = (string)$object;
+        if ($html !== true) {
+            $object = self::nohtml($object);
+        } elseif ($secure !== true) {
+            $object = self::safe($object, true);
+        }
+
+        return $object;
+    }
+
+    /**
+     * Convert link-binding type to classic link with security filter
+     * @param string|array $uri
+     * @return string
+     */
+    public static function convertLink($uri)
+    {
+        $link = App::$Alias->baseUrl . '/';
+        if (Obj::isArray($uri)) {
+            $link .= Url::buildPathway($uri);
+        } elseif (Str::startsWith('http', $uri)) {
+            $link = self::nohtml($uri);
+        } elseif (Str::startsWith('#', $uri)) { // allow pass #part
+            $link = self::nohtml($uri);
+        } else {
+            $link .= self::nohtml(trim($uri, '/'));
+        }
+        return $link;
     }
 
 

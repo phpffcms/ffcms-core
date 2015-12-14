@@ -26,7 +26,6 @@ class Listing extends NativeGenerator
             return null;
         }
 
-        $ulProperties = self::applyProperty($elements['property']);
         $orderActiveLink = false;
         if ($elements['activeOrder'] !== null) {
             $orderActiveLink = $elements['activeOrder'];
@@ -41,65 +40,19 @@ class Listing extends NativeGenerator
             }
             // sounds like a link, try detect active element
             if ($item['type'] === 'link') {
-                if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
+                if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#',
+                        $item['link'])
+                ) {
                     $item['link'] = [$item['link']]; // just controller/action sended, to array
                 }
 
+                // check if current element is link and is active
                 if (Obj::isArray($item['link'])) {
-                    $elementPoint = Url::buildPathway($item['link']);
-                    $currentPoint = Url::buildPathwayFromRequest();
-
                     if (!isset($item['activeClass'])) {
                         $item['activeClass'] = 'active';
                     }
 
-                    $activeItem = false;
-                    // use special active element order type: controller, action
-                    switch ($orderActiveLink) {
-                        case 'controller':
-                            $elementPoint = Str::firstIn($elementPoint, '/');
-                            $activeItem = Str::startsWith($elementPoint, $currentPoint);
-                            break;
-                        case 'action':
-                            $elementArray = explode('/', $elementPoint);
-                            if (!Str::contains('/', $elementPoint) || count($elementArray) < 2) {
-                                $activeItem = $elementPoint === $currentPoint;
-                            } else {
-                                $elementPoint = $elementArray[0] . '/' . $elementArray[1];
-                                $activeItem = Str::startsWith($elementPoint, $currentPoint);
-                            }
-                            break;
-                        case 'id':
-                            $elementArray = explode('/', $elementPoint);
-                            $elementPoint = $elementArray[0] . '/' . $elementArray[1];
-                            if (null !== $elementArray[2]) {
-                                $elementPoint .= '/' . $elementArray[2];
-                            }
-
-                            $activeItem = Str::startsWith($elementPoint, $currentPoint);
-                            break;
-                        default:
-                            $activeItem = $elementPoint === $currentPoint;
-                            break;
-                    }
-
-                    // if defined active on pathways lets try to find equals
-                    if (isset($item['activeOn']) && Obj::isArray($item['activeOn'])) {
-                        foreach ($item['activeOn'] as $activeUri) {
-                            $activeUri = trim($activeUri, '/');
-                            if (Str::endsWith('*', $activeUri)) {
-                                $activeUri = rtrim($activeUri, '*');
-                                if (Str::startsWith($activeUri, $currentPoint)) {
-                                    $activeItem = true;
-                                }
-                            } else {
-                                if ($activeUri === $currentPoint) {
-                                    $activeItem = true;
-                                }
-                            }
-                        }
-                    }
-
+                    $activeItem = self::isCurrentLink($item['link'], $item['activeOn'], $orderActiveLink);
 
                     // check if it active link for current pathway
                     if ($activeItem) {
@@ -110,60 +63,19 @@ class Listing extends NativeGenerator
                 }
             }
 
-            $items .= '<li';
-            if (isset($item['property']) && count($item['property']) > 0) {
-                foreach ($item['property'] as $attr => $value) {
-                    $items .= ' ' . $attr . '="' . $value . '"';
-                }
+            $innerItem = self::applyEscape($item['text'], $item['html'], $item['!secure']);
+            // sounds like a hyperlink?
+            if ($item['type'] === 'link') {
+                // parse uri-link type to classic link
+                $item['linkProperty']['href'] = self::convertLink($item['link']);
+                // make classic tag inside with text value
+                $innerItem = self::buildContainerTag('a', $item['linkProperty'], $innerItem, $item['html']);
             }
-            $items .= '>';
-
-            // sounds like a text, build element
-            if ($item['type'] === 'text') {
-                if (isset($item['html']) && $item['html'] === true) {
-                    if (isset($item['!secure']) && $item['!secure'] === true) {
-                        $items .= $item['text'];
-                    } else {
-                        $items .= self::safe($item['text'], true);
-                    }
-                } else {
-                    $items .= self::nohtml($item['text']);
-                }
-            } elseif ($item['type'] === 'link') { // sounds like link
-                $link = App::$Alias->baseUrl . '/';
-                if (Obj::isArray($item['link'])) {
-                    $link .= Url::buildPathway($item['link']);
-                } elseif (Str::startsWith('http', $item['link'])) {
-                    $link = self::nohtml($item['link']);
-                } elseif (Str::startsWith('#', $item['link'])) { // allow pass #part
-                    $link = self::nohtml($item['link']);
-                } else {
-                    $link .= self::nohtml(trim($item['link'], '/'));
-                }
-
-                $htmlLink = '<a href="' . self::nohtml($link) . '"';
-                if (isset($item['linkProperty']) && Obj::isArray($item['linkProperty'])) {
-                    $htmlLink .= self::applyProperty($item['linkProperty']);
-                }
-                $htmlLink .= '>';
-
-                if (isset($item['html']) && $item['html'] === true) {
-                    if (isset($item['!secure']) && $item['!secure'] === true) {
-                        $htmlLink .= $item['text'];
-                    } else {
-                        $htmlLink .= self::safe($item['text'], true);
-                    }
-                } else {
-                    $htmlLink .= self::nohtml($item['text']);
-                }
-
-                $htmlLink .= '</a>';
-
-                $items .= $htmlLink;
-            }
-            $items .= '</li>';
+            // store item
+            $items .= self::buildContainerTag('li', $item['property'], $innerItem, true);
         }
 
-        return '<' . $elements['type'] . $ulProperties . '>' . $items . '</' . $elements['type'] .  '>';
+        // return <ul/> or <ol/> full container
+        return self::buildContainerTag($elements['type'], $elements['property'], $items, true);
     }
 }
