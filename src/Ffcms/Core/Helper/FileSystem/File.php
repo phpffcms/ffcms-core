@@ -166,7 +166,7 @@ class File
         $path = Normalize::diskFullPath($path);
 
         $dir = opendir($path . '/.');
-        while($item = readdir($dir)) {
+        while ($item = readdir($dir)) {
             if (is_file($sub = $path . '/' . $item)) {
                 $item_ext = Str::lastIn($item, '.');
                 if ($ext === null || Arr::in($item_ext, $ext)) {

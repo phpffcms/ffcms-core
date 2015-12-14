@@ -139,12 +139,12 @@ class Url extends NativeGenerator
         }
 
         $content = null;
-        if(function_exists('curl_version')) {
+        if (function_exists('curl_version')) {
             $curl = \curl_init();
             $userAgent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)';
-            \curl_setopt($curl,CURLOPT_URL, $url);
-            \curl_setopt($curl,CURLOPT_RETURNTRANSFER, TRUE);
-            \curl_setopt($curl,CURLOPT_CONNECTTIMEOUT, 5);
+            \curl_setopt($curl, CURLOPT_URL, $url);
+            \curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+            \curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
             \curl_setopt($curl, CURLOPT_HEADER, 0);
             \curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);
             \curl_setopt($curl, CURLOPT_FAILONERROR, TRUE);

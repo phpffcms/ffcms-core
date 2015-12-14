@@ -32,11 +32,11 @@ class SimplePagination
     public function display(array $property = null)
     {
         // total items is less to pagination requirement
-        if (($this->page * $this->step)+1 > $this->total) {
+        if (($this->page * $this->step) + 1 > $this->total) {
             return null;
         }
 
-        $lastPage = ceil($this->total/$this->step); // 6/5 ~ 2 = 0..2
+        $lastPage = ceil($this->total / $this->step); // 6/5 ~ 2 = 0..2
 
         if ($lastPage <= 1) {
             return null;
@@ -59,15 +59,15 @@ class SimplePagination
                     'type' => 'link', 'link' => '#', 'text' => '...', 'property' => ['class' => 'disabled']
                 ];
                 // add middle page
-                $middlePage = ceil($lastPage/2);
+                $middlePage = ceil($lastPage / 2);
                 $items[] = [
-                    'type' => 'link', 'link' => $this->setUrlPage($middlePage), 'text' => $middlePage+1
+                    'type' => 'link', 'link' => $this->setUrlPage($middlePage), 'text' => $middlePage + 1
                 ];
                 // add "..." button
                 $items[] = [
                     'type' => 'link', 'link' => '#', 'text' => '...', 'property' => ['class' => 'disabled']
                 ];
-                $items = Arr::merge($items, $this->generateItems($lastPage-4, $lastPage));
+                $items = Arr::merge($items, $this->generateItems($lastPage - 4, $lastPage));
             } else { // meanwhile on middle
                 // generate 1-2 pages
                 $items = $this->generateItems(0, 2);
@@ -78,7 +78,7 @@ class SimplePagination
                 ];
 
                 // add middle variance -3..mid..+3
-                $items = Arr::merge($items, $this->generateItems($this->page-3, $this->page+3));
+                $items = Arr::merge($items, $this->generateItems($this->page - 3, $this->page + 3));
 
                 // add "..." button
                 $items[] = [
@@ -86,7 +86,7 @@ class SimplePagination
                 ];
 
                 // add latest 2 items
-                $items = Arr::merge($items, $this->generateItems($lastPage-2, $lastPage));
+                $items = Arr::merge($items, $this->generateItems($lastPage - 2, $lastPage));
             }
 
         } else { // less then 10 items in pagination
@@ -141,7 +141,7 @@ class SimplePagination
         $items = [];
         for ($i = $start; $i < $end; $i++) {
             $items[] = [
-                'type' => 'link', 'link' => $this->setUrlPage($i), 'text' => $i+1
+                'type' => 'link', 'link' => $this->setUrlPage($i), 'text' => $i + 1
             ];
         }
         return $items;

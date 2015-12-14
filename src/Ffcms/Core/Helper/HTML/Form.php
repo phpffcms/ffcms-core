@@ -173,7 +173,7 @@ class Form extends NativeGenerator
         // sounds like a array-path based
         if (Str::contains('.', $name)) {
             $splitedName = explode('.', $name);
-            foreach($splitedName as $nameKey) {
+            foreach ($splitedName as $nameKey) {
                 $property['name'] .= '[' . $nameKey . ']';
                 $property['id'] .= '-' . $nameKey;
             }
@@ -225,7 +225,7 @@ class Form extends NativeGenerator
                     }
                     $property['value'] = $opt;
                     // apply structured checkboxes style for each item
-                    $buildCheckboxes .= Str::replace('%item%' , self::buildSingleTag('input', $property) . self::nohtml($opt), $this->structureCheckboxes);
+                    $buildCheckboxes .= Str::replace('%item%', self::buildSingleTag('input', $property) . self::nohtml($opt), $this->structureCheckboxes);
                 }
 
                 $response = $buildCheckboxes;

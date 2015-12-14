@@ -5,7 +5,6 @@ namespace Ffcms\Core\Network;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
-use Predis\Command\StringIncrement;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
 use Ffcms\Core\App;

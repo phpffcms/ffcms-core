@@ -79,7 +79,7 @@ class LaravelDatabaseCollector extends PDOCollector
      */
     public function setFindSource($value = true)
     {
-        $this->findSource = (bool) $value;
+        $this->findSource = (bool)$value;
     }
 
     /**
@@ -91,7 +91,7 @@ class LaravelDatabaseCollector extends PDOCollector
     public function setExplainSource($enabled, $types)
     {
         $this->explainQuery = $enabled;
-        if($types){
+        if ($types) {
             $this->explainTypes = $types;
         }
     }
@@ -160,7 +160,7 @@ class LaravelDatabaseCollector extends PDOCollector
             $hints[] = '<code>LIMIT</code> without <code>ORDER BY</code> causes non-deterministic results, depending on the query execution plan';
         }
         if (preg_match('/LIKE\\s[\'"](%.*?)[\'"]/i', $query, $matches)) {
-            $hints[] = 	'An argument has a leading wildcard character: <code>' . $matches[1]. '</code>.
+            $hints[] = 'An argument has a leading wildcard character: <code>' . $matches[1] . '</code>.
 								The predicate with this argument is not sargable and cannot use an index if one exists.';
         }
         return implode("<br />", $hints);
@@ -242,13 +242,13 @@ class LaravelDatabaseCollector extends PDOCollector
             $totalTime += $query['time'];
 
             $bindings = $query['bindings'];
-            if($query['hints']){
+            if ($query['hints']) {
                 $bindings['hints'] = $query['hints'];
             }
 
             $statements[] = array(
                 'sql' => $this->formatSql($query['query']),
-                'params' => (object) $bindings,
+                'params' => (object)$bindings,
                 'duration' => $query['time'],
                 'duration_str' => $this->formatDuration($query['time']),
                 'stmt_id' => $query['source'],
