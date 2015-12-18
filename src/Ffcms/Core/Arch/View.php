@@ -137,7 +137,7 @@ class View
             }
 
             // get controller name
-            $controllerName = Str::substr($calledController, Str::length('Apps\\Controller\\' . env_name . '\\'));
+            $controllerName = Str::sub($calledController, Str::length('Apps\\Controller\\' . env_name . '\\'));
             $controllerName = Str::lowerCase($controllerName);
             // get full path
             $tmpPath = $this->themePath . DIRECTORY_SEPARATOR . $controllerName . DIRECTORY_SEPARATOR . $path . '.php';

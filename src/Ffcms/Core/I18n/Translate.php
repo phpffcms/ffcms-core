@@ -66,7 +66,7 @@ class Translate
         $namespace = 'Apps\\Controller\\' . env_name . '\\';
         foreach (debug_backtrace() as $caller) {
             if (isset($caller['class']) && Str::startsWith($namespace, $caller['class'])) {
-                $index = Str::substr((string)$caller['class'], Str::length($namespace));
+                $index = Str::sub((string)$caller['class'], Str::length($namespace));
             }
         }
         return $this->get($index, $text, $params);

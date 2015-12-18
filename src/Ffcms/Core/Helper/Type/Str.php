@@ -28,7 +28,7 @@ class Str
         if (self::length($string) < 1 || self::length($where) < 1) {
             return false;
         }
-        $pharse_prefix = self::substr($where, 0, self::length($string));
+        $pharse_prefix = self::sub($where, 0, self::length($string));
         return $pharse_prefix === $string;
     }
 
@@ -44,7 +44,7 @@ class Str
         if (self::length($string) < 1 || self::length($where) < 1) {
             return false;
         }
-        $pharse_suffix = self::substr($where, -self::length($string));
+        $pharse_suffix = self::sub($where, -self::length($string));
         return $pharse_suffix === $string;
     }
 
@@ -52,7 +52,7 @@ class Str
      * Find first entry in $string before $delimiter
      * @param string $string
      * @param string $delimiter
-     * @return string
+     * @return string|bool
      */
     public static function firstIn($string, $delimiter)
     {
@@ -64,21 +64,21 @@ class Str
      * @param string $string
      * @param string $delimiter
      * @param bool $withoutDelimiter
-     * @return null|string
+     * @return string|bool
      */
     public static function lastIn($string, $delimiter, $withoutDelimiter = false)
     {
         $pos = strrpos($string, $delimiter);
-        // if entry is not founded return null
-        if (false === $pos) {
-            return null;
+        // if entry is not founded return false
+        if (!Obj::isInt($pos)) {
+            return false;
         }
         // remove delimiter pointer
         if (true === $withoutDelimiter) {
             ++$pos;
         }
 
-        return self::substr($string, $pos);
+        return self::sub($string, $pos);
     }
 
     /**
@@ -106,7 +106,7 @@ class Str
      */
     public static function length($string)
     {
-        return mb_strlen($string, 'UTF-8');
+        return mb_strlen((string)$string, 'UTF-8');
     }
 
     /**
@@ -131,8 +131,8 @@ class Str
 
     /**
      * Count string entries of search
-     * @param $string
-     * @param $search
+     * @param string $string
+     * @param string $search
      * @return int
      */
     public static function entryCount($string, $search)
@@ -177,7 +177,7 @@ class Str
      * @param string $encode
      * @return string
      */
-    public static function substr($string, $start, $length = null, $encode = 'UTF-8')
+    public static function sub($string, $start, $length = null, $encode = 'UTF-8')
     {
         return mb_substr($string, $start, $length, $encode);
     }

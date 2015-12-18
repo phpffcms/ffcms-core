@@ -197,7 +197,7 @@ class Request extends FoundationRequest
      */
     public function getPathInfo()
     {
-        $route = $this->languageInPath ? Str::substr(parent::getPathInfo(), Str::length($this->language) + 1) : parent::getPathInfo();
+        $route = $this->languageInPath ? Str::sub(parent::getPathInfo(), Str::length($this->language) + 1) : parent::getPathInfo();
         if (!Str::startsWith('/', $route)) {
             $route = '/' . $route;
         }
