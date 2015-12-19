@@ -79,9 +79,9 @@ trait ModelValidator
 
         // sounds like file
         if ($inputTypes[$field_name] === 'file') {
-            $field_value = $this->getFile($field_name);
+            $field_value = $this->getRequest($field_name, 'file');
         } else { // sounds like plain post data
-            $field_value = $this->getInput($field_name);
+            $field_value = $this->getRequest($field_name, $this->_sendMethod);
             // remove or safe use html
             if ($html === false) {
                 $field_value = App::$Security->strip_tags($field_value);
@@ -176,7 +176,7 @@ trait ModelValidator
      */
     final public function setSubmitMethod($acceptMethod)
     {
-        $this->_sendMethod = strtoupper($acceptMethod);
+        $this->_sendMethod = Str::upperCase($acceptMethod);
     }
 
     /**
@@ -198,7 +198,7 @@ trait ModelValidator
             return false;
         }
 
-        return null !== $this->getInput('submit');
+        return $this->getRequest('submit', $this->_sendMethod) !== null;
     }
 
     /**
@@ -207,7 +207,7 @@ trait ModelValidator
      */
     public function getFormName()
     {
-        if (null === $this->_formName) {
+        if ($this->_formName === null) {
             $cname = get_class($this);
             $this->_formName = substr($cname, strrpos($cname, '\\') + 1);
         }
@@ -216,39 +216,58 @@ trait ModelValidator
     }
 
     /**
+     * @deprecated
      * Get input params GET/POST/PUT method
      * @param string $param
      * @return string|null
      */
     public function getInput($param)
     {
-        $objName = $this->getFormName();
-        if (Str::contains('.', $param)) {
-            foreach (explode('.', $param) as $item) {
-                $objName .= '[' . $item . ']';
-            }
-        } else {
-            $objName .= '[' . $param . ']';
-        }
-        return App::$Request->get($objName, null, true);
+        return $this->getRequest($param, $this->_sendMethod);
     }
 
     /**
+     * @deprecated
      * Get uploaded file from user via POST request
      * @param string $param
      * @return \Symfony\Component\HttpFoundation\File\UploadedFile|null
      */
     public function getFile($param)
     {
-        $fileName = $this->getFormName();
+        return $this->getRequest($param, 'file');
+    }
+
+    /**
+     * Get input param for current model form based on param name and request method
+     * @param string $param
+     * @param string $method
+     * @return string|null|array
+     */
+    public function getRequest($param, $method = 'get')
+    {
+        // build param query for http foundation request
+        $paramQuery = $this->getFormName();
         if (Str::contains('.', $param)) {
-            foreach (explode('.', $param) as $obj) {
-                $fileName .= '[' . $obj . ']';
+            foreach (explode('.', $param) as $item) {
+                $paramQuery .= '[' . $item . ']';
             }
         } else {
-            $fileName .= '[' . $param . ']';
+            $paramQuery .= '[' . $param . ']';
         }
-        return App::$Request->files->get($fileName, null, true);
+
+        // get request based on method and param query
+        $method = Str::lowerCase($method);
+        switch ($method) {
+            case 'get':
+                return App::$Request->query->get($paramQuery, null, true);
+            case 'post':
+                return App::$Request->request->get($paramQuery, null, true);
+            case 'file':
+                return App::$Request->files->get($paramQuery, null, true);
+            default:
+                return App::$Request->get($paramQuery, null, true);
+
+        }
     }
 
     /**
