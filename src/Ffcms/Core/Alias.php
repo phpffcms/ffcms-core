@@ -33,6 +33,12 @@ class Alias
     public $baseDomain;
 
     /**
+     * Current app basic URL without language path
+     * @var string
+     */
+    public $baseUrlNoLang;
+
+    /**
      * Current app basic URL address, obtained from request
      * @var string
      */
@@ -85,6 +91,7 @@ class Alias
         if (App::$Request->getBasePath() !== null) {
             $this->baseUrl .= App::$Request->getBasePath();
         }
+        $this->baseUrlNoLang = $this->baseUrl;
         if (App::$Request->languageInPath() && App::$Request->getLanguage() !== null) {
             $this->baseUrl .= '/' . App::$Request->getLanguage();
         }

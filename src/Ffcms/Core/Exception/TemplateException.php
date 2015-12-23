@@ -5,6 +5,8 @@ namespace Ffcms\Core\Exception;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Controller;
+use Ffcms\Core\Helper\Type\Obj;
+use Ffcms\Core\Helper\Type\Str;
 
 abstract class TemplateException extends \Exception
 {
@@ -27,11 +29,16 @@ abstract class TemplateException extends \Exception
         }
 
         $fakeController->setGlobalVar('title', App::$Translate->get('Default', $this->title));
+        $rawResponse = 'error';
         try {
-            $fakeController->response = App::$View->render('errors/' . $this->tpl, ['msg' => $this->text]);
+            $rawResponse = App::$View->render('errors/' . $this->tpl, ['msg' => $this->text]);
+            if (Str::likeEmpty($rawResponse)) {
+                $rawResponse = $this->text;
+            }
         } catch (SyntaxException $e) {
-            $fakeController->response = $this->text;
+            $rawResponse = $this->text;
         }
+        $fakeController->setResponse($rawResponse);
 
         App::$Response->setStatusCode((int)$this->status);
     }
