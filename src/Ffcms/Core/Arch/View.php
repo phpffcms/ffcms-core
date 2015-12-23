@@ -187,6 +187,9 @@ class View
     {
         if ($path === null || !File::exist($path)) {
             if (App::$Debug !== null) {
+                if (Str::likeEmpty($path)) {
+                    $path = 'Unknown';
+                }
                 App::$Debug->addMessage('Viewer is not founded: ' . $path, 'error');
             }
             return null;

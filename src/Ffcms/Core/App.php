@@ -146,19 +146,12 @@ class App
                 }
             } else { // typical parsing of native apps
                 $cName = '\Apps\Controller\\' . env_name . '\\' . self::$Request->getController();
-                $cPath = Str::replace('\\', '/', $cName) . '.php';
 
-                // try to load controller
-                if (File::exist($cPath)) {
-                    File::inc($cPath, false, true);
-                } else {
-                    throw new NotFoundException('Controller not founded: {root}' . $cPath);
-                }
                 // try to initialize class object
                 if (class_exists($cName)) {
                     $callClass = new $cName;
                 } else {
-                    throw new NotFoundException('App is not founded: "' . $cName . '. Pathway: {root}' . $cPath);
+                    throw new NotFoundException('Application can not be runned. Initialized class not founded: ' . App::$Security->strip_tags($cName));
                 }
             }
 

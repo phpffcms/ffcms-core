@@ -68,7 +68,8 @@ class Obj
      */
     public static function isLikeBoolean($data)
     {
-        return false !== filter_var($data, FILTER_VALIDATE_BOOLEAN);
+        // will return true for "1", true, "on", "yes", false for 0, "false", "off", 'no', '', NULL FOR ANY OTHER VALUE!!!
+        return filter_var($data, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) !== null;
     }
 
     /**

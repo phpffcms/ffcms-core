@@ -97,11 +97,13 @@ class Arr
 
     /**
      * Alternative var_export function for php >= 5.4 syntax
-     * @param $var
-     * @param null $indent
-     * @return mixed|string
+     * @param array|string $var
+     * @param string|null $indent
+     * @param boolean $guessTypes
+     * @return string|null
      */
-    public static  function var_export54($var, $indent = null, $guessTypes = false) {
+    public static function exportVar($var, $indent = null, $guessTypes = false)
+    {
         switch (gettype($var)) {
             case 'string':
                 // guess boolean type for "1" and "0"
@@ -115,13 +117,13 @@ class Arr
                 return '\'' . $var . '\'';
             case 'array':
                 $indexed = array_keys($var) === range(0, count($var) - 1);
-                $r = [];
+                $row = [];
                 foreach ($var as $key => $value) {
-                    $r[] = $indent . "\t"
-                        . ($indexed ? null : self::var_export54($key, null, $guessTypes) . ' => ')
-                        . self::var_export54($value, $indent . "\t", $guessTypes);
+                    $row[] = $indent . "\t"
+                        . ($indexed ? null : self::exportVar($key, null, $guessTypes) . ' => ')
+                        . self::exportVar($value, $indent . "\t", $guessTypes);
                 }
-                return "[\n" . implode(",\n", $r) . "\n" . $indent . ']';
+                return "[\n" . implode(",\n", $row) . "\n" . $indent . ']';
             case 'boolean':
                 return $var ? 'true' : 'false';
             default:

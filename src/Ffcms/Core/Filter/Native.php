@@ -39,9 +39,9 @@ class Native
     }
 
     /**
-     * Filter ['object', 'in', 'handle']
-     * @param $object
-     * @param array $handle
+     * Filter ['object', 'in', ['handles']]
+     * @param string $object
+     * @param array|null $handle
      * @return bool
      */
     public static function in($object, array $handle)
@@ -56,6 +56,27 @@ class Native
         }
 
         return Arr::in($object, $handle);
+    }
+
+    /**
+     * Filter ['object', 'notin', ['handles']]
+     * @param string $object
+     * @param array $handle
+     * @return bool
+     */
+    public static function notin($object, array $handle)
+    {
+        return !self::in($object, $handle);
+    }
+
+    /**
+     * Filter ['object', 'checked']
+     * @param $object
+     * @return bool
+     */
+    public static function checked($object)
+    {
+        return (int)$object === 1;
     }
 
     /**

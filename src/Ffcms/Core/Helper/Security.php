@@ -56,7 +56,7 @@ class Security
      * String html tags and escape quotes
      * @param string|array $html
      * @param boolean $escapeQuotes
-     * @return string
+     * @return string|array|null
      */
     public function strip_tags($html, $escapeQuotes = true)
     {
@@ -78,7 +78,7 @@ class Security
     /**
      * Strip php tags and notations in string.
      * @param array|string $data
-     * @return array|mixed|string
+     * @return array|null|string
      */
     public function strip_php_tags($data)
     {
@@ -99,7 +99,7 @@ class Security
      * @return mixed|string
      */
     public function var_export54($var, $indent = null, $guessTypes = false) {
-        return Arr::var_export54($var, $indent, $guessTypes);
+        return Arr::exportVar($var, $indent, $guessTypes);
     }
 
     /**
