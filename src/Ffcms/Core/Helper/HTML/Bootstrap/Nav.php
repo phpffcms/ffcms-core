@@ -7,7 +7,7 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\HTML\Listing;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
-use Ffcms\Core\Helper\HTML\NativeGenerator;
+use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 
 class Nav extends NativeGenerator
 {

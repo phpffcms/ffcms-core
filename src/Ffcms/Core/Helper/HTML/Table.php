@@ -3,95 +3,135 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\HTML\System\Dom;
+use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
-use Ffcms\Core\Helper\HTML\NativeGenerator;
 
+/**
+ * Class Table - helper for drawing tables using php static call Table::display([params])
+ * @package Ffcms\Core\Helper\HTML
+ */
 class Table extends NativeGenerator
 {
 
+    /**
+     * Construct table based on passed elements as array: properties, thead, tbody, rows, items etc
+     * @param array $elements
+     * @return null
+     */
     public static function display($elements)
     {
+        // check passed data
         if (!Obj::isArray($elements) || count($elements) < 1) {
             return null;
         }
 
-        if (!Obj::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1) {
+        if (!isset($elements['tbody']) || !Obj::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1) {
             return null;
         }
 
+        // check selectable box options
         $selectOptions = false;
         if (isset($elements['selectableBox'])) {
             $selectOptions = $elements['selectableBox'];
             unset($elements['selectableBox']);
         }
 
-        $tbodyItems = null;
-
-        if (Obj::isArray($elements['tbody']) && count($elements['tbody']) > 0) {
-            $tbodyItems .= '<tbody' . self::applyProperty($elements['tbody']['property']) . '>';
-            foreach ($elements['tbody']['items'] as $item) {
-                ksort($item); // sort by key
-                $tbodyItems .= '<tr' . self::applyProperty($item['property']) . '>';
-                foreach ($item as $id => $data) {
-                    if (Obj::isInt($id)) { // td element
-                        $itemText = null;
-                        if ($data['html'] === true) {
-                            if ($data['!secure'] === true) {
-                                $itemText = $data['text'];
-                            } else {
-                                $itemText = self::safe($data['text'], true);
+        // init dom model
+        $dom = new Dom();
+        // draw response
+        $table = $dom->table(function () use ($dom, $elements, $selectOptions) {
+            $res = null;
+            // check if thead is defined
+            if (isset($elements['thead']) && Obj::isArray($elements['thead']) && count($elements['thead']) > 0 && Obj::isArray($elements['thead']['titles'])) {
+                // add thead container
+                $res .= $dom->thead(function () use ($dom, $elements, $selectOptions) {
+                    return $dom->tr(function () use ($dom, $elements, $selectOptions) {
+                        $tr = null;
+                        foreach ($elements['thead']['titles'] as $order => $title) {
+                            $th = htmlentities($title['text']);
+                            // make global checkbox for selectable columns
+                            if ($selectOptions !== false && $order + 1 === $selectOptions['attachOrder']) {
+                                $th = $dom->input(function () {
+                                    return null;
+                                }, ['type' => 'checkbox', 'name' => 'selectAll']) . ' ' . $th;
                             }
-                        } else {
-                            $itemText = self::nohtml($data['text']);
+                            // build tr row collecting all th's
+                            $tr .= $dom->th(function () use ($th) {
+                                return $th;
+                            });
                         }
-                        if ($selectOptions !== false && $id === $selectOptions['attachOrder']) {
-                            $itemText = self::buildSingleTag('input', Arr::merge($selectOptions['input'], ['value' => $itemText])) . ' ' . $itemText;
-                        }
-                        $tbodyItems .= '<td' . self::applyProperty($data['property']) . '>' . $itemText . '</td>';
-                    }
-                }
-                $tbodyItems .= '</tr>';
+                        // return tr row in thead
+                        return $tr;
+                    });
+                }, $elements['thead']['property']);
             }
-            $tbodyItems .= '</tbody>';
-        }
-
-        $theadItems = null;
-        if (Obj::isArray($elements['thead']) && count($elements['thead']) > 0) {
-            $theadItems .= '<thead' . self::applyProperty($elements['thead']['property']) . '>';
-            $theadItems .= '<tr>';
-            if (Obj::isArray($elements['thead']['titles']) && count($elements['thead']['titles']) > 0) {
-                foreach ($elements['thead']['titles'] as $order => $title) {
-                    if ($selectOptions !== false && $order + 1 === $selectOptions['attachOrder']) {
-                        $title['text'] = self::buildSingleTag('input', ['type' => 'checkbox', 'name' => 'selectAll']) . ' ' . $title['text'];
-                        $title['html'] = true;
+            // parse tbody array elements
+            if (isset($elements['tbody']) && Obj::isArray($elements['tbody']) && isset($elements['tbody']['items']) && Obj::isArray($elements['tbody']['items'])) {
+                // add tbody container
+                $res .= $dom->tbody(function() use ($dom, $elements, $selectOptions){
+                    $tr = null;
+                    // each all items by row (tr)
+                    foreach ($elements['tbody']['items'] as $row) {
+                        // sort td items inside row by key increment
+                        ksort($row);
+                        // add data in tr container
+                        $tr .= $dom->tr(function () use ($dom, $row, $selectOptions) {
+                            $td = null;
+                            foreach ($row as $order => $item) {
+                                if (!Obj::isInt($order)) {
+                                    continue;
+                                }
+                                // collect td item
+                                $td .= $dom->td(function () use ($dom, $order, $item, $selectOptions) {
+                                    $text = null;
+                                    // make text secure based on passed options
+                                    if ($item['html'] === true) {
+                                        if ($item['!secure'] === true) {
+                                            $text = $item['text'];
+                                        } else {
+                                            $text = self::safe($item['text'], true);
+                                        }
+                                    } else {
+                                        $text = htmlentities($item['text']);
+                                    }
+                                    // check if selectable box is enabled and equal current order id
+                                    if ($selectOptions !== false && $order === $selectOptions['attachOrder']) {
+                                        $text = $dom->input(function (){
+                                            return null;
+                                        }, Arr::merge($selectOptions['input'], ['value' => $text])) . ' ' . $text;
+                                    }
+                                    return $text;
+                                }, $item['property']);
+                            }
+                            return $td;
+                        }, $row['property']);
                     }
-                    $theadItems .= self::buildContainerTag('th', [], $title['text'], $title['html']);
-                }
+                    return $tr;
+                }, $elements['tbody']['property']);
             }
-            $theadItems .= '</tr></thead>';
-        }
 
-        $build = null;
-        if ($selectOptions !== false) {
-            $build .= '<form ' . self::applyProperty($selectOptions['form']) . '>';
-        }
 
-        $build .= '<table' . self::applyProperty($elements['table']) . '>';
-        $build .= $theadItems;
-        $build .= $tbodyItems;
-        $build .= '</table>';
 
-        if ($selectOptions !== false) {
-            $build .= self::buildSingleTag('input', $selectOptions['button']);
-            $build .= '</form>';
-        }
+            // return all computed code
+            return $res;
+        }, $elements['table']);
 
-        if ($selectOptions !== false && Obj::isArray($selectOptions)) {
+        // check if select box is defined and used
+        if ($selectOptions !== false || Obj::isArray($selectOptions)) {
+            // build js code for "selectAll" checkbox
             self::buildSelectorHtml($selectOptions);
+            // return response inside "form" tag
+            return $dom->form(function () use ($dom, $selectOptions, $table){
+                $table .= $dom->input(function () {
+                    return null;
+                }, $selectOptions['button']);
+                return $table;
+            }, $selectOptions['form']);
         }
 
-        return $build;
+        return $table;
     }
 
     /**

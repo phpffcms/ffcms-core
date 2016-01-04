@@ -25,7 +25,7 @@ class NativeException extends \Exception
             echo $message;
         }
 
-        die();
+        exit();
     }
 
     protected function rawHTML($message = null)

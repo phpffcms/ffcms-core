@@ -4,6 +4,7 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Obj;

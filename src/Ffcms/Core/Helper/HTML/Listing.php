@@ -3,13 +3,15 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\HTML\System\Dom;
+use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
 
 /**
- * Class HList
+ * Class Listing - build html listing carcase
  * @package Ffcms\Core\Helper\HTML
  */
 class Listing extends NativeGenerator
@@ -26,56 +28,60 @@ class Listing extends NativeGenerator
             return null;
         }
 
-        $orderActiveLink = false;
-        if ($elements['activeOrder'] !== null) {
-            $orderActiveLink = $elements['activeOrder'];
-        }
-
-        $items = null;
-        // foreach elements and build schema
-        foreach ($elements['items'] as $item) {
-            // type is undefined, skip
-            if (!Arr::in($item['type'], ['text', 'link'])) {
-                continue;
+        // initialize new DOM model
+        $dom = new Dom();
+        // return DOM-HTML, build based on closures!
+        return $dom->{$elements['type']}(function () use ($dom, $elements) {
+            // prepare output avg variable
+            $liHtml = null;
+            // get active order level
+            $orderActiveLink = false;
+            if (isset($elements['activeOrder'])) {
+                $orderActiveLink = $elements['activeOrder'];
             }
-            // sounds like a link, try detect active element
-            if ($item['type'] === 'link') {
-                if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#',
-                        $item['link'])
-                ) {
-                    $item['link'] = [$item['link']]; // just controller/action sended, to array
-                }
 
-                // check if current element is link and is active
-                if (Obj::isArray($item['link'])) {
-                    if (!isset($item['activeClass'])) {
-                        $item['activeClass'] = 'active';
+            // each all items as single item
+            foreach ($elements['items'] as $item) {
+                $itemContent = self::applyEscape($item['text'], $item['html'], $item['!secure']);
+                $itemProperty = $item['property'];
+                // check if element looks like link and can be active
+                if (isset($item['link'])) {
+                    // try to parse link format for controller/action definition (must be array: 'main/index' to ['main/index'])
+                    if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
+                        $item['link'] = [$item['link']];
                     }
 
-                    $activeItem = self::isCurrentLink($item['link'], $item['activeOn'], $orderActiveLink);
+                    // if its a controller/action definition try to work with active class
+                    if (Obj::isArray($item['link'])) {
+                        // check if css class for active item is defined
+                        if (!isset($item['activeClass'])) {
+                            $item['activeClass'] = 'active';
+                        }
 
-                    // check if it active link for current pathway
-                    if ($activeItem) {
-                        $item['property']['class'] = Str::length($item['property']['class']) > 0
-                            ? $item['activeClass'] . ' ' . $item['property']['class']
-                            : $item['activeClass'];
+                        // check if element is active on current URI
+                        if (self::isCurrentLink($item['link'], $item['activeOn'], $orderActiveLink) === true) {
+                            $itemProperty['class'] = !Str::likeEmpty($itemProperty['class'])
+                                ? $item['activeClass'] . ' ' . $itemProperty['class']
+                                : $item['activeClass'];
+                        }
                     }
+
+                    // set href source for link
+                    $item['linkProperty']['href'] = self::convertLink($item['link']);
+
+                    // build a href link inside li element
+                    $itemContent = $dom->a(function () use ($itemContent) {
+                        return $itemContent;
+                    }, $item['linkProperty']);
                 }
-            }
 
-            $innerItem = self::applyEscape($item['text'], $item['html'], $item['!secure']);
-            // sounds like a hyperlink?
-            if ($item['type'] === 'link') {
-                // parse uri-link type to classic link
-                $item['linkProperty']['href'] = self::convertLink($item['link']);
-                // make classic tag inside with text value
-                $innerItem = self::buildContainerTag('a', $item['linkProperty'], $innerItem, $item['html']);
+                // build output li tag
+                $liHtml .= $dom->li(function () use ($elements, $itemContent) {
+                    return $itemContent;
+                }, $itemProperty);
             }
-            // store item
-            $items .= self::buildContainerTag('li', $item['property'], $innerItem, true);
-        }
-
-        // return <ul/> or <ol/> full container
-        return self::buildContainerTag($elements['type'], $elements['property'], $items, true);
+            // return done html dom syntax from closure
+            return $liHtml;
+        }, $elements['property']);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ffcms\Core\Helper\HTML;
+namespace Ffcms\Core\Helper\HTML\System;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Security;
