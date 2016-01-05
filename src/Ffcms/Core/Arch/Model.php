@@ -65,6 +65,15 @@ class Model
     }
 
     /**
+     * Set model data sources for input data
+     * @return array
+     */
+    public function sources()
+    {
+        return [];
+    }
+
+    /**
      * Validate defined rules in app
      * @return bool
      * @throws SyntaxException

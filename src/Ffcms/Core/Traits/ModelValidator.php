@@ -6,6 +6,7 @@ namespace Ffcms\Core\Traits;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Filter\Native;
+use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Dflydev\DotAccessData\Data as DotData;
@@ -71,26 +72,8 @@ trait ModelValidator
             return false;
         }
 
-        $inputTypes = [];
-        // check input data type. Maybe file or input (text)
-        if (method_exists($this, 'inputTypes')) {
-            $inputTypes = $this->inputTypes();
-        }
-
-        // sounds like file
-        if ($inputTypes[$field_name] === 'file') {
-            $field_value = $this->getRequest($field_name, 'file');
-        } else { // sounds like plain post data
-            $field_value = $this->getRequest($field_name, $this->_sendMethod);
-            // remove or safe use html
-            if ($html === false) {
-                $field_value = App::$Security->strip_tags($field_value);
-            } else {
-                if ($secure !== true) {
-                    $field_value = App::$Security->secureHtml($field_value);
-                }
-            }
-        }
+        // get field value from user input data
+        $field_value = $this->getFieldValue($field_name, $html, $secure);
 
         $check = false;
         // maybe no filter required?
@@ -159,6 +142,39 @@ trait ModelValidator
             }
         }
         return $check;
+    }
+
+    /**
+     * @param string $field_name
+     * @param bool $html
+     * @param bool $secure
+     * @return array|null|string
+     */
+    private function getFieldValue($field_name, $html = false, $secure = false)
+    {
+        // get type of input data (where we must look it up)
+        $sources = [];
+        $inputType = Str::lowerCase($this->_sendMethod);
+        // check input data type. Maybe file or input (text)
+        if (method_exists($this, 'sources')) {
+            $sources = $this->sources();
+        }
+
+        if (isset($sources[$field_name])) {
+            $inputType = Str::lowerCase($sources[$field_name]);
+        }
+
+        $field_value = $this->getRequest($field_name, $inputType);
+        // apply html security filter for input data
+        if ($inputType !== 'file') {
+            if ($html !== true) {
+                $field_value = App::$Security->strip_tags($field_value);
+            } elseif($secure !== true) {
+                $field_value = App::$Security->secureHtml($field_value);
+            }
+        }
+
+        return $field_value;
     }
 
     /**
@@ -268,14 +284,5 @@ trait ModelValidator
                 return App::$Request->get($paramQuery, null, true);
 
         }
-    }
-
-    /**
-     * Set special type for input data. Example: ['avatar' => 'file', 'login' => 'input']
-     * @return array
-     */
-    public function inputTypes()
-    {
-        return [];
     }
 }

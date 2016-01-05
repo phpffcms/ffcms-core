@@ -13,6 +13,34 @@ use Ffcms\Core\Helper\Type\Arr;
 /**
  * Class Dom - build html DOM structure based on anonymous callbacks
  * @package Ffcms\Core\Helper\HTML
+ * @method string hr(\Closure $obj, array $properties = null)
+ * @method string br(\Closure $obj, array $properties = null)
+ * @method string img(\Closure $obj, array $properties = null)
+ * @method string input(\Closure $obj, array $properties = null)
+ * @method string article(\Closure $obj, array $properties = null)
+ * @method string nav(\Closure $obj, array $properties = null)
+ * @method string div(\Closure $obj, array $properties = null)
+ * @method string p(\Closure $obj, array $properties = null)
+ * @method string a(\Closure $obj, array $properties = null)
+ * @method string b(\Closure $obj, array $properties = null)
+ * @method string s(\Closure $obj, array $properties = null)
+ * @method string strong(\Closure $obj, array $properties = null)
+ * @method string strike(\Closure $obj, array $properties = null)
+ * @method string u(\Closure $obj, array $properties = null)
+ * @method string span(\Closure $obj, array $properties = null)
+ * @method string ul(\Closure $obj, array $properties = null)
+ * @method string ol(\Closure $obj, array $properties = null)
+ * @method string li(\Closure $obj, array $properties = null)
+ * @method string table(\Closure $obj, array $properties = null)
+ * @method string thead(\Closure $obj, array $properties = null)
+ * @method string tbody(\Closure $obj, array $properties = null)
+ * @method string tr(\Closure $obj, array $properties = null)
+ * @method string td(\Closure $obj, array $properties = null)
+ * @method string th(\Closure $obj, array $properties = null)
+ * @method string dt(\Closure $obj, array $properties = null)
+ * @method string dd(\Closure $obj, array $properties = null)
+ * @method string form(\Closure $obj, array $properties = null)
+ * @method string label(\Closure $obj, array $properties = null)
  */
 class Dom
 {
