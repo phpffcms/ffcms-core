@@ -16,7 +16,9 @@ class Form extends NativeGenerator
     protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item% <p class="help-block">%help%</p></div></div>';
     protected $structureCheckbox = '<div class="form-group"><div class="col-md-9 col-md-offset-3"><div class="checkbox"><label>%item% %label%</label></div><p class="help-block">%help%</p></div></div>';
     protected $structureCheckboxes = '<div class="checkbox"><label>%item%</label></div>';
+    protected $structureJSError = '$("#%itemId%").parent().parent(".form-group").addClass("has-error")';
     protected $name;
+    protected $formProperty = [];
     /** @var Model */
     protected $model;
 
@@ -40,14 +42,17 @@ class Form extends NativeGenerator
 
         // set custom html build structure form fields
         if (Obj::isArray($structure)) {
-            if (Str::length($structure['base']) > 0) {
+            if (isset($structure['base']) && !Str::likeEmpty($structure['base'])) {
                 $this->structure = $structure['base'];
             }
-            if (Str::length($structure['checkbox']) > 0) {
+            if (isset($structure['checkbox']) && !Str::likeEmpty($structure['checkbox'])) {
                 $this->structureCheckbox = $structure['checkbox'];
             }
-            if (Str::length($structure['checkboxes']) > 0) {
+            if (isset($structure['checkboxes']) && !Str::likeEmpty($structure['checkboxes'])) {
                 $this->structureCheckboxes = $structure['checkboxes'];
+            }
+            if (isset($structure['jserror']) && !Str::likeEmpty($structure['jserror'])) {
+                $this->structureJSError = $structure['jserror'];
             }
         }
 
@@ -58,7 +63,18 @@ class Form extends NativeGenerator
         if (Str::likeEmpty($property['action'])) {
             $property['action'] = App::$Request->getFullUrl();
         }
-        echo '<form' . self::applyProperty($property) . '>';
+
+        // set property global for this form
+        $this->formProperty = $property;
+    }
+
+    /**
+     * Open form tag with prepared properties
+     * @return string
+     */
+    public function start()
+    {
+        return '<form' . self::applyProperty($this->formProperty) . '>';
     }
 
     /**
@@ -321,6 +337,18 @@ class Form extends NativeGenerator
                 $localeFile = '/vendor/bower/jquery-validation/src/localization/messages_' . App::$Request->getLanguage() . '.js';
                 if (File::exist($localeFile)) {
                     App::$Alias->setCustomLibrary('js', $localeFile);
+                }
+            }
+            // if model is not empty - add js error color notification
+            if ($this->model !== null) {
+                $badAttr = $this->model->getBadAttribute();
+                $formName = $this->model->getFormName();
+                if (Obj::isArray($badAttr) && count($badAttr) > 0) {
+                    $jsError = $this->structureJSError;
+                    foreach ($badAttr as $attr) {
+                        $itemId = $formName . '-' . $attr;
+                        App::$Alias->addPlainCode('js', Str::replace('%itemId%', $itemId, $jsError));
+                    }
                 }
             }
         }
