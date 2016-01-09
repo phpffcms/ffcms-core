@@ -17,7 +17,9 @@ abstract class TemplateException extends \Exception
 
     public function display()
     {
-        $this->text = App::$Translate->get('Default', $this->text, ['e' => $this->getMessage()]);
+        $msg = Str::replace(root, '$DOCUMENT_ROOT', $this->getMessage());
+        $msg = App::$Security->strip_tags($msg);
+        $this->text = App::$Translate->get('Default', $this->text, ['e' => $msg]);
 
         if (App::$Debug !== null) {
             App::$Debug->addException($this);
@@ -41,6 +43,8 @@ abstract class TemplateException extends \Exception
         $fakeController->setResponse($rawResponse);
 
         App::$Response->setStatusCode((int)$this->status);
+
+        return $fakeController->getOutput();
     }
 
 }

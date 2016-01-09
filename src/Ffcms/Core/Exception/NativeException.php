@@ -2,6 +2,8 @@
 
 namespace Ffcms\Core\Exception;
 
+use Ffcms\Core\Helper\Type\Str;
+
 class NativeException extends \Exception
 {
     protected $message;
@@ -18,14 +20,15 @@ class NativeException extends \Exception
             $message = $this->message;
         }
 
+        $message = Str::replace(root, '$DOCUMENT_ROOT', $message);
+        $message = htmlentities($message);
+
         if (type === 'web') {
             header('HTTP/1.1 404 Not Found');
-            echo $this->rawHTML($message);
-        } else {
-            echo $message;
+            return $this->rawHTML($message);
         }
 
-        exit();
+        return $message;
     }
 
     protected function rawHTML($message = null)

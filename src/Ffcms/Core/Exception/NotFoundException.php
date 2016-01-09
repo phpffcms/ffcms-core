@@ -12,6 +12,6 @@ class NotFoundException extends TemplateException
         $this->text = 'Unable to find this URL: %e%';
         $this->tpl = 'notfound';
 
-        parent::display();
+        return parent::display();
     }
 }

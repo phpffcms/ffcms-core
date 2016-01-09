@@ -12,10 +12,9 @@ class JsonException extends \Exception
     public function display()
     {
         header('Content-Type: application/json');
-        echo json_encode([
+        return json_encode([
             'status' => 0,
             'message' => $this->getMessage()
         ]);
-        exit();
     }
 }

@@ -15,6 +15,6 @@ class ForbiddenException extends TemplateException
         $this->text = 'Access to this page is forbidden: %e%';
         $this->tpl = 'forbidden';
 
-        parent::display();
+        return parent::display();
     }
 }

@@ -120,8 +120,12 @@ class Request extends FoundationRequest
         $routing = App::$Properties->getAll('Routing');
 
         // try to find static routing alias
-        /** @var array $aliasMap */
-        $aliasMap = $routing['Alias'][env_name];
+        /** @var bool|array $aliasMap */
+        $aliasMap = false;
+        if (isset($routing['Alias']) && isset($routing['Alias'][env_name])) {
+            $aliasMap = $routing['Alias'][env_name];
+        }
+
         if (Obj::isArray($aliasMap) && array_key_exists($pathway, $aliasMap)) {
             $pathway = $aliasMap[$pathway];
             $this->aliasPathTarget = $pathway;
@@ -152,8 +156,12 @@ class Request extends FoundationRequest
             $this->controller = 'Main';
         }
 
-        // get callback routing map
-        $callbackMap = $routing['Callback'][env_name];
+        $callbackMap = false;
+        if (isset($routing['Callback']) && isset($routing['Callback'][env_name])) {
+            $callbackMap = $routing['Callback'][env_name];
+        }
+
+        // check is dynamic callback map exist
         if (isset($callbackMap[$this->controller])) {
             $callbackClass = $callbackMap[$this->controller];
             // check if rule for current controller is exist

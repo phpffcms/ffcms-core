@@ -16,6 +16,6 @@ class SyntaxException extends TemplateException
         $this->tpl = 'syntax';
         $this->text = 'Website code syntax exception: %e%';
 
-        parent::display();
+        return parent::display();
     }
 }

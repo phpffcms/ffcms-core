@@ -33,27 +33,19 @@ class Controller
     public function before() {}
 
     /**
-     * Compile output
-     */
-    public function __destruct()
-    {
-        // allow use and override after() method
-        $this->after();
-        $this->make();
-    }
-
-    /**
      * Build variables and display output html
      */
-    protected function make()
+    public function getOutput()
     {
+        $this->after();
+
         // if layout is not required and this is just standalone app
         if ($this->layout === null) {
             $content = $this->response;
         } else {
             $layoutPath = App::$Alias->currentViewPath . '/layout/' . $this->layout . '.php';
             if (!File::exist($layoutPath)) {
-                throw new NativeException('Layout not founded: {root}' . Str::replace(root, '', $layoutPath));
+                throw new NativeException('Layout not founded: ' . $layoutPath);
             }
 
             $body = $this->response;
@@ -62,10 +54,12 @@ class Controller
                 App::$Debug->bar->getCollector('config')->setData(['Global Vars' => Variables::instance()->getGlobalsArray()]);
             }
 
+            // cleanup buffer from random shits after exception throw'd
+            ob_clean();
+            // start buffering to render layout
             ob_start();
-            include_once($layoutPath);
-            $content = ob_get_contents();
-            ob_end_clean();
+            include($layoutPath);
+            $content = ob_get_clean(); // read buffer content & stop buffering
 
             // set custom css library's not included on static call
             $cssIncludeCode = App::$View->showCodeLink('css');
@@ -83,9 +77,7 @@ class Controller
 
         }
 
-        // display content and layout if exist
-        App::$Response->setContent($content);
-        App::$Response->send();
+        return $content;
     }
 
     public function after() {}

@@ -4,6 +4,7 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
+use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
@@ -27,6 +28,8 @@ class View
     private $params;
 
     private $sourcePath;
+
+    public $nativeException = false;
 
     /**
      * Lets construct viewer
@@ -206,10 +209,24 @@ class View
         $self = $this;
         // turn on output buffer
         ob_start();
-        include($path);
-        $response = ob_get_contents();
-        // turn off buffer
-        ob_end_clean();
+        // try get buffered content and catch native exception to exit from app
+        try {
+            include($path);
+            $response = ob_get_clean(); // get buffer data and stop buffering
+        } catch (NativeException $e) {
+            // cleanup response
+            $response = null;
+            // cleanup buffer
+            ob_end_clean();
+            // prepare output message
+            $msg = $e->getMessage();
+            if (!Str::likeEmpty($msg)) {
+                $msg .= '. ';
+            }
+            $msg .= __('Native exception catched in view: %path% in line %line%', ['path' => $path, 'line' => $e->getLine()]);
+            exit($e->display($msg));
+        }
+
         // cleanup init params
         $this->path = null;
         $this->params = null;

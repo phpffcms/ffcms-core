@@ -70,8 +70,6 @@ class App
     /** @var \BasePhpFastCache */
     public static $Cache;
 
-    private $services;
-
 
     /**
      * Prepare entry-point services
@@ -132,7 +130,10 @@ class App
      */
     public static function run()
     {
+        $html = null;
+        // lets try to get html full content to page render
         try {
+            /** @var \Ffcms\Core\Arch\Controller $callClass */
             $callClass = null;
             $callMethod = 'action' . self::$Request->getAction();
 
@@ -157,40 +158,43 @@ class App
 
             // try to call method of founded callback class
             if (method_exists($callClass, $callMethod)) {
-                $response = null;
-                // param "id" is passed
+                $actionQuery = [];
+                // prepare action params for callback
                 if (!Str::likeEmpty(self::$Request->getID())) {
-                    // param "add" is passed
+                    $actionQuery[] = self::$Request->getID();
                     if (!Str::likeEmpty(self::$Request->getAdd())) {
-                        $response = $callClass->$callMethod(self::$Request->getID(), self::$Request->getAdd());
-                    } else {
-                        $response = $callClass->$callMethod(self::$Request->getID());
+                        $actionQuery[] = self::$Request->getAdd();
                     }
-                } else {
-                    // no passed params is founded
-                    $response = $callClass->$callMethod();
+                }
+                // make callback call to action in controller and get response
+                $actionResponse = @call_user_func_array([$callClass, $callMethod], $actionQuery);
+                if ($actionResponse !== null && !Str::likeEmpty($actionResponse)) {
+                    // set response to controller property object
+                    $callClass->setResponse($actionResponse);
                 }
 
-                // work with returned response data
-                if ($response !== null && Obj::isString($response) && method_exists($callClass, 'setResponse')) {
-                    $callClass->setResponse($response);
-                }
+                $html = $callClass->getOutput();
             } else {
-                throw new NotFoundException('Method "' . $callMethod . '()" not founded in "' . get_class($callClass) . '"');
+                throw new NotFoundException('Method "' . App::$Security->strip_tags($callMethod) . '()" not founded in "' . get_class($callClass) . '"');
             }
-        } catch (NotFoundException $e) {
-            $e->display();
+        } catch (NotFoundException $e) { // catch exceptions and set output
+            $html = $e->display();
         } catch (ForbiddenException $e) {
-            $e->display();
+            $html = $e->display();
         } catch (SyntaxException $e) {
-            $e->display();
+            $html = $e->display();
         } catch (JsonException $e) {
-            $e->display();
+            $html = $e->display();
         } catch (NativeException $e) {
-            $e->display();
+            $html = $e->display();
         } catch (\Exception $e) { // catch all other exceptions
-            (new NativeException($e->getMessage()))->display();
+            $html = (new NativeException($e->getMessage()))->display();
         }
+
+        // set full rendered content to response builder
+        self::$Response->setContent($html);
+        // echo full response to user via http foundation
+        self::$Response->send();
     }
 
 }
