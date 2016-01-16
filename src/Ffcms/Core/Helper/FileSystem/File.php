@@ -6,7 +6,7 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Str;
 
 /**
- * Class File - helper to work with files
+ * Class File. Provide methods to work with files in current filesystem.
  * @package Ffcms\Core\Helper
  */
 class File

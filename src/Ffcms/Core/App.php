@@ -19,7 +19,7 @@ use Ffcms\Core\Debug\Manager as Debug;
 use Ffcms\Core\Cache\MemoryObject;
 
 /**
- * Class App - entry point for applications
+ * Class App. Provide later static callbacks as entry point from any places of ffcms.
  * @package Ffcms\Core
  */
 class App

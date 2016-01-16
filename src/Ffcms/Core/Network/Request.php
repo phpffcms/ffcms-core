@@ -9,6 +9,11 @@ use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
 use Ffcms\Core\App;
 
+/**
+ * Class Request. Classic implementation of httpfoundation.request with smooth additions and changes which allow
+ * working as well as in ffcms.
+ * @package Ffcms\Core\Network
+ */
 class Request extends FoundationRequest
 {
     protected $language;

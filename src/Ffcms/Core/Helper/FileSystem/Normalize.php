@@ -4,6 +4,10 @@ namespace Ffcms\Core\Helper\FileSystem;
 
 use Ffcms\Core\Helper\Type\Str;
 
+/**
+ * Class Normalize. Special system-based class who provide methods to make disk path readable and clean
+ * @package Ffcms\Core\Helper\FileSystem
+ */
 class Normalize
 {
     /**

@@ -14,6 +14,11 @@ use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Template\Variables;
 use Ffcms\Core\Traits\DynamicGlobal;
 
+/**
+ * Class View. Classic realisation of view's management in MVC architecture.
+ * This class can be uses as object - (new View())->render() or from entry point App::$View->render()
+ * @package Ffcms\Core\Arch
+ */
 class View
 {
     use DynamicGlobal;

@@ -11,6 +11,10 @@ use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\I18n\Lexer;
 
+/**
+ * Class Translate. Provide methods to work with internalization data in ffcms.
+ * @package Ffcms\Core\I18n
+ */
 class Translate
 {
 

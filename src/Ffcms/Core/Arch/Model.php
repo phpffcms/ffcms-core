@@ -10,6 +10,10 @@ use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Traits\ModelValidator;
 
+/**
+ * Class Model. Classic constructor of models in MVC architecture with algorithm of passing attributes from user input data.
+ * @package Ffcms\Core\Arch
+ */
 class Model
 {
     use DynamicGlobal, ModelValidator;

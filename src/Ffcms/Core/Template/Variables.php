@@ -6,6 +6,10 @@ use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Traits\Singleton;
 
+/**
+ * Class Variables. Support singleton-based class to store data from any place as a variables for view's.
+ * @package Ffcms\Core\Template
+ */
 class Variables
 {
     use Singleton;

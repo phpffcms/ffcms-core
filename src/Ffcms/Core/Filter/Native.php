@@ -7,6 +7,11 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
+/**
+ * Class Native. Collection of native static methods for model filters.
+ * This methods can be used in models, methods rules() as second argument in array.
+ * @package Ffcms\Core\Filter
+ */
 class Native
 {
 

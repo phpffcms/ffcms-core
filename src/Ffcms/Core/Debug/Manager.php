@@ -8,7 +8,7 @@ use \Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
 
 /**
- * Class Debug - display information of debug and collected data in debug bar
+ * Class Debug. Provide methods of display information about debug and collected data in debug bar
  * @package Ffcms\Core
  */
 class Manager

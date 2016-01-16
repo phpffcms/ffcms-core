@@ -9,6 +9,10 @@ use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Template\Variables;
 
+/**
+ * Class Controller. Classic carcase of controller in MVC architecture.
+ * @package Ffcms\Core\Arch
+ */
 class Controller
 {
 

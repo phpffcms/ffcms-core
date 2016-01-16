@@ -7,6 +7,10 @@ use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Interfaces\iWidget;
 use Ffcms\Core\Traits\DynamicGlobal;
 
+/**
+ * Class Widget. Provide constructor to work with widget-type based extensions for ffcms.
+ * @package Ffcms\Core\Arch
+ */
 class Widget implements iWidget
 {
     use DynamicGlobal;

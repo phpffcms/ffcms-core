@@ -4,6 +4,10 @@ namespace Ffcms\Core\Cache;
 
 use Ffcms\Core\Traits\Singleton;
 
+/**
+ * Class MemoryObject. Simple singleton-type of magic __set and __get class to store any objects in memory (get and set)
+ * @package Ffcms\Core\Cache
+ */
 class MemoryObject
 {
     use Singleton;

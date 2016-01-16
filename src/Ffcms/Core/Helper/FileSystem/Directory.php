@@ -6,6 +6,10 @@ use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
+/**
+ * Class Directory. Provide methods to work with directories in current filesystem.
+ * @package Ffcms\Core\Helper\FileSystem
+ */
 class Directory
 {
     /**

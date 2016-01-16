@@ -3,7 +3,7 @@
 namespace Ffcms\Core\Traits;
 
 /**
- * Class Singleton
+ * Class Singleton. Basic structure of singleton pattern.
  * @package Ffcms\Core\Traits
  */
 trait Singleton

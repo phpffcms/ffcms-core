@@ -7,6 +7,10 @@ use Ffcms\Core\Helper\Type\Str;
 use Symfony\Component\HttpFoundation\Response as FoundationResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse as FoundationRedirect;
 
+/**
+ * Class Response. Basic implementation of httpfoundation.response class.
+ * @package Ffcms\Core\Network
+ */
 class Response extends FoundationResponse
 {
     /**

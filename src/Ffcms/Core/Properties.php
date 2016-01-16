@@ -9,6 +9,10 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
+/**
+ * Class Properties. Provide methods to work with ffcms configs.
+ * @package Ffcms\Core
+ */
 class Properties
 {
     protected $data;
