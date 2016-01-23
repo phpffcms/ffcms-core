@@ -186,4 +186,20 @@ class File
         return $files;
     }
 
+    /**
+     * Get file size in bytes
+     * @param string $path
+     * @return int
+     */
+    public static function size($path)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return 0;
+        }
+
+        return filesize($path);
+    }
+
 }
