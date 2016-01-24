@@ -10,6 +10,11 @@ use \Illuminate\Database\Eloquent\Model as LaravelModel;
 /**
  * Class ActiveModel. Basic implementation of laravel active records model with predefined settings
  * @package Ffcms\Core\Arch
+ * @method static ActiveModel where($field, $compare, $value)
+ * @method static ActiveModel|null first()
+ * @method static ActiveModel|null find($id)
+ * @method int count()
+ * @inheritdoc
  */
 class ActiveModel extends LaravelModel
 {
