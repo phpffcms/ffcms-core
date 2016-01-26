@@ -2,8 +2,10 @@
 
 namespace Ffcms\Core\Arch;
 
+use Apps\ActiveRecord\App as AppRecord;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iWidget;
 use Ffcms\Core\Traits\DynamicGlobal;
 
@@ -47,6 +49,16 @@ class Widget implements iWidget
         }
 
         return $out;
+    }
+
+    /**
+     * Get widget configs from admin part as array $cfg=>$value
+     * @return array|null|string
+     */
+    public function getConfigs()
+    {
+        $realName = Str::lastIn(self::$class, '\\', true);
+        return AppRecord::getConfigs('widget', $realName);
     }
 
     public function display() {}
