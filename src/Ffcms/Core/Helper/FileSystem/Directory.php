@@ -132,7 +132,8 @@ class Directory
      * @param string $path
      * @param int $mod
      */
-    public static function recursiveChmod($path, $mod = 0777) {
+    public static function recursiveChmod($path, $mod = 0777)
+    {
         $path = Normalize::diskFullPath($path);
 
         $dir = new \DirectoryIterator($path);
@@ -146,5 +147,23 @@ class Directory
                 self::recursiveChmod($item->getPathname(), $mod);
             }
         }
+    }
+
+    /**
+     * Get directory total size (in bytes)
+     * @param string $path
+     * @return int
+     */
+    public static function getSize($path)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        $size = 0;
+        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $file) {
+            if ($file->getFileName() !== '..') {
+                $size += $file->getSize();
+            }
+        }
+        return $size;
     }
 }

@@ -19,7 +19,23 @@ abstract class NativeGenerator
      */
     public static function safe($data, $quotes = false)
     {
-        $data = App::$Security->secureHtml($data);
+        $purifier = null;
+        if (App::$Memory->get('object.purifier.helpers') !== null) {
+            $purifier = App::$Memory->get('object.purifier.helpers');
+        } else {
+            $config = \HTMLPurifier_Config::createDefault();
+            $config->set('Cache.SerializerPath', root . '/Private/Cache/HTMLPurifier/');
+            $config->set('AutoFormat.AutoParagraph', false);
+
+            // allow use target=_blank for links
+            $def = $config->getHTMLDefinition(true);
+            $def->addAttribute('a', 'target', 'Enum#_blank,_self,_target,_top');
+
+            $purifier = new \HTMLPurifier($config);
+            App::$Memory->set('object.purifier.helpers', $purifier);
+        }
+
+        $data = $purifier->purify($data);
         return $quotes ? $data : App::$Security->escapeQuotes($data);
     }
 

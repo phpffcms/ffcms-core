@@ -166,8 +166,27 @@ class App
                         $actionQuery[] = self::$Request->getAdd();
                     }
                 }
+
+                // get controller method arguments count
+                $reflection = new \ReflectionMethod($callClass, $callMethod);
+                $argumentCount = 0;
+                foreach ($reflection->getParameters() as $arg) {
+                    if (!$arg->isOptional()) {
+                        $argumentCount++;
+                    }
+                }
+
+                // check method arguments count and current request count to prevent warnings
+                if (count($actionQuery) < $argumentCount) {
+                    throw new NotFoundException(__('Arguments for method %method% is not enough. Expected: %required%, got: %current%.', [
+                        'method' => $callMethod,
+                        'required' => $argumentCount,
+                        'current' => count($actionQuery)
+                    ]));
+                }
+
                 // make callback call to action in controller and get response
-                $actionResponse = @call_user_func_array([$callClass, $callMethod], $actionQuery);
+                $actionResponse = call_user_func_array([$callClass, $callMethod], $actionQuery);
                 if ($actionResponse !== null && !Str::likeEmpty($actionResponse)) {
                     // set response to controller property object
                     $callClass->setResponse($actionResponse);

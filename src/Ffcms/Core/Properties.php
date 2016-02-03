@@ -18,8 +18,8 @@ class Properties
     protected $data;
 
     public $version = [
-        'num' => '3.0.0alpha',
-        'date' => '18.09.2015'
+        'num' => '3.0.0-beta',
+        'date' => '01.02.2016'
     ];
 
     /**

@@ -10,7 +10,9 @@ use \Illuminate\Database\Eloquent\Model as LaravelModel;
 /**
  * Class ActiveModel. Basic implementation of laravel active records model with predefined settings
  * @package Ffcms\Core\Arch
- * @method static ActiveModel where($field, $compare, $value)
+ * @method static ActiveModel where($field = null, $compare = null, $value = null)
+ * @method static ActiveModel orWhere($field = null, $compare = null, $value = null)
+ * @method static ActiveModel orderBy($field, $sortType)
  * @method static ActiveModel|null first()
  * @method static ActiveModel|null find($id)
  * @method int count()

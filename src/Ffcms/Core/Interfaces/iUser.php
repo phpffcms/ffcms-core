@@ -6,7 +6,7 @@ interface iUser
 {
     /**
      * Get current user id if auth
-     * @return int|null
+     * @return int
      */
     public function getId();
 
