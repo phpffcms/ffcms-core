@@ -2,6 +2,10 @@
 
 namespace Ffcms\Core\Interfaces;
 
+use Apps\ActiveRecord\Profile;
+use Apps\ActiveRecord\Role;
+use Apps\ActiveRecord\WallPost;
+
 interface iUser
 {
     /**
@@ -61,19 +65,19 @@ interface iUser
 
     /**
      * Get user wall post object
-     * @return object
+     * @return WallPost
      */
     public function getWall();
 
     /**
      * Get user role data
-     * @return object
+     * @return Role
      */
     public function getRole();
 
     /**
      * Get user profile data. Call like (new User())->Profile->column;
-     * @return object
+     * @return Profile
      */
     public function getProfile();
 }
