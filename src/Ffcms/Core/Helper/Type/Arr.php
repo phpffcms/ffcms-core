@@ -130,4 +130,14 @@ class Arr
                 return var_export($var, TRUE);
         }
     }
+    
+    /**
+     * Check if array contains only numeric values
+     * @param array $array
+     * @return boolean
+     */
+    public static function onlyNumericValues($array)
+    {
+        return is_numeric(implode('', $array));
+    }
 }

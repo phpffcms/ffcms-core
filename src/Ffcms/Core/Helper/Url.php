@@ -27,13 +27,14 @@ class Url extends NativeGenerator
     }
 
     /**
-     * Build pathway from array $to. Example: ['controller/action', 'id', 'add', ['get' => 'value']]
+     * Build pathway from array $to. Example: ['controller/action', 'id', 'add', ['get' => 'value'], '#anchor']
      * @param array $to
      * @param bool $encode
      * @return string|null
      */
     public static function buildPathway(array $to = null, $encode = true)
     {
+        
         // if empty passed - let show main page
         if ($to === null) {
             return null;
@@ -85,8 +86,26 @@ class Url extends NativeGenerator
             }
         }
 
-        if (isset($to[3]) && Obj::isArray($to[3]) && count($to[3]) > 0) { // get params is defined?
-            $response .= '?' . http_build_query($to[3]);
+        // parse get attributes
+        if (isset($to[3]) && Obj::isArray($to[3]) && count($to[3]) > 0) {
+            // check if anchor bindig is exist
+            $anchor = false;
+            if (isset($to[3]['#']) && Obj::isString($to[3]['#']) && Str::startsWith('#', $to[3]['#'])) {
+                $anchor = $to[3]['#'];
+                unset($to[3]['#']);
+            }
+            $queryString = http_build_query($to[3]);
+            if (Str::length($queryString) > 0) {
+                $response .= '?' . http_build_query($to[3]);
+            }
+            if ($anchor !== false) {
+                $response .= $anchor;
+            }
+        }
+        
+        // parse anchor link part #item-related-id-1
+        if (isset($to[4]) && Obj::isString($to[4]) && Str::startsWith('#', $to[4])) {
+            $response .= $to[4];
         }
 
         return $response;
