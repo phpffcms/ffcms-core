@@ -26,8 +26,7 @@ class Controller
     /**
      * @var string $response
      */
-    public $response;
-
+    protected $response;
 
     public function __construct()
     {
@@ -35,6 +34,9 @@ class Controller
     }
 
     public function before() {}
+    
+    /** Global bootable method */
+    public static function boot() {}
 
     /**
      * Build variables and display output html
@@ -113,6 +115,15 @@ class Controller
     public function setResponse($response)
     {
         $this->response = $response;
+    }
+
+    /**
+     * Get response of action rendering
+     * @return string
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 
 }

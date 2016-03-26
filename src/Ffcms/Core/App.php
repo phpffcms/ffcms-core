@@ -7,7 +7,7 @@ use Ffcms\Core\Exception\JsonException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
-use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Event\EventManager;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -70,13 +70,16 @@ class App
     /** @var \BasePhpFastCache */
     public static $Cache;
 
+    /** @var EventManager */
+    public static $Event;
 
     /**
      * Prepare entry-point services
      * @param array|null $services
+     * @param bool|object $loader
      * @throws NativeException
      */
-    public static function init(array $services = null)
+    public static function init(array $services = null, $loader = false)
     {
         // initialize default services - used in all apps type
         self::$Memory = MemoryObject::instance();
@@ -87,6 +90,8 @@ class App
         self::$View = new View();
         self::$Translate = new Translate();
         self::$Alias = new Alias();
+        self::$Event = new EventManager();
+        
 
         // check if debug is enabled and available for current session
         if (isset($services['Debug']) && $services['Debug'] === true && Debug::isEnabled() === true) {
@@ -96,6 +101,9 @@ class App
         $objects = App::$Properties->getAll('object');
         // pass dynamic initialization
         self::dynamicServicePrepare($services, $objects);
+        
+        // initialize autoload, pass composer loader and auto-boot of static boot() methods in controllers
+        self::$Event->makeBoot($loader);
     }
 
     /**
@@ -187,11 +195,13 @@ class App
 
                 // make callback call to action in controller and get response
                 $actionResponse = call_user_func_array([$callClass, $callMethod], $actionQuery);
+
                 if ($actionResponse !== null && !Str::likeEmpty($actionResponse)) {
                     // set response to controller property object
                     $callClass->setResponse($actionResponse);
                 }
 
+                // get full compiled response
                 $html = $callClass->getOutput();
             } else {
                 throw new NotFoundException('Method "' . App::$Security->strip_tags($callMethod) . '()" not founded in "' . get_class($callClass) . '"');

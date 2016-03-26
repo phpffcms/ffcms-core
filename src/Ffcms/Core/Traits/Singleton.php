@@ -15,10 +15,14 @@ trait Singleton
      */
     final public static function instance()
     {
-        return isset(static::$instance)
-            ? static::$instance
-            : static::$instance = new static;
+        if (!isset(static::$instance)) {
+            static::$instance = new static;
+            static::boot();
+        }
+        return static::$instance;
     }
+    
+    public static function boot() {}
 
     /**
      * Override constructor
