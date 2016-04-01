@@ -17,24 +17,27 @@ use Ffcms\Core\Helper\HTML\Form\Constructor;
  */
 class Form extends NativeGenerator
 {
-    protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item% <p class="help-block">%help%</p></div></div>';
-    protected $structureCheckbox = '<div class="form-group"><div class="col-md-9 col-md-offset-3"><div class="checkbox"><label>%item% %label%</label></div><p class="help-block">%help%</p></div></div>';
-    protected $structureCheckboxes = '<div class="checkbox"><label>%item%</label></div>';
-    protected $structureJSError = '$("#%itemId%").parent().parent(".form-group").addClass("has-error")';
-    protected $name;
-    protected $formProperty = [];
+    private $structLayer = [
+        'base' => 'native/form/base_layer',
+        'checkbox' => 'native/form/checkbox_layer',
+        'checkboxes' => 'native/form/checkboxes_layer',
+        'jsnotify' => 'native/form/jsnotify'
+    ];
+    
+    private $name;
+    private $formProperty = [];
     /** @var Model */
-    protected $model;
+    private $model;
 
 
     /**
      * Build form based on model properties
      * @param Model $model
-     * @param array $property
-     * @param array $structure
+     * @param array|null $property
+     * @param string|null $layerFiles
      * @throws SyntaxException
      */
-    public function __construct($model, array $property = null, array $structure = null)
+    public function __construct($model, array $property = null, array $layerFiles = null)
     {
         // prevent white-screen locks when model is not passed or passed wrong
         if (!$model instanceof Model) {
@@ -43,23 +46,16 @@ class Form extends NativeGenerator
 
         $this->model = $model;
         $this->name = $model->getFormName();
-
-        // set custom html build structure form fields
-        if (Obj::isArray($structure)) {
-            if (isset($structure['base']) && !Str::likeEmpty($structure['base'])) {
-                $this->structure = $structure['base'];
-            }
-            if (isset($structure['checkbox']) && !Str::likeEmpty($structure['checkbox'])) {
-                $this->structureCheckbox = $structure['checkbox'];
-            }
-            if (isset($structure['checkboxes']) && !Str::likeEmpty($structure['checkboxes'])) {
-                $this->structureCheckboxes = $structure['checkboxes'];
-            }
-            if (isset($structure['jserror']) && !Str::likeEmpty($structure['jserror'])) {
-                $this->structureJSError = $structure['jserror'];
+        
+        // check if passed custom layer file
+        if (Obj::isArray($layerFiles) && count($layerFiles) > 0) {
+            foreach (array_keys($this->structLayer) as $type) {
+                if (isset($layerFiles[$type]) && Obj::isString($layerFiles[$type])) {
+                    $this->structLayer[$type] = $layerFiles[$type];
+                }
             }
         }
-
+        // set model submit method
         $property['method'] = $this->model->getSubmitMethod();
 
         $property['id'] = $this->name; // define form id
@@ -87,14 +83,14 @@ class Form extends NativeGenerator
      * @param $type
      * @param null|array $property
      * @param null|string $helper
-     * @param null|string $structure
+     * @param null|string $layerFile
      * @return null|string
      */
-    public function field($object, $type, $property = null, $helper = null, $structure = null)
+    public function field($object, $type, $property = null, $helper = null, $layerFile = null)
     {
         if ($this->model === null) {
             if (App::$Debug !== null) {
-                App::$Debug->addMessage('Form model is not defined for field name: ' . strip_tags($object));
+                App::$Debug->addMessage('Form model is not defined for field name: [' . strip_tags($object) . ']');
             }
             return null;
         }
@@ -108,16 +104,17 @@ class Form extends NativeGenerator
         // check if model contains current tag name as property
         if (!property_exists($this->model, $propertyName)) {
             if (App::$Debug !== null) {
-                App::$Debug->addMessage('Form field "' . $object . '" is not defined in model: ' . get_class($this->model), 'error');
+                App::$Debug->addMessage('Form field ["' . $object . '"] is not defined in model: [' . get_class($this->model) . ']', 'error');
             }
             return null;
         }
-
-        if ($structure === null) {
+        
+        // prepare layer file path
+        if ($layerFile === null) {
             if ($type === 'checkbox') {
-                $structure = $this->structureCheckbox;
+                $layerFile = $this->structLayer['checkbox'];
             } else {
-                $structure = $this->structure;
+                $layerFile = $this->structLayer['base'];
             }
         }
         
@@ -139,12 +136,14 @@ class Form extends NativeGenerator
         if ($type === 'hidden') {
             return $elementDOM;
         }
-
-        return Str::replace(
-            ['%name%', '%label%', '%item%', '%help%'],
-            [$labelFor, $labelText, $elementDOM, self::nohtml($helper)],
-            $structure
-        );
+        
+        // render output viewer
+        return App::$View->render($layerFile, [
+            'name' => $labelFor,
+            'label' => $labelText,
+            'item' => $elementDOM,
+            'help' => self::nohtml($helper)
+        ]);
     }
 
     /**
@@ -183,10 +182,10 @@ class Form extends NativeGenerator
                 $badAttr = $this->model->getBadAttribute();
                 $formName = $this->model->getFormName();
                 if (Obj::isArray($badAttr) && count($badAttr) > 0) {
-                    $jsError = $this->structureJSError;
                     foreach ($badAttr as $attr) {
                         $itemId = $formName . '-' . $attr;
-                        App::$Alias->addPlainCode('js', Str::replace('%itemId%', $itemId, $jsError));
+                        $render = App::$View->render($this->structLayer['jsnotify'], ['itemId' => $itemId]);
+                        App::$Alias->addPlainCode('js', $render);
                     }
                 }
             }
