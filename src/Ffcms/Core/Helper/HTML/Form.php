@@ -10,7 +10,11 @@ use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Arch\Model;
+use Ffcms\Core\Helper\HTML\Form\Constructor;
 
+/**
+ * Class Form. Simple HTML model generator for fast form building.
+ */
 class Form extends NativeGenerator
 {
     protected $structure = '<div class="form-group"><label for="%name%" class="col-md-3 control-label">%label%</label><div class="col-md-9">%item% <p class="help-block">%help%</p></div></div>';
@@ -101,6 +105,7 @@ class Form extends NativeGenerator
             $propertyName = strstr($propertyName, '.', true);
         }
 
+        // check if model contains current tag name as property
         if (!property_exists($this->model, $propertyName)) {
             if (App::$Debug !== null) {
                 App::$Debug->addMessage('Form field "' . $object . '" is not defined in model: ' . get_class($this->model), 'error');
@@ -108,15 +113,15 @@ class Form extends NativeGenerator
             return null;
         }
 
-        if (null === $structure) {
+        if ($structure === null) {
             if ($type === 'checkbox') {
                 $structure = $this->structureCheckbox;
             } else {
                 $structure = $this->structure;
             }
-            // structureCheckboxes is apply'd to each items in builder later
         }
-
+        
+        // prepare labels text and label "for" attr 
         $labelFor = $this->name . '-' . $propertyName;
         $labelText = $this->model->getLabel($object);
         $itemValue = $this->model->{$propertyName};
@@ -126,186 +131,20 @@ class Form extends NativeGenerator
             $labelFor .= '-' . Str::replace('.', '-', $nesting);
             $itemValue = Arr::getByPath($nesting, $itemValue);
         }
-        $itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
-        // only item if hidden type
+        //$itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
+        $constructor = new Constructor($this->model, $this->name, $type);
+        $elementDOM = $constructor->makeTag($object, $itemValue, $property);
+        
+        // if item is hidden - return tag without assign of global template
         if ($type === 'hidden') {
-            return $itemBody;
+            return $elementDOM;
         }
 
         return Str::replace(
             ['%name%', '%label%', '%item%', '%help%'],
-            [$labelFor, $labelText, $itemBody, self::nohtml($helper)],
+            [$labelFor, $labelText, $elementDOM, self::nohtml($helper)],
             $structure
         );
-    }
-
-    protected function dataTypeTag($type, $name, $value = null, $property = null)
-    {
-        if (!Obj::isArray($property) && $property !== null) {
-            throw new SyntaxException('Property must be passed as array or null! Field: ' . $name);
-        }
-
-        $propertyString = null;
-        $selectOptions = [];
-        if (Obj::isArray($property['options'])) {
-            $selectOptions = $property['options'];
-            unset($property['options']);
-        }
-
-        // jquery validation quick-build some rules
-        $rules = $this->model->getValidationRule($name);
-        if (count($rules) > 0) {
-            foreach ($rules as $rule_name => $rule_value) {
-                switch ($rule_name) {
-                    case 'required':
-                        $property['required'] = null;
-                        break;
-                    case 'length_min':
-                        $property['minlength'] = $rule_value;
-                        break;
-                    case 'length_max':
-                        $property['maxlength'] = $rule_value;
-                        break;
-                }
-            }
-        }
-
-        $response = null;
-
-        // get html allow rule from field init
-        $html = false;
-        if (isset($property['html']) && $property['html'] === true) {
-            $html = true;
-        }
-        if (Obj::isArray($property) && array_key_exists('html', $property)) {
-            unset($property['html']);
-        }
-
-        // standard property data definition
-        $property['name'] = $property['id'] = $this->name; // form global name
-        if ($value !== null) {
-            $property['value'] = $value;
-        }
-
-        // sounds like a array-path based
-        if (Str::contains('.', $name)) {
-            $splitedName = explode('.', $name);
-            foreach ($splitedName as $nameKey) {
-                $property['name'] .= '[' . $nameKey . ']';
-                $property['id'] .= '-' . $nameKey;
-            }
-        } else { // standard property's definition - add field name
-            $property['name'] .= '[' . $name . ']';
-            $property['id'] .= '-' . $name;
-        }
-
-        switch ($type) {
-            case 'password':
-                $property['type'] = 'password';
-                unset($property['value']);
-                $response = self::buildSingleTag('input', $property);
-                break;
-            case 'textarea':
-                unset($property['value']);
-                $response = self::buildContainerTag('textarea', $property, $value, $html);
-                break;
-            case 'checkbox': // single checkbox for ON or OFF" value
-                // hook DOM model
-                $response = self::buildSingleTag('input', ['type' => 'hidden', 'value' => '0', 'name' => $property['name']]); // hidden 0 elem
-                $property['type'] = 'checkbox';
-                if ($value === 1 || $value === true || $value === '1') {
-                    $property['checked'] = null; // set boolean attribute, maybe = "checked" is better
-                }
-                unset($property['required']);
-                $property['value'] = '1';
-                $response .= self::buildSingleTag('input', $property);
-                break;
-            case 'checkboxes':
-                if (!Obj::isArray($selectOptions)) {
-                    if (App::$Debug !== null) {
-                        App::$Debug->addMessage('Checkboxes field ' . $name . ' field have no options', 'warning');
-                    }
-                    break;
-                }
-
-                $property['type'] = 'checkbox';
-                $property['name'] .= '[]';
-                unset($property['value'], $property['id']);
-
-                $buildCheckboxes = null;
-
-                foreach ($selectOptions as $opt) {
-                    if (Obj::isArray($value) && Arr::in($opt, $value)) {
-                        $property['checked'] = null;
-                    } else {
-                        unset($property['checked']); // remove checked if it setted before
-                    }
-                    $property['value'] = $opt;
-                    // apply structured checkboxes style for each item
-                    $buildCheckboxes .= Str::replace('%item%', self::buildSingleTag('input', $property) . self::nohtml($opt), $this->structureCheckboxes);
-                }
-
-                $response = $buildCheckboxes;
-                break;
-            case 'select':
-                if (count($selectOptions) < 1) {
-                    $response = 'Form select ' . self::nohtml($name) . ' have no options';
-                } else {
-                    unset($property['value']);
-                    $optionsKey = $property['optionsKey'] === true;
-                    unset($property['optionsKey']);
-                    $buildOpt = null;
-                    foreach ($selectOptions as $optIdx => $opt) {
-                        $optionProperty = [];
-                        if (true === $optionsKey) { // options with value => text
-                            $optionProperty['value'] = $optIdx;
-                            if ($optIdx == $value) {
-                                $optionProperty['selected'] = null; // def boolean attribute html5
-                            }
-                        } else { // only value option
-                            if ($opt == $value) {
-                                $optionProperty['selected'] = null; // def boolean attribute html5
-                            }
-                        }
-                        $buildOpt .= self::buildContainerTag('option', $optionProperty, $opt);
-                    }
-
-                    $response = self::buildContainerTag('select', $property, $buildOpt, true);
-                }
-                break;
-            case 'captcha':
-                if (App::$Captcha->isFull()) {
-                    $response = App::$Captcha->get();
-                } else {
-                    $image = App::$Captcha->get();
-                    $response = self::buildSingleTag('img', ['id' => 'src-secure-image', 'src' => $image, 'alt' => 'secure image', 'onClick' => 'this.src=\'' . $image . '&rnd=\'+Math.random()']);
-                    $property['type'] = 'text';
-                    $response .= self::buildSingleTag('input', $property);
-                }
-                break;
-            case 'email':
-                $property['type'] = 'email';
-                $response = self::buildSingleTag('input', $property);
-                break;
-            case 'file':
-                $property['type'] = 'file';
-                unset($property['value']);
-                $response = self::buildSingleTag('input', $property);
-                break;
-            case 'hidden':
-                $property['type'] = 'hidden';
-                $response = self::buildSingleTag('input', $property);
-                break;
-            case 'div':
-                unset($property['value']);
-                $response = self::buildContainerTag('div', $property, $value, $html);
-                break;
-            default:
-                $property['type'] = 'text';
-                $response = self::buildSingleTag('input', $property);
-                break;
-        }
-        return $response;
     }
 
     /**

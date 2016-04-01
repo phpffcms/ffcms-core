@@ -93,7 +93,7 @@ class View
         if ($source === null) {
             $source = array_shift($arguments);
         }
-
+        
         // path still not defined?
         if ($path === null) {
             throw new SyntaxException('Viewer is not founded: ' . App::$Security->strip_tags($path));

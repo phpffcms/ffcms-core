@@ -79,7 +79,7 @@ class Navbar extends NativeGenerator
         $build .= '<div class="' . self::nohtml($elements['container']) . '">';
 
         $build .= '<div class="navbar-header">';
-        $build .= '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="' . $mobileCollapse . '">';
+        $build .= '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#' . $mobileCollapse . '">';
         $build .= '<span class="sr-only">Toggle navigation</span>';
         for ($i = 0; $i < 3; $i++) {
             $build .= '<span class="icon-bar"></span>';

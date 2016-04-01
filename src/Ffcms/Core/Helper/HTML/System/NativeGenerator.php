@@ -60,10 +60,10 @@ abstract class NativeGenerator
         if (!Obj::isArray($property) || count($property) < 1) {
             return null;
         }
-
+        
         $build = null;
         foreach ($property as $p => $v) {
-            if ($v === null || $v === false) {
+            if ($v === null || $v === false || $v === true) {
                 $build .= ' ' . self::nohtml($p);
             } else {
                 $build .= ' ' . self::nohtml($p) . '="' . self::nohtml($v) . '"';
@@ -97,6 +97,7 @@ abstract class NativeGenerator
         if ($valueHtml !== true) {
             $value = self::nohtml($value);
         }
+        
         return '<' . $tagName . self::applyProperty($property) . '>' . $value . '</' . $tagName . '>';
     }
 
