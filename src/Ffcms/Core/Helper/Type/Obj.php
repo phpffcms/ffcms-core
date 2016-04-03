@@ -4,8 +4,11 @@ namespace Ffcms\Core\Helper\Type;
 
 class Obj
 {
-
-
+    /**
+     * Check if input data is integer
+     * @param mixed $data
+     * @return bool
+     */
     public static function isInt($data)
     {
         return is_int($data);
@@ -18,7 +21,7 @@ class Obj
      */
     public static function isLikeInt($data)
     {
-        return false !== filter_var($data, FILTER_VALIDATE_INT);
+        return filter_var($data, FILTER_VALIDATE_INT) !== false;
     }
 
     /**
