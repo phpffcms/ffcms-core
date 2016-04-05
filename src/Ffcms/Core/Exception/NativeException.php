@@ -40,7 +40,7 @@ class NativeException extends \Exception
         // generate response based on environment type
         switch (env_type) {
             case 'html':
-                return $this->rawHTML($message);
+                return $this->sendHTML($message);
             case 'json':
                 return $this->sendJSON($message);
         }
