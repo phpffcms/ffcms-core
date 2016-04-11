@@ -194,12 +194,6 @@ class View
     protected function renderSandbox($path, $params = null)
     {
         if ($path === null || !File::exist($path)) {
-            if (App::$Debug !== null) {
-                if (Str::likeEmpty($path)) {
-                    $path = 'Unknown';
-                }
-                App::$Debug->addMessage('Viewer is not founded: ' . $path, 'error');
-            }
             return null;
         }
 
@@ -209,7 +203,7 @@ class View
                 $$key = $value;
             }
         }
-
+        
         $global = $this->buildGlobal();
         $self = $this;
         // turn on output buffer

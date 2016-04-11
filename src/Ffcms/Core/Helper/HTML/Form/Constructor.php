@@ -14,6 +14,7 @@ class Constructor
     const TYPE_EMAIL = 'email';
     const TYPE_CHECKBOX = 'checkbox';
     const TYPE_SELECT = 'select';
+    const TYPE_MULTISELECT = 'multiselect';
     const TYPE_TEXTAREA = 'textarea';
     const TYPE_MULTI_CHECKBOXES = 'checkboxes';
     const TYPE_CAPTCHA = 'captcha';
@@ -85,6 +86,9 @@ class Constructor
                 return $builder->make();
             case static::TYPE_DIV_FAKE:
                 $builder = new DivFakeField($properties, $name, $value);
+                return $builder->make();
+            case static::TYPE_MULTISELECT:
+                $builder = new MultiSelectField($properties, $name, $value);
                 return $builder->make();
         }
         

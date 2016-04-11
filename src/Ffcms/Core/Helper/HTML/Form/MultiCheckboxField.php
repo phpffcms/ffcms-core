@@ -34,7 +34,6 @@ class MultiCheckboxField extends NativeGenerator implements iField
 
     /**
      * Build <input type="checkbox" checked {$properties} /> response
-     * @todo: fix bug when option is unseted
      * {@inheritDoc}
      * @see \Ffcms\Core\Helper\HTML\Form\iField::make()
      */

@@ -15,7 +15,7 @@ class Environment
      */
     public static function osName()
     {
-        return php_uname('a');
+        return php_uname('s');
     }
 
     /**
