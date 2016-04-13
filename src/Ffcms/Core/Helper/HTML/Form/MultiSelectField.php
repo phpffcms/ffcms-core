@@ -56,11 +56,11 @@ class MultiSelectField extends NativeGenerator implements iField
             if ($optionsKey === true) {
                 $optionProperty['value'] = $val;
                 // check if current element is active
-                if (Arr::in((string)$val, $this->value)) {
+                if (Obj::isArray($this->value) && Arr::in((string)$val, $this->value)) {
                     $optionProperty['selected'] = 'selected';
                 }
             } else {
-                if (Arr::in((string)$text, $this->value)) {
+                if (Obj::isArray($this->value) && Arr::in((string)$text, $this->value)) {
                     $optionProperty['selected'] = 'selected';
                 }
             }

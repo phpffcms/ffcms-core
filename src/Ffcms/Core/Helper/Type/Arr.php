@@ -12,8 +12,12 @@ class Arr
      * @param bool $strict
      * @return bool
      */
-    public static function in($needle, array $haystack, $strict = true)
+    public static function in($needle, $haystack, $strict = true)
     {
+        // prevent errors
+        if (!Obj::isArray($haystack)) {
+            return false;
+        }
         return in_array($needle, $haystack, $strict);
     }
 
