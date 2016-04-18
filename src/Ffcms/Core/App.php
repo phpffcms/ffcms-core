@@ -91,7 +91,7 @@ class App
         self::$Translate = new Translate();
         self::$Alias = new Alias();
         self::$Event = new EventManager();
-        
+
 
         // check if debug is enabled and available for current session
         if (isset($services['Debug']) && $services['Debug'] === true && Debug::isEnabled() === true) {
@@ -101,7 +101,7 @@ class App
         $objects = App::$Properties->getAll('object');
         // pass dynamic initialization
         self::dynamicServicePrepare($services, $objects);
-        
+
         // initialize autoload, pass composer loader and auto-boot of static boot() methods in controllers
         self::$Event->makeBoot($loader);
     }

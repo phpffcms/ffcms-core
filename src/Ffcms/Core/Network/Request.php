@@ -30,10 +30,12 @@ class Request extends FoundationRequest
     protected $argumentId;
     protected $argumentAdd;
 
-    public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {
         parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
-        $this->afterInitialize();
+        $this->runMultiLanguage();
+        $this->runPathAliasing();
+        $this->loadTrustedProxies();
     }
 
     /**
@@ -68,10 +70,15 @@ class Request extends FoundationRequest
         $this->basePath = $this->baseUrl = $basePath;
     }
 
-    protected function afterInitialize()
+    /**
+     * Build multi language pathway binding.
+     */
+    private function runMultiLanguage()
     {
-        // multi-language is enabled?
-        if (App::$Properties->get('multiLanguage') === true) {
+        // multi-language is disabled, use default language
+        if (App::$Properties->get('multiLanguage') !== true) {
+            $this->language = App::$Properties->get('singleLanguage');
+        } else {
             // maybe its a language domain alias?
             if (Obj::isArray(App::$Properties->get('languageDomainAlias'))) {
                 /** @var array $domainAlias */
@@ -106,20 +113,26 @@ class Request extends FoundationRequest
                         }
                     }
 
+                    // parse query string
                     $queryString = null;
                     if (count($this->query->all()) > 0) {
                         $queryString = '?' . http_build_query($this->query->all());
                     }
 
+                    // build response with redirect to language-based path
                     $response = new Redirect($this->getSchemeAndHttpHost() . $this->basePath . '/' . $userLang . $this->getPathInfo() . $queryString);
                     $response->send();
                     exit();
                 }
             }
-        } else { // multi-language is disabled? Use default language
-            $this->language = App::$Properties->get('singleLanguage');
         }
+    }
 
+    /**
+     * Build static and dynamic path aliases for working set
+     */
+    private function runPathAliasing()
+    {
         // calculated depend of language
         $pathway = $this->getPathInfo();
         $routing = App::$Properties->getAll('Routing');
@@ -174,6 +187,24 @@ class Request extends FoundationRequest
                 $this->callbackClass = $callbackClass;
             }
         }
+    }
+
+    /**
+     * Set trusted proxies from configs
+     */
+    private function loadTrustedProxies()
+    {
+        $proxies = App::$Properties->get('trustedProxy');
+        if ($proxies === null || Str::likeEmpty($proxies)) {
+            return;
+        }
+
+        $pList = explode(',', $proxies);
+        $resultList = [];
+        foreach ($pList as $proxy) {
+            $resultList[] = trim($proxy);
+        }
+        $this->setTrustedProxies($resultList);
     }
 
     /**
