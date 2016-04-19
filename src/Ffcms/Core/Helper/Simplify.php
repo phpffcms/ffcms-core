@@ -18,7 +18,7 @@ class Simplify
      * @param string $onEmpty
      * @return string
      */
-    public static function parseUserNick($userId = null, $onEmpty = 'unknown')
+    public static function parseUserNick($userId = null, $onEmpty = 'guest')
     {
         // try to get user id as integer
         if (Obj::isLikeInt($userId)) {
@@ -35,6 +35,24 @@ class Simplify
 
         // return user nickname from profile
         return $identity->getProfile()->getNickname();
+    }
+
+    /**
+     * Prepare HTML DOM link (a href) to user with him name or guest name without link
+     * @param int $userId
+     * @param string $onEmpty
+     * @param string $controllerAction
+     * @return string
+     */
+    public function parseUserLink($userId = null, $onEmpty = 'guest', $controllerAction = 'profile/show')
+    {
+        $nick = self::parseUserNick($userId, $onEmpty);
+        // new name is not found, lets return default
+        if ($nick === $onEmpty || (int)$userId < 1) {
+            return $nick;
+        }
+
+        return Url::link([$controllerAction, (int)$userId], $nick);
     }
 
 }
