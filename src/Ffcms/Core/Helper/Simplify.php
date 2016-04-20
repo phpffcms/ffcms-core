@@ -44,7 +44,7 @@ class Simplify
      * @param string $controllerAction
      * @return string
      */
-    public function parseUserLink($userId = null, $onEmpty = 'guest', $controllerAction = 'profile/show')
+    public static function parseUserLink($userId = null, $onEmpty = 'guest', $controllerAction = 'profile/show')
     {
         $nick = self::parseUserNick($userId, $onEmpty);
         // new name is not found, lets return default

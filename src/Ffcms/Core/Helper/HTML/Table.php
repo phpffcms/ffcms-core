@@ -31,7 +31,6 @@ class Table extends NativeGenerator
             return null;
         }
 
-        // check selectable box options
         $selectOptions = false;
         if (isset($elements['selectableBox'])) {
             $selectOptions = $elements['selectableBox'];
@@ -100,7 +99,7 @@ class Table extends NativeGenerator
                                     if ($selectOptions !== false && $order === $selectOptions['attachOrder']) {
                                         $text = $dom->input(function (){
                                             return null;
-                                        }, Arr::merge($selectOptions['input'], ['value' => $text])) . ' ' . $text;
+                                        }, Arr::merge($selectOptions['selector'], ['value' => htmlentities($text)])) . ' ' . $text;
                                     }
                                     return $text;
                                 }, $item['property']);
@@ -123,10 +122,15 @@ class Table extends NativeGenerator
             // build js code for "selectAll" checkbox
             self::buildSelectorHtml($selectOptions);
             // return response inside "form" tag
-            return $dom->form(function () use ($dom, $selectOptions, $table){
-                $table .= $dom->input(function () {
-                    return null;
-                }, $selectOptions['button']);
+            return $dom->form(function () use ($dom, $selectOptions, $table) {
+                foreach ($selectOptions['buttons'] as $btn) {
+                    if (!Obj::isArray($btn)) {
+                        continue;
+                    }
+                    $table .= $dom->input(function(){
+                        return null;
+                    }, $btn) . ' ';
+                }
                 return $table;
             }, $selectOptions['form']);
         }
@@ -141,7 +145,7 @@ class Table extends NativeGenerator
     private static function buildSelectorHtml(array $opt)
     {
         $js = '$(function () {
-            var targetSwitchbox = $(\'input[name="' . $opt['input']['name'] . '"]\');
+            var targetSwitchbox = $(\'input[name="' . $opt['selector']['name'] . '"]\');
             $(\'input[name="selectAll"]\').change(function() {
                 $(targetSwitchbox).each(function () {
                     $(this).prop(\'checked\', !$(this).is(\':checked\'));
