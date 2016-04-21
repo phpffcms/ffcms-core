@@ -117,12 +117,17 @@ class SimplePagination
                 $url[2] = null;
                 break;
         }
-        // fix shits ;)
-        if (Obj::isArray($url[3])) {
-            $url[3] = Arr::merge($url[3], ['page' => $page_id]);
-        } else {
-            $url[3] = ['page' => $page_id];
+
+        // add page param if > 0
+        if ((int)$page_id > 0) {
+            // merge with ?page if query is not empty
+            if (Obj::isArray($url[3])) {
+                $url[3] = Arr::merge($url[3], ['page' => $page_id]);
+            } else { // just set ?page=$page_id
+                $url[3] = ['page' => $page_id];
+            }
         }
+
         return $url;
     }
 
