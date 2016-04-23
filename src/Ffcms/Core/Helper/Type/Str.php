@@ -284,4 +284,24 @@ class Str
         return preg_match('/^[+]?([\d]{0,3})?[\(\.\-\s]?([\d]{3})[\)\.\-\s]*([\d]{3})[\.\-\s]?([\d]{4})$/', $string) ? true : false;
     }
 
+    /**
+     * Concat string with add string by separator
+     * @param string $separator
+     * @param string $string1
+     * @param string $string2
+     */
+    public static function concat()
+    {
+        $args = func_get_args();
+        $separator = array_shift($args);
+
+        $output = null;
+        foreach ($args as $string) {
+            $output .= $string . $separator;
+        }
+
+        $output = rtrim($output, $separator);
+        return $output;
+    }
+
 }

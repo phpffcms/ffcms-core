@@ -2,30 +2,32 @@
 
 namespace Ffcms\Core\Helper\HTML\Bootstrap;
 
-use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\HTML\Listing;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\HTML\System\Dom;
 
 class Nav extends NativeGenerator
 {
-
+    /**
+     * Display nav listing block
+     * @param array $elements
+     */
     public static function display($elements)
     {
+        // check if elements isn't empty and contains rows
         if (!Obj::isArray($elements) || count($elements['items']) < 1) {
             return null;
         }
 
-        $items = [];
-        $tabIdx = 1;
-
-        $tabContent = '<div class="tab-content">';
+        // prepare tab order
         if ($elements['tabAnchor'] === null) {
             $elements['tabAnchor'] = Str::randomLatin(mt_rand(6, 12));
         }
 
+        // set global element properties
         $blockProperty = [];
         if ($elements['blockProperty'] !== null) {
             if (Obj::isArray($elements['blockProperty'])) {
@@ -37,9 +39,23 @@ class Nav extends NativeGenerator
         // check if items have defined active order
         $activeDefined = Arr::in(true, Arr::ploke('active', $elements['items']));
 
+        // prepare tab content
+        $tabContent = null;
+        $tabIdx = 1;
+
+        // initialize dom model
+        $dom = new Dom();
+
+        // prepare items to drow listing
+        $items = [];
         foreach ($elements['items'] as $item) {
+            // its just a link, drow it as is
             if ($item['type'] === 'link') {
-                $item['property']['role'] = 'presentation';
+                $items[] = $item;
+            } elseif ($item['type'] === 'dropdown') {
+                // build bootstrap dropdown properties
+                $item['dropdown'] = ['class' => 'dropdown-toggle', 'data-toggle' => 'dropdown', 'href' => '#'];
+                $item['property']['class'] = Str::concat(' ', 'dropdown', $item['property']['class']);
                 $items[] = $item;
             } elseif ($item['type'] === 'tab') {
                 $activeObject = false;
@@ -72,41 +88,45 @@ class Nav extends NativeGenerator
                 $items[] = $item;
 
                 // draw tab content
-                $tabContent .= '<div role="tabpanel" class="tab-pane fade' . ($activeObject === true ? ' in active' : null) . '" id="' . $elements['tabAnchor'] . $tabIdx . '">';
-                if ($item['html'] === true) {
-                    if ($item['!secure'] === true) {
-                        $tabContent .= $itemContent;
+                $tabContent .= $dom->div(function() use ($item, $itemContent) {
+                    if ($item['html'] === true) {
+                        if ($item['!secure'] === true) {
+                            return $itemContent;
+                        } else {
+                            return self::safe($itemContent);
+                        }
                     } else {
-                        $tabContent .= self::safe($itemContent);
+                        return self::nohtml($itemContent);
                     }
-                } else {
-                    $tabContent .= self::nohtml($itemContent);
-                }
-                $tabContent .= '</div>';
+                }, ['role' => 'tabpanel', 'class' => 'tab-pane fade' . ($activeObject === true ? ' in active' : null), 'id' => $elements['tabAnchor'] . $tabIdx]);
                 $tabIdx++;
             }
         }
 
-        $tabContent .= '</div>';
-
+        // check if global class "nav" isset
         if ($elements['property']['class'] !== null) {
-            $elements['property']['class'] = 'nav ' . $elements['property']['class'];
+            if (!Str::contains('nav ', $elements['property']['class'])) {
+                $elements['property']['class'] = 'nav ' . $elements['property']['class'];
+            }
         } else {
             $elements['property']['class'] = 'nav';
         }
 
-        $elements['property']['role'] = 'tablist';
-
-        $listing = Listing::display([
-            'type' => 'ul',
-            'property' => $elements['property'],
-            'activeOrder' => $elements['activeOrder'],
-            'items' => $items
-        ]);
-
-
-        $blockProperty['role'] = 'tabpanel';
-
-        return self::buildContainerTag('div', $blockProperty, $listing . $tabContent, true);
+        // render final output
+        return $dom->div(function() use ($elements, $items, $tabContent, $dom){
+            // drow listing
+            $listing = Listing::display([
+                'type' => 'ul',
+                'property' => $elements['property'],
+                'activeOrder' => $elements['activeOrder'],
+                'items' => $items]);
+            // drow tabs if isset
+            if ($tabContent !== null) {
+                $tabContent = $dom->div(function() use ($tabContent){
+                    return $tabContent;
+                }, ['class' => 'tab-content']);
+            }
+            return $listing . $tabContent;
+        }, $blockProperty);
     }
 }

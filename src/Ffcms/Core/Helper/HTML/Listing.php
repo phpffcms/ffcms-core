@@ -22,6 +22,7 @@ class Listing extends NativeGenerator
      */
     public static function display($elements)
     {
+        // check input elements
         if (!Arr::in($elements['type'], ['ul', 'ol']) || count($elements['items']) < 1) {
             return null;
         }
@@ -31,55 +32,108 @@ class Listing extends NativeGenerator
         // return DOM-HTML, build based on closures!
         return $dom->{$elements['type']}(function () use ($dom, $elements) {
             // prepare output avg variable
-            $liHtml = null;
+            $itemHTML = null;
             // get active order level
             $orderActiveLink = false;
             if (isset($elements['activeOrder'])) {
                 $orderActiveLink = $elements['activeOrder'];
+                unset($elements['activeOrder']);
             }
 
-            // each all items as single item
             foreach ($elements['items'] as $item) {
-                $itemContent = self::applyEscape($item['text'], $item['html'], $item['!secure']);
-                $itemProperty = $item['property'];
-                // check if element looks like link and can be active
-                if (isset($item['link'])) {
-                    // try to parse link format for controller/action definition (must be array: 'main/index' to ['main/index'])
-                    if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
-                        $item['link'] = [$item['link']];
-                    }
-
-                    // if its a controller/action definition try to work with active class
-                    if (Obj::isArray($item['link'])) {
-                        // check if css class for active item is defined
-                        if (!isset($item['activeClass'])) {
-                            $item['activeClass'] = 'active';
-                        }
-
-                        // check if element is active on current URI
-                        if (self::isCurrentLink($item['link'], $item['activeOn'], $orderActiveLink) === true) {
-                            $itemProperty['class'] = !Str::likeEmpty($itemProperty['class'])
-                                ? $item['activeClass'] . ' ' . $itemProperty['class']
-                                : $item['activeClass'];
-                        }
-                    }
-
-                    // set href source for link
-                    $item['linkProperty']['href'] = self::convertLink($item['link']);
-
-                    // build a href link inside li element
-                    $itemContent = $dom->a(function () use ($itemContent) {
-                        return $itemContent;
-                    }, $item['linkProperty']);
+                // sounds like dropdown array
+                if (isset($item['dropdown']) && isset($item['items'])) {
+                    $itemHTML .= self::buildDropdown($dom, $item);
+                } elseif (isset($item['link'])) { // looks like link item
+                    $itemHTML .= self::buildLink($dom, $item, $orderActiveLink);
+                } else { // just text item
+                    $itemHTML .= self::buildText($dom, $item);
                 }
-
-                // build output li tag
-                $liHtml .= $dom->li(function () use ($elements, $itemContent) {
-                    return $itemContent;
-                }, $itemProperty);
             }
-            // return done html dom syntax from closure
-            return $liHtml;
+            return $itemHTML;
         }, $elements['property']);
+    }
+
+    /**
+     * Build dropdown dom element
+     * @param Dom $dom
+     * @param array $item
+     */
+    private static function buildDropdown($dom, $item)
+    {
+        if (!Obj::isArray($item['items'])) {
+            return null;
+        }
+
+        return $dom->li(function() use($dom, $item){
+            $dropdownLink = $dom->a(function() use ($dom, $item){
+                return self::applyEscape($item['text'], $item['html'], $item['!secure']) . ' ' . $dom->span(function(){}, ['class' => 'caret']);
+            }, $item['dropdown']);
+
+            $dropdownElements = $dom->ul(function() use ($dom, $item){
+                $resp = null;
+                foreach ($item['items'] as $obj) {
+                    $resp .= self::buildLink($dom, $obj, false);
+                }
+                return $resp;
+            }, ['class' => 'dropdown-menu']);
+
+            return $dropdownLink . $dropdownElements;
+        }, $item['property']);
+
+    }
+
+    /**
+     * Build text item
+     * @param unknown $dom
+     * @param unknown $item
+     */
+    private static function buildText($dom, $item)
+    {
+        $text = self::applyEscape($item['text'], $item['html'], $item['!secure']);
+        return $dom->li(function() use ($text){
+            return $text;
+        }, $item['property']);
+    }
+
+    /**
+     * Build link with active definition in listing
+     * @param Dom $dom
+     * @param array $item
+     * @param string $orderActiveLink
+     */
+    private static function buildLink($dom, $item, $orderActiveLink = false)
+    {
+        // set default link data - text and properties
+        $text = self::applyEscape($item['text'], $item['html'], $item['!secure']);
+        $properties = $item['property'];
+
+        // try to parse link format for controller/action definition (must be array: 'main/index' to ['main/index'])
+        if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
+            $item['link'] = [$item['link']];
+        }
+
+        // if its a controller/action definition try to work with active class
+        if (Obj::isArray($item['link'])) {
+            // check if css class for active item is defined
+            if (!isset($item['activeClass'])) {
+                $item['activeClass'] = 'active';
+            }
+
+            // check if element is active on current URI
+            if (self::isCurrentLink($item['link'], $item['activeOn'], $orderActiveLink) === true) {
+                $properties['class'] = Str::concat(' ', $item['activeClass'], $properties['class']);
+            }
+        }
+
+        // set href source for link
+        $item['linkProperty']['href'] = self::convertLink($item['link']);
+
+        // build output <li@params><a @params>@text</li>
+        return $dom->li(function () use ($dom, $text, $item) {
+            return $dom->a(function() use ($text) {
+                return $text;
+            }, $item['linkProperty']);
+        }, $properties);
     }
 }
