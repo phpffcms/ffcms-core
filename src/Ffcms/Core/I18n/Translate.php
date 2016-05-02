@@ -45,7 +45,7 @@ class Translate
                 $this->indexes[] = $index;
             }
 
-            if ($this->cached !== null && Obj::isString($text) && $this->cached[$text] !== null) {
+            if ($this->cached !== null && Obj::isString($text) && isset($this->cached[$text])) {
                 $text = $this->cached[$text];
             }
         }

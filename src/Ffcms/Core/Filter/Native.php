@@ -223,7 +223,7 @@ class Native
      * Direct preg_match expression. Filter ['object', 'direct_match', '/^[A-Z]/*$']
      * @param $object
      * @param $value
-     * @return bool|int
+     * @return bool
      */
     public static function direct_match($object, $value)
     {
@@ -244,7 +244,7 @@ class Native
      * Regular expression validation rule ['object', 'reg_match', '/^[A-Z]/*$']
      * @param $object
      * @param $value
-     * @return bool|int
+     * @return bool
      */
     public static function reg_match($object, $value)
     {
@@ -256,7 +256,8 @@ class Native
             return true;
         }
 
-        return preg_match($value, $object) > 0;
+        // what the f*ck? -> return preg_match($value, $object) > 0;
+        return (bool)preg_match($value, $object);
     }
 
     /**
@@ -270,16 +271,22 @@ class Native
         if (Obj::isArray($object)) {
             return false;
         }
-        return !preg_match('/[^0-9, ]/', $object);
+        return !preg_match('/[^0-9\s,]/$', $object);
     }
 
     /**
+     * Check if field is file or null
      * @param object $object
      * @param $value
      * @return bool
      */
     public static function isFile($object, $value)
     {
+        // allow empty fields, "required" option filter that
+        if ($object === null) {
+            return true;
+        }
+
         $all = false;
         // if string is given
         if (!Obj::isArray($value)) {
@@ -305,12 +312,18 @@ class Native
     }
 
     /**
+     * Check file size. If is null - will return true
      * @param object $object
      * @param $value
      * @return bool
      */
     public static function sizeFile($object, $value)
     {
+        // allow empty field, validate on filter 'required'
+        if ($object === null) {
+            return true;
+        }
+
         if (!Obj::isArray($value)) {
             $value = [0, $value];
         }

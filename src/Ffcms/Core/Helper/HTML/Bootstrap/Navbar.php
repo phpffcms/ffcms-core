@@ -20,7 +20,7 @@ class Navbar extends NativeGenerator
      * @param array $elements
      * @return NULL|string
      */
-    public function display($elements)
+    public static function display($elements)
     {
         // check if elements passed well
         if (!Obj::isArray($elements) || count($elements['items']) < 1) {
