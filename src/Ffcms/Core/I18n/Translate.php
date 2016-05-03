@@ -9,7 +9,6 @@ use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\FileSystem\Normalize;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
-use Ffcms\Core\I18n\Lexer;
 
 /**
  * Class Translate. Provide methods to work with internalization data in ffcms.
@@ -126,14 +125,5 @@ class Translate
             $langs[] = trim($row, '/');
         }
         return $langs;
-    }
-
-    /**
-     * Get lexer
-     * @return static
-     */
-    public function lexer()
-    {
-        return Lexer::instance();
     }
 }

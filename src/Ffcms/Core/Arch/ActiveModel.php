@@ -29,10 +29,10 @@ class ActiveModel extends LaravelModel
      */
     public function getLocaled($attribute)
     {
-        if (!Obj::isString($attribute) || Str::likeEmpty($this->$attribute)) {
+        if (!Obj::isString($attribute) || Str::likeEmpty($this->{$attribute})) {
             return null;
         }
 
-        return Serialize::getDecodeLocale($this->$attribute);
+        return Serialize::getDecodeLocale($this->{$attribute});
     }
 }
