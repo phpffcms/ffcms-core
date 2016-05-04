@@ -108,7 +108,7 @@ class Model
 
                     $this->{$attrName} = $dotData->export(); // export to model
                 } else {
-                    $this->{$attr} = App::$Security->strip_tags($defaultAttr[$attr]); // just set ;)
+                    $this->{$attr} = $defaultAttr[$attr]; // just set ;)
                 }
                 // add message about wrong attribute to session holder, later display it
                 $attrLabel = $attr;
@@ -123,19 +123,56 @@ class Model
     }
 
     /**
+     * Filter model fields as text, html or secure obscured
+     * @param array|null $fields
+     * @return $this
+     */
+    public function filter(array $fields = null)
+    {
+        // list all model fields
+        $allFields = $this->getAllProperties();
+        if ($allFields !== null && Obj::isArray($allFields)) {
+            foreach ($allFields as $f => $v) {
+                // if attr is not passed - set from global as plaintext
+                if (!isset($fields[$f])) {
+                    $fields[$f] = 'text';
+                }
+            }
+        }
+
+        // if no fields is found - return
+        if (!Obj::isArray($fields)) {
+            return $this;
+        }
+
+        // each all properties
+        foreach ($fields as $field => $security) {
+            // get property value
+            $fieldValue = $this->{$field};
+            // switch security levels
+            switch ($security) {
+                case '!secure': // is full security obscured field, skip it
+                    break;
+                case 'html':
+                    $this->{$field} = App::$Security->secureHtml($fieldValue);
+                    break;
+                default: // text/plaintext
+                    $this->{$field} = App::$Security->strip_tags($fieldValue);
+                    break;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Export model values for safe-using in HTML pages.
+     * @deprecated
      * @return $this
      */
     final public function export()
     {
-        $properties = get_object_vars($this);
-        foreach ($properties as $var => $value) {
-            if (Str::startsWith('_', $var)) { // ignore $_var
-                continue;
-            }
-            $this->{$var} = App::$Security->secureHtml($value);
-        }
-        return $this;
+        return $this->filter(null);
     }
 
 
@@ -146,6 +183,7 @@ class Model
     public function getAllProperties()
     {
         $properties = null;
+        // list all properties here, array_walk sucks on performance!
         foreach ($this as $property => $value) {
             if (Str::startsWith('_', $property)) {
                 continue;
@@ -153,6 +191,18 @@ class Model
             $properties[$property] = $value;
         }
         return $properties;
+    }
+
+    /**
+     * Cleanup all public model properties
+     */
+    public function clearProperties()
+    {
+        foreach ($this as $property => $value) {
+            if (!Str::startsWith('_', $property)) {
+                $this->{$property} = null;
+            }
+        }
     }
 
     /**

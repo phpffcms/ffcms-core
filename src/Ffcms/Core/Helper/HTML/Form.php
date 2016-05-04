@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 use Ffcms\Core\Helper\Type\Arr;
@@ -34,7 +35,7 @@ class Form extends NativeGenerator
      * Build form based on model properties
      * @param Model $model
      * @param array|null $property
-     * @param string|null $layerFiles
+     * @param array|null $layerFiles
      * @throws SyntaxException
      */
     public function __construct($model, array $property = null, array $layerFiles = null)
@@ -85,6 +86,8 @@ class Form extends NativeGenerator
      * @param null|string $helper
      * @param null|string $layerFile
      * @return null|string
+     * @throws NativeException
+     * @throws SyntaxException
      */
     public function field($object, $type, $property = null, $helper = null, $layerFile = null)
     {

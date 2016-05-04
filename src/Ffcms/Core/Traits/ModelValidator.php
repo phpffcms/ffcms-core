@@ -133,7 +133,7 @@ trait ModelValidator
                     }
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
-                    $dotData->set($dot_path, $field_value); // todo: check me!!! bug here
+                    $dotData->set($dot_path, $field_value); // todo: check me!!! big change the bug is there
                     // export data from dot-data lib to model property
                     $this->{$field_set_name} = $dotData->export();
                 } else { // just single property

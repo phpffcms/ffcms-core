@@ -78,6 +78,7 @@ class App
      * @param array|null $services
      * @param bool|object $loader
      * @throws NativeException
+     * @throws \InvalidArgumentException
      */
     public static function init(array $services = null, $loader = false)
     {
