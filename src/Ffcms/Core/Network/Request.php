@@ -356,4 +356,19 @@ class Request extends FoundationRequest
         return $this->getSchemeAndHttpHost() . $this->getRequestUri();
     }
 
+    /**
+     * Get base path from current environment without basePath of subdirectories
+     * @return string
+     */
+    public function getInterfaceSlug()
+    {
+        $path = $this->getBasePath();
+        $subDir = App::$Properties->get('basePath');
+        if ($subDir !== '/') {
+            $offset = (int)Str::length($subDir);
+            $path = Str::sub($path, --$offset);
+        }
+        return $path;
+    }
+
 }

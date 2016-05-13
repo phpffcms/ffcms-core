@@ -87,10 +87,14 @@ class Alias
         // make alias for baseUrl, script url and domain
         $this->baseDomain = App::$Request->getHost();
         $this->scriptUrl = App::$Request->getSchemeAndHttpHost();
-        $this->baseUrl = $this->scriptUrl;
-        if (App::$Request->getBasePath() !== null) {
-            $this->baseUrl .= App::$Request->getBasePath();
+        if (App::$Properties->get('basePath') !== '/') {
+            $this->scriptUrl .= rtrim(App::$Properties->get('basePath'), '/');
         }
+        $this->baseUrl = $this->scriptUrl;
+        if (App::$Request->getInterfaceSlug() !== null) {
+            $this->baseUrl .= App::$Request->getInterfaceSlug();
+        }
+
         $this->baseUrlNoLang = $this->baseUrl;
         if (App::$Request->languageInPath() && App::$Request->getLanguage() !== null) {
             $this->baseUrl .= '/' . App::$Request->getLanguage();
