@@ -34,7 +34,7 @@ class Request extends FoundationRequest
     {
         parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
         $this->runMultiLanguage();
-        $this->runPathAliasing();
+        $this->runPathBinding();
         $this->loadTrustedProxies();
     }
 
@@ -131,41 +131,22 @@ class Request extends FoundationRequest
     /**
      * Build static and dynamic path aliases for working set
      */
-    private function runPathAliasing()
+    private function runPathBinding()
     {
         // calculated depend of language
         $pathway = $this->getPathInfo();
+        /** @var array $routing */
         $routing = App::$Properties->getAll('Routing');
 
-        // try to find static routing alias
-        /** @var bool|array $aliasMap */
-        $aliasMap = false;
-        if (isset($routing['Alias']) && isset($routing['Alias'][env_name])) {
-            $aliasMap = $routing['Alias'][env_name];
+        // try to work with static aliases
+        if (Obj::isArray($routing) && isset($routing['Alias'], $routing['Alias'][env_name])) {
+            $pathway = $this->findStaticAliases($routing['Alias'][env_name], $pathway);
         }
 
-        if (Obj::isArray($aliasMap) && array_key_exists($pathway, $aliasMap)) {
-            $pathway = $aliasMap[$pathway];
-            $this->aliasPathTarget = $pathway;
-        }
-
-        // check if pathway is the same with target and redirect to source from static routing
-        if (Obj::isArray($aliasMap) && Arr::in($this->getPathInfo(), $aliasMap)) {
-            $source = array_search($this->getPathInfo(), $aliasMap);
-            $targetUri = $this->getSchemeAndHttpHost() . $this->getBasePath() . '/';
-            if (App::$Properties->get('multiLanguage') === true) {
-                $targetUri .= $this->language . '/';
-            }
-            $targetUri .= ltrim($source, '/');
-            $response = new Redirect($targetUri);
-            $response->send();
-            exit();
-        }
-
-        // define data from pathway
         $this->setPathdata(explode('/', trim($pathway, '/')));
 
-        if ($this->action == null) { // can be null or string(0)""
+        // set default controller and action for undefined data
+        if ($this->action == null) {
             $this->action = 'Index';
         }
 
@@ -174,17 +155,65 @@ class Request extends FoundationRequest
             $this->controller = 'Main';
         }
 
-        $callbackMap = false;
-        if (isset($routing['Callback']) && isset($routing['Callback'][env_name])) {
-            $callbackMap = $routing['Callback'][env_name];
+        // find callback injection in routing configs (calculated in App::run())
+        if (Obj::isArray($routing) && isset($routing['Callback'], $routing['Callback'][env_name])) {
+            $this->findDynamicCallbacks($routing['Callback'][env_name], $this->controller);
+        }
+    }
+
+    /**
+     * Prepare static pathway aliasing for routing
+     * @param array|null $map
+     * @param string|null $pathway
+     * @return string
+     */
+    private function findStaticAliases(array $map = null, $pathway = null)
+    {
+        if ($map === null) {
+            return $pathway;
         }
 
-        // check is dynamic callback map exist
-        if (isset($callbackMap[$this->controller])) {
-            $callbackClass = $callbackMap[$this->controller];
-            // check if rule for current controller is exist
-            if ($callbackClass !== null) {
-                $this->callbackClass = $callbackClass;
+        // current pathway is found as "old path" (or alias target). Make redirect to new pathway.
+        if (Arr::in($pathway, $map)) {
+            // find "new path" as binding uri slug
+            $binding = array_search($pathway, $map, true);
+            // build url to redirection
+            $url = $this->getSchemeAndHttpHost() . $this->getBasePath() . '/';
+            if (App::$Properties->get('multiLanguage')) {
+                $url .= $this->language . '/';
+            }
+            $url .= ltrim($binding, '/');
+
+            $redirect = new Redirect($url);
+            $redirect->send();
+            exit();
+        }
+
+        // current pathway request is equal to path alias. Set alias to property.
+        if (array_key_exists($pathway, $map)) {
+            $pathway = $map[$pathway];
+            $this->aliasPathTarget = $pathway;
+        }
+
+        return $pathway;
+    }
+
+    /**
+     * Prepare dynamic callback data for routing
+     * @param array|null $map
+     * @param string|null $controller
+     */
+    private function findDynamicCallbacks(array $map = null, $controller = null)
+    {
+        if ($map === null) {
+            return;
+        }
+
+        // try to find global callback for this controller slug
+        if (array_key_exists($controller, $map)) {
+            $class = (string)$map[$controller];
+            if (!Str::likeEmpty($class)) {
+                $this->callbackClass = $class;
             }
         }
     }
@@ -204,7 +233,7 @@ class Request extends FoundationRequest
         foreach ($pList as $proxy) {
             $resultList[] = trim($proxy);
         }
-        $this->setTrustedProxies($resultList);
+        self::setTrustedProxies($resultList);
     }
 
     /**
@@ -231,8 +260,6 @@ class Request extends FoundationRequest
                 $this->controller = ucfirst(Str::lowerCase($pathArray[0]));
                 break;
         }
-
-        return;
     }
 
     /**

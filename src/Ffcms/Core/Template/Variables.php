@@ -14,7 +14,7 @@ class Variables
 {
     use Singleton;
 
-    protected $globalVars;
+    protected $globalVars = [];
 
     /**
      * Set global variable for Views
@@ -57,5 +57,15 @@ class Variables
     public function getGlobalsObject()
     {
         return (object)$this->globalVars;
+    }
+
+    /**
+     * Check if global variable isset
+     * @param string $var
+     * @return bool
+     */
+    public function issetGlobal($var)
+    {
+        return array_key_exists($var, $this->globalVars);
     }
 }

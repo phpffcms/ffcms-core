@@ -16,7 +16,7 @@ trait DynamicGlobal
      * @param $var
      * @param $value
      */
-    public final function __set($var, $value)
+    final public function __set($var, $value)
     {
         Variables::instance()->setGlobal($var, $value);
     }
@@ -26,9 +26,19 @@ trait DynamicGlobal
      * @param $var
      * @return mixed
      */
-    public final function __get($var)
+    final public function __get($var)
     {
         $globals = Variables::instance()->getGlobalsArray();
         return $globals[$var];
+    }
+
+    /**
+     * Check if global variable exists for isset and empty methods. In php 7.0.6 without this definition warning occurred.
+     * @param string $var
+     * @return bool
+     */
+    final public function __isset($var)
+    {
+        return Variables::instance()->issetGlobal($var);
     }
 }

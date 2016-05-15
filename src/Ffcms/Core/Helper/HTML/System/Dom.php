@@ -62,7 +62,7 @@ class Dom
     ];
 
     // private variables storage
-    private $_vars;
+    private $_vars = [];
 
     /**
      * Catch all callbacks
@@ -154,5 +154,15 @@ class Dom
     public function __get($name)
     {
         return $this->_vars[$name];
+    }
+
+    /**
+     * Check dynamic binded variable isset. Required for php 7.0.6 and highter
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return array_key_exists($name, $this->_vars);
     }
 }
