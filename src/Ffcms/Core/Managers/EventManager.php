@@ -1,5 +1,5 @@
 <?php
-namespace Ffcms\Core\Event;
+namespace Ffcms\Core\Managers;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
@@ -14,10 +14,9 @@ use Ffcms\Core\Helper\FileSystem\File;
  */
 class EventManager
 {
+    /** @var array $events */
     private $events;
     private $runned;
-    
-    private $runOnBoot = false;
 
     /**
      * EventManager constructor. Get always initiated data from memory storage.
@@ -29,16 +28,14 @@ class EventManager
         $this->runned = App::$Memory->get('events.runned.save');
     }
 
-    /**
-     * Catch the event if it occurred after this initiation of interception
-     * 
+    /** Catch the event if it occurred after this initiation of interception
      * @param string|array $event            
      * @param \Closure $callback            
      */
     public function on($event, \Closure $callback)
     {
         // check if event is a single string and parse it to array single item
-        if (! Obj::isArray($event)) {
+        if (!Obj::isArray($event)) {
             $event = [$event];
         }
         
@@ -46,7 +43,7 @@ class EventManager
             $this->events[$item][] = $callback;
         }
     }
-    
+
     /**
      * Catch the event if it occurred before the initiation of interception
      * @param string|array $event
@@ -99,49 +96,6 @@ class EventManager
         // set to post runned actions
         $this->runned[$eventName] = $eventArgs;
         return false;
-    }
-    
-    /**
-     * Initialize bootable static methods in controllers. System method.
-     * @param object|bool $loader
-     */
-    public static function makeBoot($loader = false)
-    {
-        $controllers = [root . '/Apps/Controller/' . env_name];
-        // get custom apps directories from composer autoloader maps
-        if ($loader !== false) {
-            $sources = $loader->getPrefixes();
-            // is there any custom paths for apps binding?
-            if (Obj::isArray($sources) && isset($sources['Apps\\'])) {
-                // each every one add a new path to controllers map
-                $controllers = [];
-                foreach ($sources['Apps\\'] as $path) {
-                    $controllers[] = $path . '/Apps/Controller/' . env_name;
-                }
-            }
-        }
-        
-        // each every path try to run boot method in ever controller
-        foreach ($controllers as $path) {
-            // check if directory exists
-            if (!Directory::exist($path)) {
-                continue;
-            }
-            $list = File::listFiles($path, ['.php'], true);
-            // foreach all files in list
-            foreach ($list as $file) {
-                // define full class name with namespace
-                $class = 'Apps\Controller\\' . env_name . '\\' . Str::cleanExtension($file);
-                // check if class exists (must be loaded over autoloader)
-                if (class_exists($class)) {
-                    // check if static method boot is exists
-                    if (method_exists($class, 'boot')) {
-                        // call to boot method
-                        call_user_func([$class, 'boot']);
-                    }
-                }
-            }
-        }
     }
 
     /**

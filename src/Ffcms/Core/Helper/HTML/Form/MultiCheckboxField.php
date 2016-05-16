@@ -36,6 +36,8 @@ class MultiCheckboxField extends NativeGenerator implements iField
      * Build <input type="checkbox" checked {$properties} /> response
      * {@inheritDoc}
      * @see \Ffcms\Core\Helper\HTML\Form\iField::make()
+     * @throws \Ffcms\Core\Exception\NativeException
+     * @throws \Ffcms\Core\Exception\SyntaxException
      */
     public function make()
     {
@@ -43,6 +45,7 @@ class MultiCheckboxField extends NativeGenerator implements iField
         $options = false;
         if (isset($this->properties['options']) && Obj::isArray($this->properties['options'])) {
             $options = $this->properties['options'];
+            unset($this->properties['options']);
         } else {
             throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not defined');
         }

@@ -7,7 +7,8 @@ use Ffcms\Core\Exception\JsonException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
-use Ffcms\Core\Event\EventManager;
+use Ffcms\Core\Managers\BootManager;
+use Ffcms\Core\Managers\EventManager;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -24,7 +25,6 @@ use Ffcms\Core\Cache\MemoryObject;
  */
 class App
 {
-
     /** @var \Ffcms\Core\Network\Request */
     public static $Request;
 
@@ -103,8 +103,9 @@ class App
         // pass dynamic initialization
         self::dynamicServicePrepare($services, $objects);
 
-        // initialize autoload, pass composer loader and auto-boot of static boot() methods in controllers
-        self::$Event->makeBoot($loader);
+        // Initialize boot manager. This manager allow to auto-execute 'static boot()' methods in apps and widgets
+        $bootManager = new BootManager($loader);
+        $bootManager->run();
     }
 
     /**

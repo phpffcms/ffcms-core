@@ -27,7 +27,7 @@ class MemoryObject
     /**
      * Get stored data
      * @param string $key
-     * @return object|array|string|null|boolean
+     * @return mixed
      */
     public function get($key)
     {

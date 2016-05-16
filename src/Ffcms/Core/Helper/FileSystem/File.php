@@ -165,6 +165,10 @@ class File
     {
         $path = Normalize::diskFullPath($path);
 
+        if (!self::exist($path)) {
+            return [];
+        }
+
         $dir = opendir($path . '/.');
         while ($item = readdir($dir)) {
             if (is_file($sub = $path . '/' . $item)) {

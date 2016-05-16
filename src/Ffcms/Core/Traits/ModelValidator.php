@@ -11,6 +11,10 @@ use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Dflydev\DotAccessData\Data as DotData;
 
+/**
+ * Class ModelValidator. Extended realisation of model field validation
+ * @package Ffcms\Core\Traits
+ */
 trait ModelValidator
 {
     protected $_badAttr;
@@ -18,6 +22,12 @@ trait ModelValidator
 
     protected $_formName;
 
+    /**
+     * Start validation for defined fields in rules() model method.
+     * @param array|null $rules
+     * @return bool
+     * @throws SyntaxException
+     */
     public function runValidate(array $rules = null)
     {
         // skip validation on empty rules
@@ -28,7 +38,7 @@ trait ModelValidator
         $success = true;
         // each
         foreach ($rules as $rule) {
-            // 0 = name, 1 = filter name, 2 = filter value
+            // 0 = field (property) name, 1 = filter name, 2 = filter value
             if ($rule[0] === null || $rule[1] === null) {
                 continue;
             }
@@ -57,9 +67,10 @@ trait ModelValidator
     }
 
     /**
-     * @param $field_name
-     * @param $filter_name
-     * @param $filter_argv
+     * Try to recursive validate field by defined rules and set result to model properties if validation is successful passed
+     * @param string|array $field_name
+     * @param string $filter_name
+     * @param mixed $filter_argv
      * @param bool $html
      * @param bool $secure
      * @return bool
@@ -145,10 +156,12 @@ trait ModelValidator
     }
 
     /**
+     * Get field value from input POST/GET/AJAX data with defined security level (html - safe html, !secure = fully unescaped)
      * @param string $field_name
      * @param bool $html
      * @param bool $secure
      * @return array|null|string
+     * @throws \InvalidArgumentException
      */
     private function getFieldValue($field_name, $html = false, $secure = false)
     {
@@ -160,7 +173,7 @@ trait ModelValidator
             $sources = $this->sources();
         }
 
-        if (isset($sources[$field_name])) {
+        if (Obj::isArray($sources) && array_key_exists($field_name, $sources)) {
             $inputType = Str::lowerCase($sources[$field_name]);
         }
 
@@ -207,6 +220,7 @@ trait ModelValidator
     /**
      * Check if model get POST-based request as submit of SEND data
      * @return bool
+     * @throws \InvalidArgumentException
      */
     final public function send()
     {
@@ -258,6 +272,7 @@ trait ModelValidator
      * @param string $param
      * @param string $method
      * @return string|null|array
+     * @throws \InvalidArgumentException
      */
     public function getRequest($param, $method = 'get')
     {
