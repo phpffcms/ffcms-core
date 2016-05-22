@@ -48,7 +48,7 @@ class Properties
         // try to load from file
         $configFile = ucfirst(Str::lowerCase($configName)) . '.php';
         if (File::exist('/Private/Config/' . $configFile)) {
-            $this->data[$configName] = @include(root . '/Private/Config/' . $configFile);
+            $this->data[$configName] = File::inc('/Private/Config/' . $configFile, true);
             return true;
         }
 
@@ -107,7 +107,7 @@ class Properties
     public function getAll($configFile = 'default')
     {
         $this->load($configFile);
-        if (!isset($this->data[$configFile])) {
+        if (!Obj::isArray($this->data) || !array_key_exists($configFile, $this->data)) {
             return false;
         }
 

@@ -26,13 +26,12 @@ class BootManager
 
     /**
      * BootManager constructor. Pass composer loader inside
-     * @param bool $loader
+     * @param bool|object $loader
      */
     public function __construct($loader = false)
     {
         // pass loader inside
         $this->loader = $loader;
-
         if ($this->loader !== false) {
             $this->parseComposerLoader();
         }
@@ -104,6 +103,9 @@ class BootManager
             $widget .= '/Widgets/' . env_name;
             // widgets are packed in directory, classname should be the same with root directory name
             $dirs = Directory::scan($widget, GLOB_ONLYDIR, true);
+            if (!Obj::isArray($dirs)) {
+                continue;
+            }
             foreach ($dirs as $instance) {
                 $class = 'Widgets\\' . env_name . '\\' . $instance . '\\' . $instance;
                 if (class_exists($class) && method_exists($class, 'boot') && is_a($class, 'Ffcms\Core\Arch\Widget', true)) {

@@ -165,7 +165,7 @@ class File
     {
         $path = Normalize::diskFullPath($path);
 
-        if (!self::exist($path)) {
+        if (!Directory::exist($path)) {
             return [];
         }
 

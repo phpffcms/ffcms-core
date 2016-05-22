@@ -8,6 +8,7 @@ use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Managers\BootManager;
+use Ffcms\Core\Managers\CronManager;
 use Ffcms\Core\Managers\EventManager;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Obj;
@@ -67,11 +68,14 @@ class App
     /** @var \Ffcms\Core\Interfaces\iCaptcha */
     public static $Captcha;
 
-    /** @var \BasePhpFastCache */
+    /** @var \phpFastCache\Drivers\files */
     public static $Cache;
 
     /** @var EventManager */
     public static $Event;
+
+    /** @var CronManager */
+    public static $Cron;
 
     /**
      * Prepare entry-point services
@@ -92,7 +96,7 @@ class App
         self::$Translate = new Translate();
         self::$Alias = new Alias();
         self::$Event = new EventManager();
-
+        self::$Cron = new CronManager();
 
         // check if debug is enabled and available for current session
         if (isset($services['Debug']) && $services['Debug'] === true && Debug::isEnabled() === true) {
