@@ -183,15 +183,27 @@ class Str
     }
 
     /**
-     * Alias for function str_replace()
-     * @param string|array|null $needle
-     * @param string|array|null $replacement
+     * Case-sensive replace $needle to $replacement in all string $haystack entry. Alias for function str_replace()
+     * @param string|array $needle
+     * @param string|array $replacement
      * @param string $haystack
      * @return string
      */
     public static function replace($needle, $replacement, $haystack)
     {
         return str_replace($needle, $replacement, $haystack);
+    }
+
+    /**
+     * Case-ignore replace $needle to $replacement in string $haystack. Alias for function str_ireplace()
+     * @param string|array $needle
+     * @param string|array $replacement
+     * @param string $haystack
+     * @return string
+     */
+    public static function ireplace($needle, $replacement, $haystack)
+    {
+        return str_ireplace($needle, $replacement, $haystack);
     }
 
     /**
