@@ -4,6 +4,8 @@ namespace Ffcms\Core\Interfaces;
 
 use Apps\ActiveRecord\Profile;
 use Apps\ActiveRecord\Role;
+use Apps\ActiveRecord\UserLog;
+use Apps\ActiveRecord\UserProvider;
 use Apps\ActiveRecord\WallPost;
 
 interface iUser
@@ -80,4 +82,23 @@ interface iUser
      * @return Profile
      */
     public function getProfile();
+
+    /**
+     * Get user logs relation.
+     * @return UserLog
+     */
+    public function getLogs();
+
+    /**
+     * Get user social openid providers relation.
+     * @return UserProvider
+     */
+    public function getProviders();
+
+    /**
+     * Check if target user with $target_id in blacklist for current session user_id
+     * @param int $target_id
+     * @return bool
+     */
+    public function inBlacklist($target_id);
 }

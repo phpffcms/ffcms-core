@@ -134,6 +134,8 @@ class App
                 } elseif (is_callable($services[$name])) { // raw initialization from App::run()
                     self::${$name} = $services[$name]();
                 }
+            } elseif (Str::startsWith('_', $name)) { // just anonymous callback without entry-point
+                @call_user_func($instance);
             }
         }
     }

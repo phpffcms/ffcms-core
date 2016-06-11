@@ -146,11 +146,11 @@ class Url extends NativeGenerator
     }
 
     /**
-     * Download remote content in string
+     * Download remote content in binary string
      * @param string $url
      * @return null|string
      */
-    public static function getRemoteContent($url)
+    public static function download($url)
     {
         // check is valid url
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
