@@ -8,7 +8,7 @@ class Str
 
     /**
      * Check if string is empty (check null, false and '' values)
-     * @param null $string
+     * @param string|null $string
      * @return bool
      */
     public static function likeEmpty($string = null)

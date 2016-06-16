@@ -18,13 +18,16 @@ use Ffcms\Core\Helper\HTML\Form\Constructor;
  */
 class Form extends NativeGenerator
 {
-    private $structLayer = [
+    /** @var array */
+    private static $structLayer = [
         'base' => 'native/form/base_layer',
         'checkbox' => 'native/form/checkbox_layer',
         'checkboxes' => 'native/form/checkboxes_layer',
+        'radio' => 'native/form/radio_layer',
         'jsnotify' => 'native/form/jsnotify'
     ];
-    
+
+    /** @var string */
     private $name;
     private $formProperty = [];
     /** @var Model */
@@ -32,7 +35,7 @@ class Form extends NativeGenerator
 
 
     /**
-     * Build form based on model properties
+     * Form constructor. Build form based on model properties
      * @param Model $model
      * @param array|null $property
      * @param array|null $layerFiles
@@ -50,9 +53,9 @@ class Form extends NativeGenerator
         
         // check if passed custom layer file
         if (Obj::isArray($layerFiles) && count($layerFiles) > 0) {
-            foreach (array_keys($this->structLayer) as $type) {
+            foreach (array_keys(static::$structLayer) as $type) {
                 if (isset($layerFiles[$type]) && Obj::isString($layerFiles[$type])) {
-                    $this->structLayer[$type] = $layerFiles[$type];
+                    static::$structLayer[$type] = $layerFiles[$type];
                 }
             }
         }
@@ -112,12 +115,18 @@ class Form extends NativeGenerator
             return null;
         }
         
-        // prepare layer file path
+        // prepare layer template file path
         if ($layerFile === null) {
-            if ($type === 'checkbox') {
-                $layerFile = $this->structLayer['checkbox'];
-            } else {
-                $layerFile = $this->structLayer['base'];
+            switch ($type) {
+                case 'checkbox':
+                    $layerFile = static::$structLayer['checkbox'];
+                    break;
+                case 'radio':
+                    $layerFile = static::$structLayer['radio'];
+                    break;
+                default:
+                    $layerFile = static::$structLayer['base'];
+                    break;
             }
         }
         
@@ -131,7 +140,8 @@ class Form extends NativeGenerator
             $labelFor .= '-' . Str::replace('.', '-', $nesting);
             $itemValue = Arr::getByPath($nesting, $itemValue);
         }
-        //$itemBody = $this->dataTypeTag($type, $object, $itemValue, $property);
+
+        // initialize form fields constructor and build output dom html value
         $constructor = new Constructor($this->model, $this->name, $type);
         $elementDOM = $constructor->makeTag($object, $itemValue, $property);
         
@@ -187,7 +197,7 @@ class Form extends NativeGenerator
                 if (Obj::isArray($badAttr) && count($badAttr) > 0) {
                     foreach ($badAttr as $attr) {
                         $itemId = $formName . '-' . $attr;
-                        $render = App::$View->render($this->structLayer['jsnotify'], ['itemId' => $itemId]);
+                        $render = App::$View->render(static::$structLayer['jsnotify'], ['itemId' => $itemId]);
                         App::$Alias->addPlainCode('js', $render);
                     }
                 }

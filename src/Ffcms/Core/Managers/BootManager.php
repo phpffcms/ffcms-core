@@ -36,12 +36,15 @@ class BootManager
             $this->parseComposerLoader();
         }
 
-        // try to get bootable class map from cache, or initialize parsing
-        if (App::$Cache->get('boot.class.map') !== null) {
-            $this->objects = App::$Cache->get('boot.class.map');
-        } else {
-            $this->compileBootableClasses();
-            App::$Cache->set('boot.class.map', $this->objects, static::CACHE_TREE_TIME);
+        // check if cache is enabled
+        if (App::$Cache !== null) {
+            // try to get bootable class map from cache, or initialize parsing
+            if (App::$Cache->get('boot.' . env_name . '.class.map') !== null) {
+                $this->objects = App::$Cache->get('boot.' . env_name . '.class.map');
+            } else {
+                $this->compileBootableClasses();
+                App::$Cache->set('boot.' . env_name . '.class.map', $this->objects, static::CACHE_TREE_TIME);
+            }
         }
     }
 

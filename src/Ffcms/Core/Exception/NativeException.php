@@ -19,12 +19,13 @@ class NativeException extends \Exception
         if ($message !== null) {
             $this->message = $message;
         }
+        parent::__construct();
     }
 
     /**
      * Display native exception
      * @param string $message
-     * @return string|unknown
+     * @return string|null
      */
     public function display($message = null)
     {
@@ -35,7 +36,7 @@ class NativeException extends \Exception
 
         // hide root path from exception
         $message = Str::replace(root, '$DOCUMENT_ROOT', $message);
-        $message = htmlentities($message);
+        $message = strip_tags($message);
         
         // generate response based on environment type
         switch (env_type) {
@@ -50,7 +51,8 @@ class NativeException extends \Exception
 
     /**
      * Build html response
-     * @param unknown $message
+     * @param string|null $message
+     * @return string
      */
     protected function sendHTML($message = null)
     {
@@ -60,7 +62,8 @@ class NativeException extends \Exception
     
     /**
      * Build json response
-     * @param string $message
+     * @param string|null $message
+     * @return string
      */
     protected function sendJSON($message = NULL) 
     {

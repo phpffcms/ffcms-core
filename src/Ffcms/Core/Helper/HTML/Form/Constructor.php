@@ -21,15 +21,16 @@ class Constructor
     const TYPE_FILE = 'file';
     const TYPE_HIDDEN = 'hidden';
     const TYPE_DIV_FAKE = 'div';
+    const TYPE_RADIO = 'radio';
     
-    /** @var Ffcms\Core\Arch\Model $model */
+    /** @var \Ffcms\Core\Arch\Model $model */
     private $model;
     private $formName;
     private $type;
     
     /**
      * Initialize Constructor. Pass model and type inside of current field inside.
-     * @param Ffcms\Core\Arch\Model $model
+     * @param \Ffcms\Core\Arch\Model $model
      * @param string $type
      */
     public function __construct($model, $formName = false, $type = 'text')
@@ -43,7 +44,7 @@ class Constructor
     public function makeTag($name, $value = null, $properties = null)
     {
         // check if properties is passed well
-        if (!Obj::isArray($properties) && $properties !== null) {
+        if ($properties !== null && !Obj::isArray($properties)) {
             throw new SyntaxException('Property must be passed as array or null! Field: ' . $name);
         }
         
@@ -89,6 +90,9 @@ class Constructor
                 return $builder->make();
             case static::TYPE_MULTISELECT:
                 $builder = new MultiSelectField($properties, $name, $value);
+                return $builder->make();
+            case static::TYPE_RADIO:
+                $builder = new RadioField($properties, $name, $value);
                 return $builder->make();
         }
         
