@@ -131,6 +131,4 @@ class Security
     {
         return dechex(crc32($string));
     }
-
-
 }

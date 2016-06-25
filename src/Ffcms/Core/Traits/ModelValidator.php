@@ -31,18 +31,19 @@ trait ModelValidator
     public function runValidate(array $rules = null)
     {
         // skip validation on empty rules
-        if ($rules === null) {
+        if ($rules === null || !Obj::isArray($rules)) {
             return true;
         }
 
         $success = true;
-        // each
+        // list each rule as single one
         foreach ($rules as $rule) {
             // 0 = field (property) name, 1 = filter name, 2 = filter value
             if ($rule[0] === null || $rule[1] === null) {
                 continue;
             }
 
+            // check if target field defined as array and make recursive validation
             if (Obj::isArray($rule[0])) {
                 $validate_foreach = true;
                 foreach ($rule[0] as $field_name) {
@@ -144,7 +145,7 @@ trait ModelValidator
                     }
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
-                    $dotData->set($dot_path, $field_value); // todo: check me!!! big change the bug is there
+                    $dotData->set($dot_path, $field_value); // todo: check me!!! Here can be bug of fail parsing dots and passing path-value
                     // export data from dot-data lib to model property
                     $this->{$field_set_name} = $dotData->export();
                 } else { // just single property

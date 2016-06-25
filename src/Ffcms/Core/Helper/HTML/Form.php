@@ -6,6 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Obj;
@@ -79,6 +80,25 @@ class Form extends NativeGenerator
     public function start()
     {
         return '<form' . self::applyProperty($this->formProperty) . '>';
+    }
+
+    /**
+     * Build csrf token key and return input[type=hidden] tag
+     * @param string $name
+     * @return string
+     */
+    public function csrfToken($name)
+    {
+        // get token from session data (will be destoyed after form validation)
+        $token = App::$Session->get($name, false);
+        // if no token data in session - generate it and save in session data
+        if ($token === false) {
+            $token = Str::randomLatinNumeric(mt_rand(32, 64));
+            App::$Session->set($name, $token);
+        }
+
+        // build input[type=hidden] with token value
+        return $this->field($name, 'hidden', ['value' => $token]);
     }
 
     /**

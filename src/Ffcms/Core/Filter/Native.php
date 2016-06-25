@@ -206,7 +206,7 @@ class Native
 
     /**
      * Filter ['object', 'equal', value]
-     * @param $object
+     * @param string $object
      * @param $value
      * @return bool
      */
@@ -217,6 +217,23 @@ class Native
         }
 
         return $object === $value;
+    }
+
+    /**
+     * Validate csrf token with session value and invalidate it
+     * @param string $object
+     * @return bool
+     */
+    public static function csrf_check($object, $name = null)
+    {
+        if (Obj::isArray($object) || $name === null || !App::$Session->has($name)) {
+            return false;
+        }
+
+        $token = App::$Session->get($name);
+        App::$Session->remove($name);
+        
+        return $token === $object;
     }
 
     /**

@@ -89,7 +89,7 @@ class Model
         // get default values of attributes
         $defaultAttr = $this->getAllProperties();
 
-        // start validation as save boolean value
+        // start validation: on this step class attribute values will be changed to input data if it valid
         $success = $this->runValidate($rules);
 
         // get not-passed validation fields as array
@@ -231,5 +231,4 @@ class Model
 
         return $response;
     }
-
 }
