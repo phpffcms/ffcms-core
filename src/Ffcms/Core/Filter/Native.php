@@ -220,23 +220,6 @@ class Native
     }
 
     /**
-     * Validate csrf token with session value and invalidate it
-     * @param string $object
-     * @return bool
-     */
-    public static function csrf_check($object, $name = null)
-    {
-        if (Obj::isArray($object) || $name === null || !App::$Session->has($name)) {
-            return false;
-        }
-
-        $token = App::$Session->get($name);
-        App::$Session->remove($name);
-        
-        return $token === $object;
-    }
-
-    /**
      * Direct preg_match expression. Filter ['object', 'direct_match', '/^[A-Z]/*$']
      * @param $object
      * @param $value

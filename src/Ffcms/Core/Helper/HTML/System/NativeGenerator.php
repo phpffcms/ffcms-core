@@ -76,11 +76,12 @@ abstract class NativeGenerator
      * Fast building single tag based on property's array
      * @param string $tagName
      * @param array|null $property
+     * @param bool $closeSlash
      * @return string
      */
-    public static function buildSingleTag($tagName, array $property = null)
+    public static function buildSingleTag($tagName, array $property = null, $closeSlash = true)
     {
-        return '<' . self::nohtml($tagName) . self::applyProperty($property) . '/>';
+        return '<' . self::nohtml($tagName) . self::applyProperty($property) . ($closeSlash ? '/>' : '>');
     }
 
     /**

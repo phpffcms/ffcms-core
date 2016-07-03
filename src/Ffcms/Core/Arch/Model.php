@@ -16,13 +16,25 @@ use Ffcms\Core\Traits\ModelValidator;
  */
 class Model
 {
-    use DynamicGlobal, ModelValidator;
-
-    public function __construct()
-    {
-        $this->before();
+    use DynamicGlobal, ModelValidator {
+        ModelValidator::initialize as private validatorConstructor;
     }
 
+    public $_csrf_token;
+
+    /**
+     * Model constructor. Initialize before() method for extended objects and run validator initialization
+     * @param bool $csrf
+     */
+    public function __construct($csrf = false)
+    {
+        $this->before();
+        $this->validatorConstructor($csrf);
+    }
+
+    /**
+     * Make any things before model is initialized
+     */
     public function before() {}
 
     /**
@@ -84,6 +96,11 @@ class Model
      */
     final public function validate()
     {
+        // validate csrf token if required
+        if ($this->_tokenRequired && !$this->_tokenOk) {
+            App::$Session->getFlashBag()->add('warning', __('Hack attention: security token is wrong!'));
+            return false;
+        }
         // get all rules as array from method rules()
         $rules = $this->rules();
         // get default values of attributes

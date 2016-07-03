@@ -6,7 +6,6 @@ namespace Ffcms\Core\Traits;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Filter\Native;
-use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Dflydev\DotAccessData\Data as DotData;
@@ -21,6 +20,34 @@ trait ModelValidator
     protected $_sendMethod = 'POST';
 
     protected $_formName;
+
+    public $_tokenRequired = false;
+    protected $_tokenOk = true;
+
+    /**
+     * Initialize validator. Set csrf protection token from request data if available.
+     * @param bool $csrf
+     */
+    public function initialize($csrf = false)
+    {
+        $this->_tokenRequired = $csrf;
+        if ($csrf === true) {
+            // get current token value from session
+            $currentToken = App::$Session->get('_csrf_token', false);
+            // set new token value to session
+            $newToken = Str::randomLatinNumeric(mt_rand(32, 64));
+            App::$Session->set('_csrf_token', $newToken);
+            // if request is submited for this model - try to validate input data
+            if ($this->send()) {
+                // token is wrong - update bool state
+                if ($currentToken !== $this->getRequest('_csrf_token', 'all')) {
+                    $this->_tokenOk = false;
+                }
+            }
+            // set token data to display
+            $this->_csrf_token = $newToken;
+        }
+    }
 
     /**
      * Start validation for defined fields in rules() model method.
@@ -225,7 +252,7 @@ trait ModelValidator
      */
     final public function send()
     {
-        if (App::$Request->getMethod() !== $this->_sendMethod) {
+        if (!Str::equalIgnoreCase($this->_sendMethod, App::$Request->getMethod())) {
             return false;
         }
 
@@ -271,11 +298,11 @@ trait ModelValidator
     /**
      * Get input param for current model form based on param name and request method
      * @param string $param
-     * @param string $method
+     * @param string|null $method
      * @return string|null|array
      * @throws \InvalidArgumentException
      */
-    public function getRequest($param, $method = 'get')
+    public function getRequest($param, $method = null)
     {
         // build param query for http foundation request
         $paramQuery = $this->getFormName();
@@ -285,6 +312,10 @@ trait ModelValidator
             }
         } else {
             $paramQuery .= '[' . $param . ']';
+        }
+
+        if ($method === null) {
+            $method = $this->_sendMethod;
         }
 
         // get request based on method and param query

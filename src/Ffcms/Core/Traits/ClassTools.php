@@ -5,7 +5,7 @@ namespace Ffcms\Core\Traits;
 /**
  * Assistance tools for fast using some magical things and opportunity of classic object-oriented programming
  */
-trait OopTools
+trait ClassTools
 {
 
     /**

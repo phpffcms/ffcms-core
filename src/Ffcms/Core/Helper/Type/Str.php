@@ -301,6 +301,7 @@ class Str
      * @param string $separator
      * @param string $string1
      * @param string $string2
+     * @return string
      */
     public static function concat()
     {
@@ -316,4 +317,14 @@ class Str
         return $output;
     }
 
+    /**
+     * Check if var1 is equal to var2 in binary-safe mode with ignore case
+     * @param string $var1
+     * @param string $var2
+     * @return bool
+     */
+    public static function equalIgnoreCase($var1, $var2)
+    {
+        return strcasecmp($var1, $var2) === 0;
+    }
 }
