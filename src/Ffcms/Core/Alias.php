@@ -78,18 +78,25 @@ class Alias
         'css' => null
     ];
 
-
+    /**
+     * Alias constructor. Build alias properties for system data to provide fast-access from apps and other places.
+     */
     public function __construct()
     {
         // make alias for view pathway
         $this->currentViewPath = App::$View->themePath;
 
         // make alias for baseUrl, script url and domain
-        $this->baseDomain = App::$Request->getHost();
-        $this->scriptUrl = App::$Request->getSchemeAndHttpHost();
+        $this->baseDomain = App::$Request->getHttpHost();
+        if (Str::likeEmpty($this->baseDomain)) {
+            $this->baseDomain = App::$Properties->get('baseDomain');
+        }
+        // build script url
+        $this->scriptUrl = App::$Request->getScheme() . '://' . $this->baseDomain;
         if (App::$Properties->get('basePath') !== '/') {
             $this->scriptUrl .= rtrim(App::$Properties->get('basePath'), '/');
         }
+        // build base url (with current used interface path slug)
         $this->baseUrl = $this->scriptUrl;
         if (App::$Request->getInterfaceSlug() !== null) {
             $this->baseUrl .= App::$Request->getInterfaceSlug();
@@ -116,6 +123,7 @@ class Alias
     }
 
     /**
+     * Get vendor library url if defined by type and name. Example: getVendor('js', 'jquery')
      * @param string $type
      * @param string $name
      * @return string|null

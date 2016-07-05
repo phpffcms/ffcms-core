@@ -146,6 +146,34 @@ class Url extends NativeGenerator
     }
 
     /**
+     * Build full URL link from URI string, if REQUEST data is not available (console, cron, etc)
+     * @param string $uri
+     * @param string|null $lang
+     * @return string
+     */
+    public static function standaloneUrl($uri, $lang = null)
+    {
+        /** @var array $configs */
+        $configs = \App::$Properties->getAll('default');
+        $httpHost = $configs['baseProto'] . '://' . $configs['baseDomain'];
+        if ($configs['basePath'] !== '/') {
+            $httpHost .= $configs['basePath'] . '/';
+        }
+
+        // check if is this is URI not URL
+        if (!Str::startsWith($httpHost, $uri)) {
+            // check if lang is defined in URI or define it
+            if ($lang !== null && $configs['multiLanguage'] && !Str::startsWith($lang, $uri)) {
+                $uri = $lang . '/' . ltrim($uri, '/');
+            }
+            // add basic httpHost data
+            $uri = rtrim($httpHost, '/') . '/' . ltrim($uri, '/');
+        }
+
+        return $uri;
+    }
+
+    /**
      * Download remote content in binary string
      * @param string $url
      * @return null|string
