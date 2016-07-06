@@ -15,6 +15,8 @@ use \Illuminate\Database\Eloquent\Model as LaravelModel;
  * @method static ActiveModel orderBy($field, $sortType)
  * @method static ActiveModel|null first()
  * @method static ActiveModel|null find($id)
+ * @method static ActiveModel|null whereNotNull($field)
+ * @method static ActiveModel|null orWhereNotNull($field)
  * @method ActiveModel skip($count)
  * @method ActiveModel take($count)
  * @method int count()

@@ -174,6 +174,20 @@ class Url extends NativeGenerator
     }
 
     /**
+     * Build a.href html tag with full URL link from uri & text
+     * @param string $text
+     * @param string $uri
+     * @param string|null $lang
+     * @param array $property
+     * @return string
+     */
+    public static function standaloneLink($text, $uri, $lang = null, array $property = [])
+    {
+        $property['href'] = self::standaloneUrl($uri, $lang);
+        return self::buildContainerTag('a', $property, $text);
+    }
+
+    /**
      * Download remote content in binary string
      * @param string $url
      * @return null|string

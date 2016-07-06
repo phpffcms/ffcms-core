@@ -48,6 +48,7 @@ class Text
             $text = strip_tags($text);
             $text = self::cut($text, 0, $length);
         }
+
         return $text;
     }
 

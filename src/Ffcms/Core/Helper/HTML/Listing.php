@@ -58,6 +58,7 @@ class Listing extends NativeGenerator
      * Build dropdown dom element
      * @param Dom $dom
      * @param array $item
+     * @return string
      */
     private static function buildDropdown($dom, $item)
     {
@@ -85,8 +86,9 @@ class Listing extends NativeGenerator
 
     /**
      * Build text item
-     * @param unknown $dom
-     * @param unknown $item
+     * @param Dom $dom
+     * @param array $item
+     * @return string
      */
     private static function buildText($dom, $item)
     {
@@ -100,7 +102,8 @@ class Listing extends NativeGenerator
      * Build link with active definition in listing
      * @param Dom $dom
      * @param array $item
-     * @param string $orderActiveLink
+     * @param bool $orderActiveLink
+     * @return string
      */
     private static function buildLink($dom, $item, $orderActiveLink = false)
     {
