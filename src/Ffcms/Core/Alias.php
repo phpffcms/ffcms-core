@@ -107,6 +107,11 @@ class Alias
             $this->baseUrl .= '/' . App::$Request->getLanguage();
         }
 
+        // add cron initiation from user if enabled
+        if ((bool)App::$Properties->get('userCron') && env_name === 'Front') {
+            $this->addPlainCode('js', 'if(Math.random() > 0.8) { $.get("' . $this->scriptUrl . '/cron.php?rand=" + Math.random()); }');
+        }
+
         // build vendor libs alias
         $this->vendorNamedLibrary['js']['jquery'] = $this->scriptUrl . '/vendor/bower/jquery/dist/jquery.min.js';
         $this->vendorNamedLibrary['css']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';

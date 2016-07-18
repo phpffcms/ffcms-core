@@ -70,11 +70,11 @@ abstract class TemplateException extends \Exception
             $rawResponse = $this->text;
         }
         // set controller body response
-        $fakeController->setResponse($rawResponse);
+        $fakeController->setOutput($rawResponse);
         // set status code for header
         App::$Response->setStatusCode((int)$this->status);
         // return compiled html output
-        return $fakeController->getOutput();
+        return $fakeController->buildOutput();
     }
 
 }

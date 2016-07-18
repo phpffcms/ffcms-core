@@ -15,24 +15,33 @@ use Ffcms\Core\Template\Variables;
  */
 class Controller
 {
-
     use DynamicGlobal;
 
-    /**
-     * @var string $layout
-     */
+    /** @var string */
     public $layout = 'main';
 
-    /**
-     * @var string $response
-     */
-    protected $response;
+    /** @var string */
+    protected $output;
 
+    /** @var \Ffcms\Core\Network\Request */
+    public $request;
+    /** @var \Ffcms\Core\Network\Response */
+    public $response;
+    /** @var View */
+    public $view;
+
+    /**
+     * Controller constructor. Set controller access data - request, response, view
+     */
     public function __construct()
     {
+        $this->request = App::$Request;
+        $this->response = App::$Response;
+        $this->view = App::$View;
         $this->before();
     }
 
+    /** Before action call method */
     public function before() {}
     
     /** Global bootable method */
@@ -41,20 +50,20 @@ class Controller
     /**
      * Build variables and display output html
      */
-    public function getOutput()
+    public function buildOutput()
     {
         $this->after();
 
         // if layout is not required and this is just standalone app
         if ($this->layout === null) {
-            $content = $this->response;
+            $content = $this->output;
         } else {
             $layoutPath = App::$Alias->currentViewPath . '/layout/' . $this->layout . '.php';
             if (!File::exist($layoutPath)) {
                 throw new NativeException('Layout not founded: ' . $layoutPath);
             }
 
-            $body = $this->response;
+            $body = $this->output;
             // pass global data to config viewer
             if (App::$Debug !== null) {
                 App::$Debug->bar->getCollector('config')->setData(['Global Vars' => Variables::instance()->getGlobalsArray()]);
@@ -86,6 +95,7 @@ class Controller
         return $content;
     }
 
+    /** After action called method */
     public function after() {}
 
     /**
@@ -110,20 +120,20 @@ class Controller
 
     /**
      * Special method to set response of action execution
-     * @param string $response
+     * @param string $output
      */
-    public function setResponse($response)
+    public function setOutput($output)
     {
-        $this->response = $response;
+        $this->output = $output;
     }
 
     /**
      * Get response of action rendering
      * @return string
      */
-    public function getResponse()
+    public function getOutput()
     {
-        return $this->response;
+        return $this->output;
     }
 
 }

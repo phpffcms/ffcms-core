@@ -206,11 +206,11 @@ class App
 
                 if ($actionResponse !== null && !Str::likeEmpty($actionResponse)) {
                     // set response to controller property object
-                    $callClass->setResponse($actionResponse);
+                    $callClass->setOutput($actionResponse);
                 }
 
-                // get full compiled response
-                $html = $callClass->getOutput();
+                // build full compiled output html data
+                $html = $callClass->buildOutput();
             } else {
                 throw new NotFoundException('Method "' . App::$Security->strip_tags($callMethod) . '()" not founded in "' . get_class($callClass) . '"');
             }

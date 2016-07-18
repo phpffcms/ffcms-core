@@ -16,7 +16,8 @@ use Ffcms\Core\Traits\DynamicGlobal;
 
 /**
  * Class View. Classic realisation of view's management in MVC architecture.
- * This class can be uses as object - (new View())->render() or from entry point App::$View->render()
+ * This class can be uses as object - (new View())->render() or from entry point App::$View->render() or
+ * from controller action like $this->view->render()
  * @package Ffcms\Core\Arch
  */
 class View
@@ -29,11 +30,15 @@ class View
      */
     public $themePath;
 
+    /** @var string */
     private $path;
+    /** @var array|null */
     private $params;
 
+    /** @var string|null */
     private $sourcePath;
 
+    /** @var bool */
     public $nativeException = false;
 
     /**
