@@ -2,6 +2,10 @@
 
 namespace Ffcms\Core\Helper\Type;
 
+/**
+ * Class Arr. Helper for work with arrays and it data.
+ * @package Ffcms\Core\Helper\Type
+ */
 class Arr
 {
 
@@ -37,6 +41,10 @@ class Arr
         return call_user_func_array('array_merge', $arguments);
     }
 
+    /**
+     * Alternative function for array_merge_recursive - safe for use with any params
+     * @return array
+     */
     public static function mergeRecursive()
     {
         $arguments = [];

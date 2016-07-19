@@ -3,6 +3,10 @@
 
 namespace Ffcms\Core\Helper\Type;
 
+/**
+ * Class Str. Helper to work with string variables
+ * @package Ffcms\Core\Helper\Type
+ */
 class Str
 {
 
@@ -158,7 +162,7 @@ class Str
         $split = preg_split($expression, $string);
         $output = [];
         $count = count($split);
-        for ($i = 0; $i < $count; ++$i) {
+        for ($i = 0; $i < $count; ++$i) { // @todo: rework me with foreach() cycle
             $word = strtolower($split[$i]);
             if ($i === 0) {
                 $word = ucfirst($word);

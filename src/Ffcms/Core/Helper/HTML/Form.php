@@ -16,6 +16,7 @@ use Ffcms\Core\Helper\HTML\Form\Constructor;
 
 /**
  * Class Form. Simple HTML model generator for fast form building.
+ * @package Ffcms\Core\Helper\HTML
  */
 class Form extends NativeGenerator
 {

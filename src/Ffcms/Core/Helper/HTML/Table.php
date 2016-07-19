@@ -9,7 +9,7 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 
 /**
- * Class Table - helper for drawing tables using php static call Table::display([params])
+ * Class Table. Helper for drawing tables using php static call Table::display([params])
  * @package Ffcms\Core\Helper\HTML
  */
 class Table extends NativeGenerator

@@ -6,7 +6,7 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 
 /**
- * Class SimplePagination
+ * Class SimplePagination. Build and display html pagination block
  * @package Ffcms\Core\Helper\HTML
  */
 class SimplePagination

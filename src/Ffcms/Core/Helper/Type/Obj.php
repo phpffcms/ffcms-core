@@ -2,6 +2,10 @@
 
 namespace Ffcms\Core\Helper\Type;
 
+/**
+ * Class Obj. Helper to work with unknown variables
+ * @package Ffcms\Core\Helper\Type
+ */
 class Obj
 {
     /**
