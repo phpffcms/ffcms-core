@@ -17,6 +17,9 @@ class Manager
     public $bar;
     public $render;
 
+    /**
+     * Manager constructor. Construct debug manager - build debug bar, javascripts and initialize configs
+     */
     public function __construct()
     {
         $this->bar = new StandardDebugBar();
@@ -101,7 +104,7 @@ class Manager
     public static function isEnabled()
     {
         $property = App::$Properties->get('debug');
-        return (true === $property['all'] ||
-            App::$Request->cookies->get($property['cookie']['key']) === $property['cookie']['value']);
+        // $_COOKIE used insted of symfony request, cuz debug initialize early
+        return ($property['all'] === true || $_COOKIE[$property['cookie']['key']] === $property['cookie']['value']);
     }
 }

@@ -77,19 +77,59 @@ class App
     /** @var CronManager */
     public static $Cron;
 
+    private $_services;
+    private $_loader;
+
     /**
-     * Prepare entry-point services
+     * App constructor. Build App entry-point instance
      * @param array|null $services
-     * @param bool|object $loader
-     * @throws NativeException
+     * @param bool $loader
+     * @throws \Ffcms\Core\Exception\NativeException
      * @throws \InvalidArgumentException
      */
-    public static function init(array $services = null, $loader = false)
+    public function __construct(array $services = null, $loader = false)
     {
-        // initialize default services - used in all apps type
+        // pass initialization data inside
+        $this->_services = $services;
+        $this->_loader = $loader;
+        // initialize service links
+        $this->nativeStaticLinks();
+        $this->dynamicStaticLinks();
+        // Initialize boot manager. This manager allow to auto-execute 'static boot()' methods in apps and widgets
+        $bootManager = new BootManager($this->_loader);
+        $bootManager->run();
+    }
+
+    /**
+     * Factory method builder for app entry point
+     * @param array|null $services
+     * @param bool $loader
+     * @return App
+     * @throws \InvalidArgumentException
+     * @throws \Ffcms\Core\Exception\NativeException
+     */
+    public static function factory(array $services = null, $loader = false)
+    {
+        return new self($services, $loader);
+    }
+
+    /**
+     * Prepare static symbolic links for app services
+     * @throws \InvalidArgumentException
+     * @throws \Ffcms\Core\Exception\NativeException
+     */
+    private function nativeStaticLinks()
+    {
+        // initialize memory and properties controllers
         self::$Memory = MemoryObject::instance();
         self::$Properties = new Properties();
+        // initialize debugger
+        if (isset($this->_services['Debug']) && $this->_services['Debug'] === true && Debug::isEnabled()) {
+            self::$Debug = new Debug();
+        }
+        // prepare request data
         self::$Request = Request::createFromGlobals();
+        // initialize response, securty translate and other workers
         self::$Security = new Security();
         self::$Response = new Response();
         self::$View = new View();
@@ -97,30 +137,16 @@ class App
         self::$Alias = new Alias();
         self::$Event = new EventManager();
         self::$Cron = new CronManager();
-
-        // check if debug is enabled and available for current session
-        if (isset($services['Debug']) && $services['Debug'] === true && Debug::isEnabled() === true) {
-            self::$Debug = new Debug();
-        }
-
-        $objects = App::$Properties->getAll('object');
-        // pass dynamic initialization
-        self::dynamicServicePrepare($services, $objects);
-
-        // Initialize boot manager. This manager allow to auto-execute 'static boot()' methods in apps and widgets
-        $bootManager = new BootManager($loader);
-        $bootManager->run();
     }
 
     /**
-     * Prepare dynamic services from object anonymous functions
-     * @param array|null $services
-     * @param null $objects
+     * Prepare dynamic static links from object configurations as anonymous functions
      * @throws NativeException
      */
-    private static function dynamicServicePrepare(array $services = null, $objects = null)
+    private function dynamicStaticLinks()
     {
-        // check if object configuration is passed
+        /** @var array $objects */
+        $objects = App::$Properties->getAll('object');
         if (!Obj::isArray($objects)) {
             throw new NativeException('Object configurations is not loaded: /Private/Config/Object.php');
         }
@@ -128,11 +154,11 @@ class App
         // each all objects as service_name => service_instance()
         foreach ($objects as $name => $instance) {
             // check if definition of object is exist and services list contains it or is null to auto build
-            if (property_exists(get_called_class(), $name) && $instance instanceof \Closure && (isset($services[$name]) || $services === null)) {
-                if ($services[$name] === true || $services === null) { // initialize from configs
+            if (property_exists(get_called_class(), $name) && $instance instanceof \Closure && (isset($this->_services[$name]) || $this->_services === null)) {
+                if ($this->_services[$name] === true || $this->_services === null) { // initialize from configs
                     self::${$name} = $instance();
-                } elseif (is_callable($services[$name])) { // raw initialization from App::run()
-                    self::${$name} = $services[$name]();
+                } elseif (is_callable($this->_services[$name])) { // raw initialization from App::run()
+                    self::${$name} = $this->_services[$name]();
                 }
             } elseif (Str::startsWith('_', $name)) { // just anonymous callback without entry-point
                 @call_user_func($instance);
@@ -144,7 +170,7 @@ class App
      * Run applications and display output
      * @throws \DebugBar\DebugBarException
      */
-    public static function run()
+    public function run()
     {
         $html = null;
         // lets try to get html full content to page render

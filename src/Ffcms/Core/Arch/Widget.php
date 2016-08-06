@@ -64,4 +64,13 @@ class Widget implements iWidget
     public function display() {}
     public function init() {}
 
+    /**
+     * Check if widget is enabled. For native widget is always enabled
+     * @param string $name
+     * @return bool
+     */
+    public static function enabled($name)
+    {
+        return true;
+    }
 }
