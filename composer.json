@@ -1,4 +1,5 @@
 {
+  "version": "1.0.0-beta",
   "name": "phpffcms/ffcms-core",
   "description": "Core package for FFCMS 3 version",
   "type": "library",
@@ -13,7 +14,7 @@
     }
   ],
   "require": {
-    "php": ">=5.4",
+    "php": ">=5.5",
     "illuminate/database": "5.*@stable",
     "symfony/http-foundation": "2.8@stable",
     "maximebf/debugbar": "1.*@stable",
