@@ -246,9 +246,13 @@ class Request extends FoundationRequest
             return;
         }
 
-        /**
-         * Switch path array as reverse without break point! Caution: drugs inside!
-         */
+        // check if array length is more then 4 basic elements and slice it recursive
+        if (count($pathArray) > 4) {
+            $this->setPathdata(array_slice($pathArray, 0, 4));
+            return;
+        }
+
+        // Switch path array as reverse without break point! Caution: drugs inside!
         switch (count($pathArray)) {
             case 4:
                 $this->argumentAdd = Str::lowerCase($pathArray[3]);
