@@ -23,13 +23,13 @@ class Serialize
     }
 
     /**
-     * Unserialize encoded data from string to object/array/etc
+     * Unserialize encoded data from string to object/array/etc. Can return false if $data is not serialized
      * @param string $data
-     * @return string|array
+     * @return array|false
      */
     public static function decode($data)
     {
-        return unserialize($data);
+        return @unserialize($data);
     }
 
     /**
@@ -41,7 +41,7 @@ class Serialize
     public static function getDecoded($data, $key)
     {
         $data = self::decode($data);
-        return $data[$key];
+        return $data === false ? null : $data[$key];
     }
 
     /**
