@@ -82,9 +82,21 @@ class Model
 
     /**
      * Set model data sources for input data
+     * Allowed sources: get, post, file
      * @return array
      */
     public function sources()
+    {
+        return [];
+    }
+
+    /**
+     * Set model property types to advanced filtering
+     * Allowed types: text, html, !secure
+     * Ex: ['property1' => 'text', 'property2' => 'html']
+     * @return array
+     */
+    public function types()
     {
         return [];
     }
@@ -138,60 +150,6 @@ class Model
 
         return $success;
     }
-
-    /**
-     * Filter model fields as text, html or secure obscured
-     * @param array|null $fields
-     * @return $this
-     */
-    public function filter(array $fields = null)
-    {
-        // list all model fields
-        $allFields = $this->getAllProperties();
-        if ($allFields !== null && Obj::isArray($allFields)) {
-            foreach ($allFields as $f => $v) {
-                // if attr is not passed - set from global as plaintext
-                if (!isset($fields[$f])) {
-                    $fields[$f] = 'text';
-                }
-            }
-        }
-
-        // if no fields is found - return
-        if (!Obj::isArray($fields)) {
-            return $this;
-        }
-
-        // each all properties
-        foreach ($fields as $field => $security) {
-            // get property value
-            $fieldValue = $this->{$field};
-            // switch security levels
-            switch ($security) {
-                case '!secure': // is full security obscured field, skip it
-                    break;
-                case 'html':
-                    $this->{$field} = App::$Security->secureHtml($fieldValue);
-                    break;
-                default: // text/plaintext
-                    $this->{$field} = App::$Security->strip_tags($fieldValue);
-                    break;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Export model values for safe-using in HTML pages.
-     * @deprecated
-     * @return $this
-     */
-    final public function export()
-    {
-        return $this->filter(null);
-    }
-
 
     /**
      * Get all properties for current model in key=>value array

@@ -75,14 +75,14 @@ trait ModelValidator
                 $validate_foreach = true;
                 foreach ($rule[0] as $field_name) {
                     // end false condition
-                    if (!$this->validateRecursive($field_name, $rule[1], $rule[2], $rule[3], $rule[4])) {
+                    if (!$this->validateRecursive($field_name, $rule[1], $rule[2])) {
                         $validate_foreach = false;
                     }
                 }
                 // assign total
                 $validate = $validate_foreach;
             } else {
-                $validate = $this->validateRecursive($rule[0], $rule[1], $rule[2], $rule[3], $rule[4]);
+                $validate = $this->validateRecursive($rule[0], $rule[1], $rule[2]);
             }
 
             // do not change condition on "true" check's (end-false-condition)
@@ -99,12 +99,10 @@ trait ModelValidator
      * @param string|array $field_name
      * @param string $filter_name
      * @param mixed $filter_argv
-     * @param bool $html
-     * @param bool $secure
      * @return bool
      * @throws SyntaxException
      */
-    public function validateRecursive($field_name, $filter_name, $filter_argv, $html = false, $secure = false)
+    public function validateRecursive($field_name, $filter_name, $filter_argv = null)
     {
         // check if we got it from form defined request method
         if (App::$Request->getMethod() !== $this->_sendMethod) {
@@ -112,7 +110,7 @@ trait ModelValidator
         }
 
         // get field value from user input data
-        $field_value = $this->getFieldValue($field_name, $html, $secure);
+        $field_value = $this->getFieldValue($field_name);
 
         $check = false;
         // maybe no filter required?
@@ -186,32 +184,40 @@ trait ModelValidator
     /**
      * Get field value from input POST/GET/AJAX data with defined security level (html - safe html, !secure = fully unescaped)
      * @param string $field_name
-     * @param bool $html
-     * @param bool $secure
      * @return array|null|string
      * @throws \InvalidArgumentException
      */
-    private function getFieldValue($field_name, $html = false, $secure = false)
+    private function getFieldValue($field_name)
     {
         // get type of input data (where we must look it up)
         $sources = [];
+        $types = [];
         $inputType = Str::lowerCase($this->_sendMethod);
+        $filterType = 'text';
         // check input data type. Maybe file or input (text)
         if (method_exists($this, 'sources')) {
             $sources = $this->sources();
         }
-
+        if (method_exists($this, 'types')) {
+            $types = $this->types();
+        }
+        // validate sources for current field
         if (Obj::isArray($sources) && array_key_exists($field_name, $sources)) {
             $inputType = Str::lowerCase($sources[$field_name]);
         }
+        if (Obj::isArray($types) && array_key_exists($field_name, $types)) {
+            $filterType = Str::lowerCase($types[$field_name]);
+        }
 
+        // get clear field value
         $field_value = $this->getRequest($field_name, $inputType);
-        // apply html security filter for input data
+
+        // apply security filter for input data
         if ($inputType !== 'file') {
-            if ($html !== true) {
-                $field_value = App::$Security->strip_tags($field_value);
-            } elseif($secure !== true) {
+            if ($filterType === 'html') {
                 $field_value = App::$Security->secureHtml($field_value);
+            } elseif ($filterType !== '!secure') {
+                $field_value = App::$Security->strip_tags($field_value);
             }
         }
 

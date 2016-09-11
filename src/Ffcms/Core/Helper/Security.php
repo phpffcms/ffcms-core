@@ -7,11 +7,14 @@ use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
+/**
+ * Class Security. Basic framework security entry point
+ * @package Ffcms\Core\Helper
+ */
 class Security
 {
 
     protected $purifier;
-
 
     /**
      * Security constructor. Construct html purifier instance.
@@ -20,7 +23,7 @@ class Security
     {
         $config = \HTMLPurifier_Config::createDefault();
         $config->set('Cache.SerializerPath', root . '/Private/Cache/HTMLPurifier/');
-        $config->set('HTML.Allowed', 'p,b,strong,em,a[href],i,span,ul,ol,li,blockquote,h2,h3,pre,code');
+        $config->set('HTML.Allowed', 'p,b,strong,em,a[href],i,span,ul,ol,li,blockquote,h2,h3,pre,code,img[src|alt|width|height]');
         //$config->set('URI.Base', 'http://www.example.com');
         //$config->set('URI.MakeAbsolute', true);
         $config->set('AutoFormat.AutoParagraph', false);
