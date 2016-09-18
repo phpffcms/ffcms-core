@@ -20,6 +20,9 @@ class Translate
     protected $cached = [];
     protected $indexes = [];
 
+    /**
+     * Translate constructor. Load default translations.
+     */
     public function __construct()
     {
         if (App::$Request->getLanguage() !== App::$Properties->get('baseLanguage')) {
@@ -66,8 +69,8 @@ class Translate
     public function translate($text, array $params = [])
     {
         $index = null;
-        $namespace = 'Apps\\Controller\\' . env_name . '\\';
-        foreach (debug_backtrace() as $caller) {
+        $namespace = 'Apps\Controller\\' . env_name . '\\';
+        foreach (@debug_backtrace() as $caller) {
             if (isset($caller['class']) && Str::startsWith($namespace, $caller['class'])) {
                 $index = Str::sub((string)$caller['class'], Str::length($namespace));
             }
@@ -86,7 +89,7 @@ class Translate
         if (!File::exist($file)) {
             return [];
         }
-        return require_once($file);
+        return require($file);
     }
 
     /**
