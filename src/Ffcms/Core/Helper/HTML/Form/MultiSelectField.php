@@ -33,13 +33,12 @@ class MultiSelectField extends NativeGenerator implements iField
     public function make()
     {
         // check if options is defined
-        $options = false;
+        $options = $this->properties['options'];
         $optionsKey = (bool)$this->properties['optionsKey'];
-        if (isset($this->properties['options']) && Obj::isArray($this->properties['options'])) {
-            $options = $this->properties['options'];
-        } else {
-            throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not defined');
+        if (!Obj::isIterable($options)) {
+            throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not iterable');
         }
+        unset($this->properties['options']);
         
         // set global field type
         $this->properties['type'] = 'select';

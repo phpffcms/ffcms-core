@@ -40,13 +40,11 @@ class RadioField extends NativeGenerator implements iField
     {
         // get options from properties
         $options = $this->properties['options'];
-        unset($this->properties['options']);
-        if (!Obj::isArray($options) || count($options) < 1) {
-            throw new SyntaxException('Radio field ' . self::nohtml($this->name) . ' have no options passed');
+        if (!Obj::isIterable($options)) {
+            throw new SyntaxException('Radio field ' . self::nohtml($this->name) . ' have no iterable options');
         }
+        unset($this->properties['options'], $this->properties['value']);
 
-        // value is not used there
-        unset($this->properties['value']);
         // options is defined as key->value array?
         $optionsKey = $this->properties['optionsKey'] === true;
         unset($this->properties['optionsKey']);

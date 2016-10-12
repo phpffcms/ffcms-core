@@ -88,4 +88,14 @@ class Obj
     {
         return is_object($data);
     }
+
+    /**
+     * Check if $data is iterable in foreach
+     * @param $data
+     * @return bool
+     */
+    public static function isIterable($data)
+    {
+        return (is_array($data) || $data instanceof \Traversable);
+    }
 }

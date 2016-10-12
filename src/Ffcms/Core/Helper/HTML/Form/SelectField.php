@@ -34,8 +34,8 @@ class SelectField extends NativeGenerator implements iField
         // get options from properties
         $options = $this->properties['options'];
         unset($this->properties['options']);
-        if (!Obj::isArray($options) || count($options) < 1) {
-            throw new SyntaxException('Select field ' . self::nohtml($this->name) . ' have no options passed');
+        if (!Obj::isIterable($options)) {
+            throw new SyntaxException('Select field ' . self::nohtml($this->name) . ' have no iterable options');
         }
         // value is not used there
         unset($this->properties['value']);

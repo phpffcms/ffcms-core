@@ -42,13 +42,11 @@ class MultiCheckboxField extends NativeGenerator implements iField
     public function make()
     {
         // check if options is defined
-        $options = false;
-        if (isset($this->properties['options']) && Obj::isArray($this->properties['options'])) {
-            $options = $this->properties['options'];
-            unset($this->properties['options']);
-        } else {
-            throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not defined');
+        $options = $this->properties['options'];
+        if (!Obj::isIterable($options)) {
+            throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not iterable');
         }
+        unset($this->properties['options']);
         
         // set field type
         $this->properties['type'] = 'checkbox';
