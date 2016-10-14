@@ -24,6 +24,7 @@ class View
 {
     use DynamicGlobal;
 
+    public $lang = 'en';
     /**
      * Global path for current environment theme
      * @var string
@@ -47,6 +48,7 @@ class View
      */
     public function __construct()
     {
+        $this->lang = App::$Request->getLanguage();
         // get theme config and build full path
         $themeConfig = App::$Properties->get('theme');
         $this->themePath = root . DIRECTORY_SEPARATOR . 'Apps' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . env_name;

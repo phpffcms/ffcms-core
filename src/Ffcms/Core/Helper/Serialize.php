@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Obj;
 
 /**
  * Serialization and unsertialization data for database/any storage
@@ -40,7 +41,9 @@ class Serialize
      */
     public static function getDecoded($data, $key)
     {
-        $data = self::decode($data);
+        if (!Obj::isArray($data)) {
+            $data = self::decode($data);
+        }
         return $data === false ? null : $data[$key];
     }
 

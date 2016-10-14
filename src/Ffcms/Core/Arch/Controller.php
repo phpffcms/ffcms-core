@@ -19,6 +19,7 @@ class Controller
 
     /** @var string */
     public $layout = 'main';
+    public $lang = 'en';
 
     /** @var string */
     protected $output;
@@ -35,6 +36,7 @@ class Controller
      */
     public function __construct()
     {
+        $this->lang = App::$Request->getLanguage();
         $this->request = App::$Request;
         $this->response = App::$Response;
         $this->view = App::$View;

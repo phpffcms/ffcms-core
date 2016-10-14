@@ -3,6 +3,7 @@
 namespace Ffcms\Core\I18n;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
@@ -128,5 +129,30 @@ class Translate
             $langs[] = trim($row, '/');
         }
         return $langs;
+    }
+
+    /**
+     * Get locale data from input array or serialized string
+     * @param array|string $input
+     * @param string|null $lang
+     * @param string|null $default
+     * @return string|null
+     */
+    public function getLocaleText($input, $lang = null, $default = null)
+    {
+        // define language if empty
+        if ($lang === null) {
+            $lang = App::$Request->getLanguage();
+        }
+        // unserialize from string to array
+        if (Obj::isString($input)) {
+            $input = Serialize::decode($input);
+        }
+
+        if (Obj::isArray($input) && array_key_exists($lang, $input)) {
+            return $input[$lang];
+        }
+
+        return $default;
     }
 }

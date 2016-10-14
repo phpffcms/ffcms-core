@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Arch;
 
+use Ffcms\Core\App;
 use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -32,6 +33,11 @@ class ActiveModel extends LaravelModel
      */
     public function getLocaled($attribute)
     {
+        // if always decoded
+        if (Obj::isArray($this->{$attribute})) {
+            return $this->{$attribute}[App::$Request->getLanguage()];
+        }
+
         if (!Obj::isString($attribute) || Str::likeEmpty($this->{$attribute})) {
             return null;
         }
