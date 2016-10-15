@@ -2,9 +2,9 @@
 
 namespace Ffcms\Core\Debug;
 
-use \DebugBar\StandardDebugBar;
-use \DebugBar\DataCollector\ConfigCollector;
-use \Ffcms\Core\App;
+use DebugBar\DataCollector\ConfigCollector;
+use DebugBar\StandardDebugBar;
+use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
 
 /**

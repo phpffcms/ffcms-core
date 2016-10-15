@@ -2,12 +2,12 @@
 
 namespace Ffcms\Core\Network;
 
+use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
-use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 use Symfony\Component\HttpFoundation\RedirectResponse as Redirect;
-use Ffcms\Core\App;
+use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 
 /**
  * Class Request. Classic implementation of httpfoundation.request with smooth additions and changes which allow

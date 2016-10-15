@@ -2,10 +2,6 @@
 
 namespace Ffcms\Core\Exception;
 
-use Ffcms\Core\App;
-use Ffcms\Core\Arch\Controller;
-use Ffcms\Core\Helper\Type\Str;
-
 class SyntaxException extends TemplateException
 {
 

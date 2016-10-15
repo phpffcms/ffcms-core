@@ -3,12 +3,12 @@
 namespace Ffcms\Core\Traits;
 
 
+use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Filter\Native;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
-use Dflydev\DotAccessData\Data as DotData;
 
 /**
  * Class ModelValidator. Extended realisation of model field validation

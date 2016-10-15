@@ -3,16 +3,15 @@
 namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Arch\Model;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\SyntaxException;
-use Ffcms\Core\Helper\HTML\System\NativeGenerator;
-use Ffcms\Core\Helper\Security;
-use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\HTML\Form\Constructor;
+use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
-use Ffcms\Core\Arch\Model;
-use Ffcms\Core\Helper\HTML\Form\Constructor;
 
 /**
  * Class Form. Simple HTML model generator for fast form building.

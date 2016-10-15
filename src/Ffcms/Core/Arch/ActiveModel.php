@@ -6,7 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
-use \Illuminate\Database\Eloquent\Model as LaravelModel;
+use Illuminate\Database\Eloquent\Model as LaravelModel;
 
 /**
  * Class ActiveModel. Basic implementation of laravel active records model with predefined settings

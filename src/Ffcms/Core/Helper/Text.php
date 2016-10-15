@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Helper;
 
-use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 

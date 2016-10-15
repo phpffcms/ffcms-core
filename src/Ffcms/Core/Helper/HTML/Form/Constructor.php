@@ -3,8 +3,8 @@
 namespace Ffcms\Core\Helper\HTML\Form;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 class Constructor

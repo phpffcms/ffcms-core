@@ -4,8 +4,8 @@ namespace Ffcms\Core\Network;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Str;
-use Symfony\Component\HttpFoundation\Response as FoundationResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse as FoundationRedirect;
+use Symfony\Component\HttpFoundation\Response as FoundationResponse;
 
 /**
  * Class Response. Basic implementation of httpfoundation.response class.

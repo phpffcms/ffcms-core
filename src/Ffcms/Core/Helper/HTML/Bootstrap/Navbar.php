@@ -3,11 +3,11 @@
 namespace Ffcms\Core\Helper\HTML\Bootstrap;
 
 use Ffcms\Core\Helper\HTML\Listing;
+use Ffcms\Core\Helper\HTML\System\Dom;
+use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
-use Ffcms\Core\Helper\HTML\System\NativeGenerator;
-use Ffcms\Core\Helper\HTML\System\Dom;
 
 /**
  * Class Navbar. Generate bootstrap navbar from array elements in one method ;)

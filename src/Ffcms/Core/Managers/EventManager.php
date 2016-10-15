@@ -3,9 +3,6 @@ namespace Ffcms\Core\Managers;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
-use Ffcms\Core\Helper\Type\Str;
-use Ffcms\Core\Helper\FileSystem\Directory;
-use Ffcms\Core\Helper\FileSystem\File;
 
 /**
  * Class EventManager. Control and run events.

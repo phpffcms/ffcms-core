@@ -6,8 +6,8 @@ use Ffcms\Core\App;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Str;
-use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Template\Variables;
+use Ffcms\Core\Traits\DynamicGlobal;
 
 /**
  * Class Controller. Classic carcase of controller in MVC architecture.

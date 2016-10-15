@@ -3,7 +3,6 @@
 namespace Ffcms\Core\Helper\HTML\System;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;

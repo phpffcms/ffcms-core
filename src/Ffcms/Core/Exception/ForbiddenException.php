@@ -2,9 +2,6 @@
 
 namespace Ffcms\Core\Exception;
 
-use Ffcms\Core\App;
-use Ffcms\Core\Arch\Controller;
-
 class ForbiddenException extends TemplateException
 {
 

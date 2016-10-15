@@ -2,9 +2,9 @@
 
 namespace Ffcms\Core\Arch;
 
+use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
-use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Traits\DynamicGlobal;

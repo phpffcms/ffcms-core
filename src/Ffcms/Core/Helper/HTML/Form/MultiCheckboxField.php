@@ -2,11 +2,10 @@
 namespace Ffcms\Core\Helper\HTML\Form;
 
 use Ffcms\Core\App;
-use Ffcms\Core\Helper\HTML\System\NativeGenerator;
-use Ffcms\Core\Helper\Type\Obj;
-use Ffcms\Core\Helper\Type\Arr;
-use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Obj;
 
 class MultiCheckboxField extends NativeGenerator implements iField
 {

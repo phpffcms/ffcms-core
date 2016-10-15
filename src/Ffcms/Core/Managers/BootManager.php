@@ -4,7 +4,6 @@ namespace Ffcms\Core\Managers;
 
 
 use Ffcms\Core\App;
-use Ffcms\Core\Arch\Controller;
 use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Obj;

@@ -3,7 +3,6 @@
 namespace Ffcms\Core\Arch;
 
 use Apps\ActiveRecord\App as AppRecord;
-use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iWidget;
@@ -26,7 +25,7 @@ class Widget implements iWidget
 
         // check if class exist
         if (!class_exists(self::$class)) {
-            return 'Error: Widget is not founded: ' . App::$Security->strip_tags(self::$class);
+            return 'Error: Widget is not founded: ' . self::$class;
         }
 
         // init class and pass properties
