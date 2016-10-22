@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
@@ -191,33 +192,11 @@ class Url extends NativeGenerator
      * Download remote content in binary string
      * @param string $url
      * @return null|string
+     * @deprecated
      */
     public static function download($url)
     {
-        // check is valid url
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return null;
-        }
-
-        $content = null;
-        if (function_exists('curl_version')) {
-            $curl = \curl_init();
-            $userAgent = 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)';
-            \curl_setopt($curl, CURLOPT_URL, $url);
-            \curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-            \curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-            \curl_setopt($curl, CURLOPT_HEADER, 0);
-            \curl_setopt($curl, CURLOPT_USERAGENT, $userAgent);
-            \curl_setopt($curl, CURLOPT_FAILONERROR, TRUE);
-            \curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
-            \curl_setopt($curl, CURLOPT_AUTOREFERER, TRUE);
-            \curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-            $content = \curl_exec($curl);
-            \curl_close($curl);
-        } else {
-            $content = @file_get_contents($url);
-        }
-        return $content;
+        return File::getFromUrl($url);
     }
 
 }

@@ -17,11 +17,6 @@ class Properties
 {
     protected $data;
 
-    public $version = [
-        'num' => '3.0.0-RC_FINAL',
-        'date' => '15.10.2016'
-    ];
-
     /**
      * Load default configuration
      * @throws NativeException

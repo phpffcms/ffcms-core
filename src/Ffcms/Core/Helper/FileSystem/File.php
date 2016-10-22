@@ -206,4 +206,76 @@ class File
         return filesize($path);
     }
 
+    /**
+     * Get data from remote $url by curl library
+     * @param string $url
+     * @return mixed|null|false
+     */
+    public static function getFromUrl($url)
+    {
+        // check is valid url
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !function_exists('curl_init')) {
+            return null;
+        }
+
+        // initialize curl & set required options and target url
+        $curl = \curl_init();
+        \curl_setopt($curl, CURLOPT_URL, $url);
+        if (Str::startsWith('https', $url)) {
+            \curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+            \curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        }
+        \curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+        \curl_setopt($curl, CURLOPT_HEADER, 0);
+        \curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)');
+        \curl_setopt($curl, CURLOPT_FAILONERROR, true);
+        \curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        \curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+        \curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+        $content = \curl_exec($curl);
+        \curl_close($curl);
+
+        return $content;
+    }
+
+    /**
+     * Download file from $url and save it into $path
+     * @param string $url
+     * @param string $path
+     * @return bool
+     */
+    public static function saveFromUrl($url, $path)
+    {
+        if (!filter_var($url, FILTER_VALIDATE_URL) || !function_exists('curl_init')) {
+            return false;
+        }
+
+        $path = Normalize::diskFullPath($path);
+        // initialize stream resource
+        $stream = @fopen($path, 'w');
+        // initialize curl & set required options, target url, destination save stream
+        $curl = \curl_init();
+        \curl_setopt($curl, CURLOPT_URL, $url);
+        if (Str::startsWith('https', $url)) {
+            \curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+            \curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        }
+        \curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        \curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+        \curl_setopt($curl, CURLOPT_HEADER, 0);
+        \curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322');
+        \curl_setopt($curl, CURLOPT_FAILONERROR, true);
+        \curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        \curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+        \curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+        // set destination file path
+        \curl_setopt($curl, CURLOPT_FILE, $stream);
+        \curl_exec($curl);
+        \curl_close($curl);
+        fclose($stream);
+
+        return true;
+    }
+
 }
