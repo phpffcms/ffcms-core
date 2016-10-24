@@ -147,11 +147,17 @@ abstract class NativeGenerator
             case 'id':
                 $elementArray = explode('/', $elementPoint);
                 $elementPoint = $elementArray[0] . '/' . $elementArray[1];
-                if (null !== $elementArray[2]) {
+                if ($elementArray[2] === null) { // looks like id is not defined in element
+                    if (Str::contains('?', $currentPoint)) {
+                        $currentPoint = Str::firstIn($currentPoint, '?');
+                    }
+                    $currentArray = explode('/', $currentPoint);
+                    $currentToId = implode('/', array_slice($currentArray, 0, 3));
+                    $active = $elementPoint === $currentToId;
+                } else {
                     $elementPoint .= '/' . $elementArray[2];
+                    $active = Str::startsWith($elementPoint, $currentPoint);
                 }
-
-                $active = Str::startsWith($elementPoint, $currentPoint);
                 break;
             default:
                 $active = $elementPoint === $currentPoint;
