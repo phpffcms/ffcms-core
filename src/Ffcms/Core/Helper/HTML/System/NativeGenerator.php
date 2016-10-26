@@ -41,11 +41,13 @@ abstract class NativeGenerator
     /**
      * Remove all html tags from data
      * @param string $data
+     * @param bool $quotes
      * @return string
      */
-    public static function nohtml($data)
+    public static function nohtml($data, $quotes = false)
     {
-        return App::$Security->escapeQuotes(App::$Security->strip_tags($data));
+        $plaintext = App::$Security->strip_tags($data);
+        return $quotes === true ? $plaintext : App::$Security->escapeQuotes($plaintext);
     }
 
     /**

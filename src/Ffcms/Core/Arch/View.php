@@ -18,6 +18,10 @@ use Ffcms\Core\Traits\DynamicGlobal;
  * This class can be uses as object - (new View())->render() or from entry point App::$View->render() or
  * from controller action like $this->view->render()
  * @package Ffcms\Core\Arch
+ * @property string $title
+ * @property string $description
+ * @property string $keywords
+ * @property array $breadcrumbs
  */
 class View
 {

@@ -93,7 +93,7 @@ class Nav extends NativeGenerator
                         if ($item['!secure'] === true) {
                             return $itemContent;
                         } else {
-                            return self::safe($itemContent);
+                            return self::safe($itemContent, true);
                         }
                     } else {
                         return self::nohtml($itemContent);
