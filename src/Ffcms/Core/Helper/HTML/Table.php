@@ -49,7 +49,16 @@ class Table extends NativeGenerator
                     return $dom->tr(function () use ($dom, $elements, $selectOptions) {
                         $tr = null;
                         foreach ($elements['thead']['titles'] as $order => $title) {
-                            $th = htmlentities($title['text']);
+                            $th = null;
+                            if ($title['html'] === true) {
+                                if ($title['!secure'] === true) {
+                                    $th = $title['text'];
+                                } else {
+                                    $th = self::safe($title['text'], true);
+                                }
+                            } else {
+                                $th = htmlentities($title['text']);
+                            }
                             // make global checkbox for selectable columns
                             if ($selectOptions !== false && $order + 1 === $selectOptions['attachOrder']) {
                                 $th = $dom->input(function () {
@@ -59,7 +68,7 @@ class Table extends NativeGenerator
                             // build tr row collecting all th's
                             $tr .= $dom->th(function () use ($th) {
                                 return $th;
-                            });
+                            }, $title['property']);
                         }
                         // return tr row in thead
                         return $tr;
