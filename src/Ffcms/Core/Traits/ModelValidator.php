@@ -190,23 +190,25 @@ trait ModelValidator
     private function getFieldValue($field_name)
     {
         // get type of input data (where we must look it up)
-        $sources = [];
-        $types = [];
         $inputType = Str::lowerCase($this->_sendMethod);
         $filterType = 'text';
-        // check input data type. Maybe file or input (text)
-        if (method_exists($this, 'sources')) {
-            $sources = $this->sources();
-        }
-        if (method_exists($this, 'types')) {
-            $types = $this->types();
-        }
+        // get declared field sources and types
+        $sources = $this->sources();
+        $types = $this->types();
         // validate sources for current field
         if (Obj::isArray($sources) && array_key_exists($field_name, $sources)) {
             $inputType = Str::lowerCase($sources[$field_name]);
         }
-        if (Obj::isArray($types) && array_key_exists($field_name, $types)) {
-            $filterType = Str::lowerCase($types[$field_name]);
+        if (Obj::isArray($types)) {
+            // check if field is array-nested element by dots and use first element as general
+            $filterField = $field_name;
+            // check if field_name is dot-separated array and use general part
+            if (Str::contains('.', $field_name)) {
+                $filterField = Str::firstIn($field_name, '.');
+            }
+            if (array_key_exists($filterField, $types)) {
+                $filterType = Str::lowerCase($types[$filterField]);
+            }
         }
 
         // get clear field value
