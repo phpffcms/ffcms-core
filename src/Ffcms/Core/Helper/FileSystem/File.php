@@ -252,6 +252,11 @@ class File
         }
 
         $path = Normalize::diskFullPath($path);
+        // check if upload directory is exists
+        $dir = dirname($path);
+        if (!Directory::exist($dir)) {
+            Directory::create($dir);
+        }
         // initialize stream resource
         $stream = @fopen($path, 'w');
         // initialize curl & set required options, target url, destination save stream
