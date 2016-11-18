@@ -98,4 +98,27 @@ class Obj
     {
         return (is_array($data) || $data instanceof \Traversable);
     }
+
+    /**
+     * Guess data type and parse to variable type
+     * @param mixed $data
+     * @return bool|float|int|string|array
+     */
+    public static function guessType($data)
+    {
+        // int
+        if (self::isLikeInt($data)) {
+            return (int)$data;
+        }
+        // bool
+        if (self::isLikeBoolean($data)) {
+            return (bool)$data;
+        }
+        // float
+        if (self::isLikeFloat($data)) {
+            return (float)$data;
+        }
+        // string
+        return $data;
+    }
 }

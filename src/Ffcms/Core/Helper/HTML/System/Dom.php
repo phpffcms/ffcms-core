@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zenn
- * Date: 03.01.2016
- * Time: 12:24
- */
 
 namespace Ffcms\Core\Helper\HTML\System;
 

@@ -59,6 +59,8 @@ class Native
             return true;
         }
 
+        $object = Obj::guessType($object);
+
         return Arr::in($object, $handle);
     }
 
