@@ -39,10 +39,10 @@ interface iUser
 
     /**
      * Get user person all data like a object
-     * @param null|int $user_id
+     * @param null|int $id
      * @return null|iUser
      */
-    public static function identity($user_id = null);
+    public static function identity($id = null);
 
     /**
      * Check if use with $email is exist

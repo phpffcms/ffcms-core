@@ -123,7 +123,7 @@ class Properties
         }
 
         $saveData = Arr::mergeRecursive($this->data[$configFile], $newData);
-        return $this->writeConfig('Routing', $saveData);
+        return $this->writeConfig($configFile, $saveData);
     }
 
     /**
