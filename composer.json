@@ -1,5 +1,4 @@
 {
-  "version": "1.0.0-beta2",
   "name": "phpffcms/ffcms-core",
   "description": "Core package for FFCMS 3 version",
   "type": "library",
