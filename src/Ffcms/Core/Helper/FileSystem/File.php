@@ -81,6 +81,7 @@ class File
     }
 
     /**
+     * Write $content to file in $path
      * @param string $path
      * @param null|string $content
      * @param null|int $flags
@@ -94,7 +95,7 @@ class File
         array_pop($pathArray);
         $pathName = implode(DIRECTORY_SEPARATOR, $pathArray);
 
-        if (Directory::exist($pathName)) {
+        if (!Directory::exist($pathName)) {
             Directory::create($pathName);
         }
         return @file_put_contents($path, $content, $flags);
