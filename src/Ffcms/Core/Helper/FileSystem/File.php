@@ -208,6 +208,22 @@ class File
     }
 
     /**
+     * Get file md5 hash
+     * @param string $path
+     * @return bool|string
+     */
+    public static function getMd5($path)
+    {
+        $path = Normalize::diskFullPath($path);
+
+        if (!self::exist($path)) {
+            return false;
+        }
+
+        return md5_file($path);
+    }
+
+    /**
      * Get data from remote $url by curl library
      * @param string $url
      * @return mixed|null|false
