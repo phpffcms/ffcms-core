@@ -37,7 +37,7 @@ class Nav extends NativeGenerator
         }
 
         // check if items have defined active order
-        $activeDefined = Arr::in(true, Arr::ploke('active', $elements['items']));
+        $activeDefined = Arr::in(true, Arr::pluck('active', $elements['items']));
 
         // prepare tab content
         $tabContent = null;

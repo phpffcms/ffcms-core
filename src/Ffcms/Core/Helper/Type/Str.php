@@ -29,11 +29,12 @@ class Str
     public static function startsWith($string, $where)
     {
         // check is not empty string
-        if (self::length($string) < 1 || self::length($where) < 1) {
+        if (!Obj::isString($string) || !Obj::isString($where) || self::likeEmpty($string) || self::likeEmpty($where)) {
             return false;
         }
-        $pharse_prefix = self::sub($where, 0, self::length($string));
-        return $pharse_prefix === $string;
+
+        $prefix = self::sub($where, 0, self::length($string));
+        return $prefix === $string;
     }
 
     /**
@@ -45,7 +46,7 @@ class Str
     public static function endsWith($string, $where)
     {
         // check is not empty string
-        if (self::length($string) < 1 || self::length($where) < 1) {
+        if (!Obj::isString($string) || !Obj::isString($where) || self::likeEmpty($string) || self::likeEmpty($where)) {
             return false;
         }
         $pharse_suffix = self::sub($where, -self::length($string));
@@ -60,6 +61,9 @@ class Str
      */
     public static function firstIn($string, $delimiter)
     {
+        if (!Obj::isString($string) || !Obj::isString($delimiter)) {
+            return false;
+        }
         return strstr($string, $delimiter, true);
     }
 
@@ -72,7 +76,10 @@ class Str
      */
     public static function lastIn($string, $delimiter, $withoutDelimiter = false)
     {
-        $pos = strrpos($string, $delimiter);
+        if (!Obj::isString($string) || !Obj::isString($delimiter)) {
+            return false;
+        }
+        $pos = mb_strrpos($string, $delimiter);
         // if entry is not founded return false
         if (!Obj::isInt($pos)) {
             return false;
@@ -93,7 +100,7 @@ class Str
     public static function cleanExtension($string)
     {
         // no extension in string is founded
-        if (!self::contains('.', $string)) {
+        if (!Obj::isString($string) || !self::contains('.', $string)) {
             return $string;
         }
 
@@ -141,11 +148,15 @@ class Str
      */
     public static function entryCount($string, $search)
     {
+        if (!Obj::isString($string) || !Obj::isString($search)) {
+            return 0;
+        }
+
         return mb_substr_count($string, $search, 'UTF-8');
     }
 
     /**
-     * Split camel case words with glue. camelCaseWords => camel Case Words
+     * Split camel case words with glue. camelCaseWords => Camel case words
      * @param string $string
      * @param string $glue
      * @return string
@@ -195,6 +206,9 @@ class Str
      */
     public static function replace($needle, $replacement, $haystack)
     {
+        if (!Obj::isString($haystack)) {
+            return $haystack;
+        }
         return str_replace($needle, $replacement, $haystack);
     }
 
@@ -213,11 +227,14 @@ class Str
     /**
      * Search entery's in string $where by string $what
      * @param string $what
-     * @param $where
+     * @param string $where
      * @return bool
      */
     public static function contains($what, $where)
     {
+        if (!Obj::isString($what) || !Obj::isString($where)) {
+            return false;
+        }
         return mb_strpos($where, $what, 0, 'UTF-8') !== false;
     }
 

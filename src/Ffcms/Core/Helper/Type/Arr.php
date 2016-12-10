@@ -67,7 +67,7 @@ class Arr
     public static function getByPath($path, $array = null, $delimiter = '.')
     {
         // path of nothing? interest
-        if (!Obj::isArray($array) || count($array) < 1) {
+        if (!Obj::isArray($array) || count($array) < 1 || !Obj::isString($path) || Str::likeEmpty($path)) {
             return null;
         }
 
@@ -79,6 +79,9 @@ class Arr
         $output = $array;
         $pathArray = explode($delimiter, $path);
         foreach ($pathArray as $key) {
+            if (!Obj::isArray($output) || !array_key_exists($key, $output)) {
+                return null;
+            }
             $output = $output[$key];
         }
         return $output;
@@ -90,9 +93,9 @@ class Arr
      * @param array $array
      * @return array
      */
-    public static function ploke($key, $array)
+    public static function pluck($key, $array)
     {
-        if (!Obj::isArray($array)) {
+        if (!Obj::isArray($array) || !Obj::isString($key)) {
             return [];
         }
 
@@ -150,6 +153,10 @@ class Arr
      */
     public static function onlyNumericValues($array)
     {
+        if (!Obj::isArray($array)) {
+            return false;
+        }
+
         return is_numeric(implode('', $array));
     }
 }

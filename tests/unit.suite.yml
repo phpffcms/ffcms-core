@@ -7,3 +7,4 @@ modules:
     enabled:
         - Asserts
         - \Ffcms\Core\Helper\Unit
+        - \Ffcms\Core\App
