@@ -29,24 +29,40 @@ class App extends \Codeception\Module
     public static $Event;
     public static $Cron;
 
-
     private static $instance;
 
     private $services;
     private $loader;
 
-    public function __construct($services = [], $loader = null)
+    /**
+     * App constructor. Initialize fake mock object
+     */
+    public function __construct()
     {
-        $this->services = $services;
-        $this->loader = $loader;
-
-        $this->init();
+        $root = realpath(__DIR__ . '/../../../../../');
+        // define root ;)
+        if (!defined('root')) {
+            define('root', $root);
+        }
+        // define environment
+        if (!defined('env_name')) {
+            define('env_name', 'test');
+        }
+        // include bootstrap autoloader
+        include $root . '/Loader/Autoload.php';
     }
 
-    private function init()
+    public function init()
     {
-        // initialize memory and properties controllers
+        // initialize memory and properties controllers, will work fine in test environment
         self::$Memory = MemoryObject::instance();
+        self::$Properties = new Properties();
+        // emulate fake http GET request to /en/ page
+        self::$Request = Request::create('/en/', 'GET');
+        // emulate empty 200-header response
+        self::$Response = new Response();
+        // load i18n translation engine, will work fine in test env
+        self::$Translate = new Translate();
         /**self::$Properties = new Properties();
         self::$Request = Request::create('/en/', 'GET'); // make empty fake request instance object
         // initialize response, securty translate and other workers
@@ -60,15 +76,13 @@ class App extends \Codeception\Module
     }
 
     /**
-     * Make fake factory method for obj building.
-     * @param array $services
-     * @param object|null $loader
+     * Make fake factory method for obj building. Just singleton logic, fake factory
      * @return App
      */
-    public static function factory($services = [], $loader = null)
+    public static function factory()
     {
         if (self::$instance === null) {
-            self::$instance = new self($services, $loader);
+            self::$instance = new self();
         }
         return self::$instance;
     }
