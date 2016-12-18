@@ -294,6 +294,21 @@ class Request extends FoundationRequest
     }
 
     /**
+     * Set current language
+     * @param string $lang
+     * @return bool
+     */
+    public function setLanguage($lang)
+    {
+        if (Arr::in($lang, App::$Properties->get('languages'))) {
+            $this->language = $lang;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Get current controller name
      * @return string
      */

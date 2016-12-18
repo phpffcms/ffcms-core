@@ -1,17 +1,17 @@
 <?php
 
-namespace Ffcms\Core\Filter;
+namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 /**
- * Class Native. Collection of native static methods for model filters.
+ * Class ModelFilters. Collection of native static methods for model filters.
  * This methods can be used in models, methods rules() as second argument in array.
- * @package Ffcms\Core\Filter
+ * @package Ffcms\Core\Helper
  */
-class Native
+class ModelFilters
 {
 
     /**

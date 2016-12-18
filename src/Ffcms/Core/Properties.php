@@ -31,12 +31,13 @@ class Properties
     /**
      * Load configurations from file in /Private/Config/
      * @param string $configName
+     * @param bool $overload
      * @return bool
      */
-    private function load($configName)
+    private function load($configName, $overload = false)
     {
         // check if always loaded
-        if (Obj::isArray($this->data) && array_key_exists($configName, $this->data)) {
+        if (Obj::isArray($this->data) && array_key_exists($configName, $this->data) && $overload === false) {
             return true;
         }
 
@@ -110,7 +111,7 @@ class Properties
     }
 
     /**
-     * Update configuration data based on key-value array of new data
+     * Update configuration data based on key-value array of new data. Do not pass multi-level array on new position without existing keys
      * @param string $configFile
      * @param array $newData
      * @return bool
@@ -122,7 +123,7 @@ class Properties
             return false;
         }
 
-        $saveData = Arr::mergeRecursive($this->data[$configFile], $newData);
+        $saveData = Arr::merge($this->data[$configFile], $newData);
         return $this->writeConfig($configFile, $saveData);
     }
 
@@ -140,8 +141,8 @@ class Properties
         }
         $saveData = '<?php return ' . Arr::exportVar($data) . ';';
         File::write($path, $saveData);
+        // overload config values if changed
+        $this->load($configFile, true);
         return true;
     }
-
-
 }

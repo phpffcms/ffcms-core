@@ -7,6 +7,7 @@ use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Filter\Native;
+use Ffcms\Core\Helper\ModelFilters;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
@@ -128,7 +129,7 @@ trait ModelValidator
                 foreach ($callbackArray as $obj) {
                     if (Str::startsWith('$', $obj) && property_exists($class, ltrim($obj, '$'))) { // sounds like a variable
                         $obj = ltrim($obj, '$'); // trim variable symbol '$'
-                        $class = $class::$$obj; // make magic :)
+                        $class = $class::${$obj}; // make magic :)
                     } elseif (method_exists($class, $obj)) { // maybe its a function?
                         $class = $class::$obj; // call function
                     } else {
@@ -144,11 +145,11 @@ trait ModelValidator
             } else {
                 throw new SyntaxException('Filter callback execution failed: ' . $filter_name);
             }
-        } elseif (method_exists('Ffcms\Core\Filter\Native', $filter_name)) { // only full namespace\class path based :(
+        } elseif (method_exists('Ffcms\Core\Helper\ModelFilters', $filter_name)) { // only full namespace\class path based :(
             if ($filter_argv != null) {
-                $check = Native::$filter_name($field_value, $filter_argv);
+                $check = ModelFilters::$filter_name($field_value, $filter_argv);
             } else {
-                $check = Native::$filter_name($field_value);
+                $check = ModelFilters::$filter_name($field_value);
             }
         } else {
             throw new SyntaxException('Filter "' . $filter_name . '" is not exist');

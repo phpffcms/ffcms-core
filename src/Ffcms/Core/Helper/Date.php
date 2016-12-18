@@ -34,13 +34,16 @@ class Date
     }
 
     /**
-     * Try to convert string to unix timestamp format
+     * Try to convert string to unix timestamp format. Return 0 if converting is failed
      * @param string $date
      * @return int
      */
     public static function convertToTimestamp($date)
     {
-        return strtotime($date);
+        if (Obj::isObject($date) || Obj::isArray($date)) {
+            return 0;
+        }
+        return (int)strtotime($date);
     }
 
     /**
@@ -51,7 +54,10 @@ class Date
     public static function humanize($raw)
     {
         // convert to timestamp
-        $timestamp = self::convertToTimestamp($raw);
+        $timestamp = $raw;
+        if (!Obj::isInt($raw)) {
+            $timestamp = self::convertToTimestamp($timestamp);
+        }
         // calculate difference between tomorrow day midnight and passed date
         $diff = time() - $timestamp;
 
