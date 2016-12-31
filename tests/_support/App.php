@@ -28,6 +28,7 @@ class App extends \Codeception\Module
     public static $Alias;
     public static $Event;
     public static $Cron;
+    public static $Session;
 
     private static $instance;
 
@@ -52,6 +53,9 @@ class App extends \Codeception\Module
         include $root . '/Loader/Autoload.php';
     }
 
+    /**
+     * Initialize app construction.
+     */
     public function init()
     {
         // initialize memory and properties controllers, will work fine in test environment
@@ -63,16 +67,9 @@ class App extends \Codeception\Module
         self::$Response = new Response();
         // load i18n translation engine, will work fine in test env
         self::$Translate = new Translate();
-        /**self::$Properties = new Properties();
-        self::$Request = Request::create('/en/', 'GET'); // make empty fake request instance object
-        // initialize response, securty translate and other workers
+        // init security for string escaping and html cleanup functions
         self::$Security = new Security();
-        self::$Response = new Response();
-        self::$View = new View();
-        self::$Translate = new Translate();
-        self::$Alias = new Alias();
-        self::$Event = new EventManager();
-        self::$Cron = new CronManager();*/
+        self::$Session = new FakeSession();
     }
 
     /**
@@ -85,5 +82,28 @@ class App extends \Codeception\Module
             self::$instance = new self();
         }
         return self::$instance;
+    }
+}
+
+class FakeSession
+{
+    public function getFlashBag()
+    {
+        return $this;
+    }
+
+    public function set($key, $val)
+    {
+        return true;
+    }
+
+    public function get($key, $def = null)
+    {
+        return $def;
+    }
+
+    public function add($key, $val)
+    {
+        return true;
     }
 }

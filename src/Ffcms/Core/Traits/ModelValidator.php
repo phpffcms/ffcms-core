@@ -6,7 +6,6 @@ namespace Ffcms\Core\Traits;
 use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
-use Ffcms\Core\Filter\Native;
 use Ffcms\Core\Helper\ModelFilters;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -70,20 +69,26 @@ trait ModelValidator
             if ($rule[0] === null || $rule[1] === null) {
                 continue;
             }
+            $propertyName = $rule[0];
+            $validationRule = $rule[1];
+            $validationValue = null;
+            if (isset($rule[2])) {
+                $validationValue = $rule[2];
+            }
 
             // check if target field defined as array and make recursive validation
-            if (Obj::isArray($rule[0])) {
-                $validate_foreach = true;
-                foreach ($rule[0] as $field_name) {
+            if (Obj::isArray($propertyName)) {
+                $cumulateValidation = true;
+                foreach ($propertyName as $attrNme) {
                     // end false condition
-                    if (!$this->validateRecursive($field_name, $rule[1], $rule[2])) {
-                        $validate_foreach = false;
+                    if (!$this->validateRecursive($attrNme, $validationRule, $validationValue)) {
+                        $cumulateValidation = false;
                     }
                 }
                 // assign total
-                $validate = $validate_foreach;
+                $validate = $cumulateValidation;
             } else {
-                $validate = $this->validateRecursive($rule[0], $rule[1], $rule[2]);
+                $validate = $this->validateRecursive($propertyName, $validationRule, $validationValue);
             }
 
             // do not change condition on "true" check's (end-false-condition)
@@ -97,13 +102,13 @@ trait ModelValidator
 
     /**
      * Try to recursive validate field by defined rules and set result to model properties if validation is successful passed
-     * @param string|array $field_name
-     * @param string $filter_name
-     * @param mixed $filter_argv
+     * @param string|array $propertyName
+     * @param string $filterName
+     * @param mixed $filterArgs
      * @return bool
      * @throws SyntaxException
      */
-    public function validateRecursive($field_name, $filter_name, $filter_argv = null)
+    public function validateRecursive($propertyName, $filterName, $filterArgs = null)
     {
         // check if we got it from form defined request method
         if (App::$Request->getMethod() !== $this->_sendMethod) {
@@ -111,15 +116,15 @@ trait ModelValidator
         }
 
         // get field value from user input data
-        $field_value = $this->getFieldValue($field_name);
+        $fieldValue = $this->getFieldValue($propertyName);
 
         $check = false;
         // maybe no filter required?
-        if ($filter_name === 'used') {
+        if ($filterName === 'used') {
             $check = true;
-        } elseif (Str::contains('::', $filter_name)) { // sounds like a callback class::method::method
+        } elseif (Str::contains('::', $filterName)) { // sounds like a callback class::method::method
             // string to array via delimiter ::
-            $callbackArray = explode('::', $filter_name);
+            $callbackArray = explode('::', $filterName);
             // first item is a class name
             $class = array_shift($callbackArray);
             // last item its a function
@@ -133,7 +138,7 @@ trait ModelValidator
                     } elseif (method_exists($class, $obj)) { // maybe its a function?
                         $class = $class::$obj; // call function
                     } else {
-                        throw new SyntaxException('Filter callback execution failed: ' . $filter_name);
+                        throw new SyntaxException('Filter callback execution failed: ' . $filterName);
                     }
 
                 }
@@ -141,41 +146,41 @@ trait ModelValidator
 
             // check is endpoint method exist
             if (method_exists($class, $method)) {
-                $check = @$class::$method($field_value, $filter_argv);
+                $check = @$class::$method($fieldValue, $filterArgs);
             } else {
-                throw new SyntaxException('Filter callback execution failed: ' . $filter_name);
+                throw new SyntaxException('Filter callback execution failed: ' . $filterName);
             }
-        } elseif (method_exists('Ffcms\Core\Helper\ModelFilters', $filter_name)) { // only full namespace\class path based :(
-            if ($filter_argv != null) {
-                $check = ModelFilters::$filter_name($field_value, $filter_argv);
+        } elseif (method_exists('Ffcms\Core\Helper\ModelFilters', $filterName)) { // only full namespace\class path based :(
+            if ($filterArgs != null) {
+                $check = ModelFilters::$filterName($fieldValue, $filterArgs);
             } else {
-                $check = ModelFilters::$filter_name($field_value);
+                $check = ModelFilters::$filterName($fieldValue);
             }
         } else {
-            throw new SyntaxException('Filter "' . $filter_name . '" is not exist');
+            throw new SyntaxException('Filter "' . $filterName . '" is not exist');
         }
         if ($check !== true) { // switch only on fail check.
-            $this->_badAttr[] = $field_name;
+            $this->_badAttr[] = $propertyName;
         } else {
-            $field_set_name = $field_name;
+            $field_set_name = $propertyName;
             // prevent array-type setting
             if (Str::contains('.', $field_set_name)) {
                 $field_set_name = strstr($field_set_name, '.', true);
             }
             if (property_exists($this, $field_set_name)) {
-                if ($field_name !== $field_set_name) { // array-based property
-                    $dot_path = trim(strstr($field_name, '.'), '.');
+                if ($propertyName !== $field_set_name) { // array-based property
+                    $dot_path = trim(strstr($propertyName, '.'), '.');
                     // prevent throws any exceptions for null and false objects
                     if (!Obj::isArray($this->{$field_set_name})) {
                         $this->{$field_set_name} = [];
                     }
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
-                    $dotData->set($dot_path, $field_value); // todo: check me!!! Here can be bug of fail parsing dots and passing path-value
+                    $dotData->set($dot_path, $fieldValue); // todo: check me!!! Here can be bug of fail parsing dots and passing path-value
                     // export data from dot-data lib to model property
                     $this->{$field_set_name} = $dotData->export();
                 } else { // just single property
-                    $this->{$field_name} = $field_value; // refresh model property's from post data
+                    $this->{$propertyName} = $fieldValue; // refresh model property's from post data
                 }
             }
         }
@@ -184,11 +189,11 @@ trait ModelValidator
 
     /**
      * Get field value from input POST/GET/AJAX data with defined security level (html - safe html, !secure = fully unescaped)
-     * @param string $field_name
+     * @param string $propertyName
      * @return array|null|string
      * @throws \InvalidArgumentException
      */
-    private function getFieldValue($field_name)
+    private function getFieldValue($propertyName)
     {
         // get type of input data (where we must look it up)
         $inputType = Str::lowerCase($this->_sendMethod);
@@ -197,34 +202,35 @@ trait ModelValidator
         $sources = $this->sources();
         $types = $this->types();
         // validate sources for current field
-        if (Obj::isArray($sources) && array_key_exists($field_name, $sources)) {
-            $inputType = Str::lowerCase($sources[$field_name]);
+        if (Obj::isArray($sources) && array_key_exists($propertyName, $sources)) {
+            $inputType = Str::lowerCase($sources[$propertyName]);
         }
         if (Obj::isArray($types)) {
             // check if field is array-nested element by dots and use first element as general
-            $filterField = $field_name;
+            $filterField = $propertyName;
+            /** @todo - i have no idea why before i use only first element of dot-nested array. Probably bug.
             // check if field_name is dot-separated array and use general part
-            if (Str::contains('.', $field_name)) {
-                $filterField = Str::firstIn($field_name, '.');
-            }
+            if (Str::contains('.', $propertyName)) {
+                $filterField = Str::firstIn($propertyName, '.');
+            }*/
             if (array_key_exists($filterField, $types)) {
                 $filterType = Str::lowerCase($types[$filterField]);
             }
         }
 
         // get clear field value
-        $field_value = $this->getRequest($field_name, $inputType);
+        $propertyValue = $this->getRequest($propertyName, $inputType);
 
         // apply security filter for input data
         if ($inputType !== 'file') {
             if ($filterType === 'html') {
-                $field_value = App::$Security->secureHtml($field_value);
+                $propertyValue = App::$Security->secureHtml($propertyValue);
             } elseif ($filterType !== '!secure') {
-                $field_value = App::$Security->strip_tags($field_value);
+                $propertyValue = App::$Security->strip_tags($propertyValue);
             }
         }
 
-        return $field_value;
+        return $propertyValue;
     }
 
     /**

@@ -24,12 +24,12 @@ trait DynamicGlobal
     /**
      * Get variable from MVC model on magic callback $this->var
      * @param $var
-     * @return mixed
+     * @return mixed|null
      */
     final public function __get($var)
     {
         $globals = Variables::instance()->getGlobalsArray();
-        return $globals[$var];
+        return array_key_exists($var, $globals) ? $globals[$var] : null;
     }
 
     /**
