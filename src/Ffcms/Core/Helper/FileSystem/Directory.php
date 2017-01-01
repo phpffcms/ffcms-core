@@ -135,6 +135,9 @@ class Directory
     public static function recursiveChmod($path, $mod = 0777)
     {
         $path = Normalize::diskFullPath($path);
+        if (!self::exist($path)) {
+            return;
+        }
 
         $dir = new \DirectoryIterator($path);
         foreach ($dir as $item) {
@@ -154,9 +157,12 @@ class Directory
      * @param string $path
      * @return int
      */
-    public static function getSize($path)
+    public static function size($path)
     {
         $path = Normalize::diskFullPath($path);
+        if (!self::exist($path)) {
+            return 0;
+        }
 
         $size = 0;
         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $file) {
