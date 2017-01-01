@@ -128,10 +128,13 @@ class Security
     /**
      * Generate simple hash of 8 chars (32bit) for string. This method is NOT SECURE for crypt reason!
      * @param string $string
-     * @return string
+     * @return string|false
      */
     public static function simpleHash($string)
     {
+        if (Obj::isArray($string) || Obj::isObject($string)) {
+            return false;
+        }
         return dechex(crc32($string));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Ffcms\Core\Helper;
 
 class DateTest extends \Codeception\TestCase\Test
