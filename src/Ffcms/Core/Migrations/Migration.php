@@ -7,7 +7,7 @@ use Illuminate\Database\Capsule\Manager as DatabaseManager;
 
 /**
  * Class Migration. Basic features for migration
- * @package Ffcms\Console\Migrations
+ * @package Ffcms\Core\Migrations
  */
 class Migration
 {
