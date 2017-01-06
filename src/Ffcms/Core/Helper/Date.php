@@ -56,8 +56,10 @@ class Date
         // convert to timestamp
         $timestamp = $raw;
         if (!Obj::isInt($raw)) {
-            $timestamp = self::convertToTimestamp($timestamp);
+            // raw can be instance of eloquent active record object, convert to str
+            $timestamp = self::convertToTimestamp((string)$timestamp);
         }
+
         // calculate difference between tomorrow day midnight and passed date
         $diff = time() - $timestamp;
 
