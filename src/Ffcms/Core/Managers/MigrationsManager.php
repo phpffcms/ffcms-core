@@ -43,11 +43,11 @@ class MigrationsManager
 
     /**
      * Search migration files. If $exists = false search only not installed files, if true - only installed
-     * @param string $query
+     * @param string|null $query
      * @param bool $exist
      * @return array|false
      */
-    public function search($query, $exist = false)
+    public function search($query = null, $exist = false)
     {
         // initialize db migration record
         $records = new Migration();
@@ -68,12 +68,11 @@ class MigrationsManager
             // parse migration fullname
             $fullName = Str::cleanExtension($migration);
             // check if name contains search query conditions
-            if (!Str::contains($query, $fullName)) {
+            if (!Str::likeEmpty($query) && !Str::contains($query, $fullName)) {
                 continue;
             }
-
             // check initialize conditions (equals to $exist)
-            if (file_exists($this->dir . '/' . $migration)) {
+            if (File::exist($this->dir . '/' . $migration)) {
                 if (Arr::in($fullName, $dbmigrations) === $exist) {
                     $found[] = $migration;
                 }
@@ -123,7 +122,7 @@ class MigrationsManager
         }
 
         // implement migration
-        $init = new $class($fullName);
+        $init = new $class($fullName, $this->connection);
         $init->up();
         $init->seed();
 
@@ -163,7 +162,7 @@ class MigrationsManager
         }
 
         // init migration and execute down method
-        $init = new $class($fullName);
+        $init = new $class($fullName, $this->connection);
         $init->down();
 
         return true;
