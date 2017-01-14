@@ -102,6 +102,28 @@ class File
     }
 
     /**
+     * Copy file from source to target destination
+     * @param string $source
+     * @param string $target
+     * @return bool
+     */
+    public static function copy($source, $target)
+    {
+        $source = Normalize::diskFullPath($source);
+        $target = Normalize::diskFullPath($target);
+
+        // check if target directory exist & create new if not
+        $targetArray = explode(DIRECTORY_SEPARATOR, $target);
+        array_pop($targetArray);
+        $targetDir = implode(DIRECTORY_SEPARATOR, $targetArray);
+        if (!Directory::exist($targetDir)) {
+            Directory::create($targetDir, 0777);
+        }
+
+        return copy($source, $target);
+    }
+
+    /**
      * Remove file
      * @param string $path
      * @return bool
