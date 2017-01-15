@@ -312,7 +312,7 @@ class File
         \curl_setopt($curl, CURLOPT_FAILONERROR, true);
         \curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
         \curl_setopt($curl, CURLOPT_AUTOREFERER, true);
-        \curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+        \curl_setopt($curl, CURLOPT_TIMEOUT, 20);
         // set destination file path
         \curl_setopt($curl, CURLOPT_FILE, $stream);
         \curl_exec($curl);
