@@ -114,16 +114,22 @@ class Properties
      * Update configuration data based on key-value array of new data. Do not pass multi-level array on new position without existing keys
      * @param string $configFile
      * @param array $newData
+     * @param bool $mergeDeep
      * @return bool
      */
-    public function updateConfig($configFile, array $newData)
+    public function updateConfig($configFile, array $newData, $mergeDeep = false)
     {
         $this->load($configFile);
         if (!isset($this->data[$configFile])) {
             return false;
         }
 
-        $saveData = Arr::merge($this->data[$configFile], $newData);
+        if ($mergeDeep) {
+            $saveData = Arr::mergeRecursive($this->data[$configFile], $newData);
+        } else {
+            $saveData = Arr::merge($this->data[$configFile], $newData);
+        }
+
         return $this->writeConfig($configFile, $saveData);
     }
 
