@@ -124,12 +124,15 @@ class Navbar extends NativeGenerator
                     // drow <div @brand>@brandtext<?div>
                     $brand = null;
                     if (isset($elements['brand'])) {
+                        if (!isset($elements['brand']['property']['class'])) {
+                            $elements['brand']['property']['class'] = 'navbar-brand';
+                        }
                         if (isset($elements['brand']['link'])) {
-                            $brand = Url::link($elements['brand']['link'], $elements['brand']['text'], ['class' => 'navbar-brand']);
+                            $brand = Url::link($elements['brand']['link'], $elements['brand']['text'], $elements['brand']['property']);
                         } else {
                             $brand = (new Dom())->span(function() use ($elements){
                                 return $elements['brand']['text'];
-                            }, ['class' => 'navbar-brand']);
+                            }, $elements['brand']['property']);
                         }
                     }
                     return $collapseButton . $brand;
