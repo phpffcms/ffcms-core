@@ -23,7 +23,7 @@ class Date
     public static function convertToDatetime($rawDate, $format = 'd.m.Y')
     {
         if (Obj::isLikeInt($rawDate)) { // convert timestamp to date format
-            $rawDate = date($format, $rawDate);
+            $rawDate = date(\DateTime::ATOM, $rawDate);
         }
         try {
             $object = new \DateTime($rawDate);
