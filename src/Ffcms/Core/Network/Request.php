@@ -33,6 +33,7 @@ class Request extends FoundationRequest
     public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {
         parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+        $this->findRedirect();
         $this->runMultiLanguage();
         $this->runPathBinding();
         $this->loadTrustedProxies();
@@ -158,6 +159,33 @@ class Request extends FoundationRequest
         // find callback injection in routing configs (calculated in App::run())
         if (Obj::isArray($routing) && isset($routing['Callback'], $routing['Callback'][env_name])) {
             $this->findDynamicCallbacks($routing['Callback'][env_name], $this->controller);
+        }
+    }
+
+    /**
+     * Check if current url in redirect map
+     */
+    private function findRedirect()
+    {
+        // calculated depend of language
+        $pathway = $this->getPathInfo();
+        /** @var array $routing */
+        $routing = App::$Properties->getAll('Routing');
+
+        if (!Obj::isArray($routing) || !isset($routing['Redirect']) || !Obj::isArray($routing['Redirect'])) {
+            return;
+        }
+
+        // check if source uri is key in redirect target map
+        if (array_key_exists($pathway, $routing['Redirect'])) {
+            $target = $this->getSchemeAndHttpHost(); // . $this->getBasePath() . '/' . rtrim($routing['Redirect'][$pathway], '/');
+            if ($this->getBasePath() !== null && !Str::likeEmpty($this->getBasePath())) {
+                $target .= '/' . $this->getBasePath();
+            }
+            $target .= rtrim($routing['Redirect'][$pathway], '/');
+            $redirect = new Redirect($target);
+            $redirect->send();
+            exit();
         }
     }
 
