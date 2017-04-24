@@ -114,7 +114,7 @@ abstract class NativeGenerator
         $string = Str::lowerCase($string);
         $string = self::nohtml($string);
         if ($encode === true) {
-            $string = urlencode($string);
+            $string = self::encode($string);
         }
         return $string;
     }
@@ -223,6 +223,18 @@ abstract class NativeGenerator
             $link .= self::nohtml(trim($uri, '/'));
         }
         return $link;
+    }
+
+    /**
+     * Encode safe uri links with slashes
+     * @param $uri
+     * @return string
+     */
+    public static function encode($uri)
+    {
+        return implode('/', array_map(function($v){
+            return urlencode($v);
+        }, explode('/', $uri)));
     }
 
 
