@@ -159,7 +159,7 @@ trait ModelValidator
         } else {
             throw new SyntaxException('Filter "' . $filterName . '" is not exist');
         }
-        if ($check !== true) { // switch only on fail check.
+        if ($check !== true) { // if one from all validation tests is fail - mark as incorrect attribute
             $this->_badAttr[] = $propertyName;
         } else {
             $field_set_name = $propertyName;

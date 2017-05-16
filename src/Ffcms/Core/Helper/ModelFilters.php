@@ -206,7 +206,7 @@ class ModelFilters
     }
 
     /**
-     * Filter ['object', 'equal', value]
+     * Filter ['object', 'equal', value]. Check if input data is equals to value
      * @param string $object
      * @param $value
      * @return bool
@@ -218,6 +218,21 @@ class ModelFilters
         }
 
         return $object === $value;
+    }
+
+    /**
+     * Filter ['object', 'notequal', value]. Check if input data not equals to some value
+     * @param string $object
+     * @param string $value
+     * @return bool
+     */
+    public static function notequal($object, $value = null)
+    {
+        if (Obj::isArray($object)) {
+            return false;
+        }
+
+        return $object !== $value;
     }
 
     /**
