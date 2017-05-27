@@ -40,10 +40,9 @@ class Date
      */
     public static function convertToTimestamp($date)
     {
-        if (Obj::isObject($date) || Obj::isArray($date)) {
-            return 0;
-        }
-        return (int)strtotime($date);
+        // make clearly cast $date into string type
+        // Some times, $date could be an object with __toString() magic
+        return (int)strtotime((string)$date);
     }
 
     /**
