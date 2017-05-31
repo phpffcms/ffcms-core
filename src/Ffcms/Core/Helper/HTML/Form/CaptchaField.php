@@ -35,13 +35,7 @@ class CaptchaField extends NativeGenerator implements iField
         }
         // get image link
         $image = App::$Captcha->get();
-        // build image tag
-        $response = self::buildSingleTag('img', [
-            'id' => 'src-secure-image',
-            'src' => $image,
-            'alt' => 'secure captcha image',
-            'onClick' => 'this.src=\'' . $image . '&rnd=\'+Math.random()'
-        ]);
+        $response = '<img id="src-secure-image" src="' . $image . '" alt="captcha" onClick="this.src=\''.$image.'&rnd=\'+Math.random()" />';
         // render response tag with image
         $this->properties['type'] = 'text';
         $response .= self::buildSingleTag('input', $this->properties);
