@@ -27,10 +27,7 @@ class Security
         //$config->set('URI.Base', 'http://www.example.com');
         //$config->set('URI.MakeAbsolute', true);
         $config->set('AutoFormat.AutoParagraph', false);
-
-        // allow use target=_blank for links
-        $def = $config->getHTMLDefinition(true);
-        $def->addAttribute('a', 'target', 'Enum#_blank,_self,_target,_top');
+        $config->set('HTML.TargetBlank', true);
 
         $this->purifier = new \HTMLPurifier($config);
     }
