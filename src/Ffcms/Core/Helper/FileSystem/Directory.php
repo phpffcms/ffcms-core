@@ -165,10 +165,14 @@ class Directory
         }
 
         $size = 0;
-        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $file) {
-            if ($file->getFileName() !== '..') {
-                $size += $file->getSize();
+        try {
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $file) {
+                if ($file->getFileName() !== '..') {
+                    $size += $file->getSize();
+                }
             }
+        } catch (\Exception $e) {
+            return 0;
         }
         return $size;
     }
