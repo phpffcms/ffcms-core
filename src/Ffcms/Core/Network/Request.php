@@ -283,9 +283,9 @@ class Request extends FoundationRequest
         // Switch path array as reverse without break point! Caution: drugs inside!
         switch (count($pathArray)) {
             case 4:
-                $this->argumentAdd = Str::lowerCase($pathArray[3]);
+                $this->argumentAdd = $pathArray[3];
             case 3:
-                $this->argumentId = Str::lowerCase($pathArray[2]);
+                $this->argumentId = $pathArray[2];
             case 2:
                 $this->action = ucfirst(Str::lowerCase($pathArray[1]));
             case 1:

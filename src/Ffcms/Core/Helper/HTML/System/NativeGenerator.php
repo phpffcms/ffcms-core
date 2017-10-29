@@ -111,7 +111,6 @@ abstract class NativeGenerator
      */
     public static function safeUri($string, $encode = true)
     {
-        $string = Str::lowerCase($string);
         $string = self::nohtml($string);
         if ($encode === true) {
             $string = self::encode($string);
