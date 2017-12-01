@@ -122,9 +122,13 @@ class Nav extends NativeGenerator
                 'items' => $items]);
             // drow tabs if isset
             if ($tabContent !== null) {
+                if ($elements['tabProperty']['class'] === null) {
+                    $elements['tabProperty']['class'] = 'tab-content';
+                }
+
                 $tabContent = $dom->div(function() use ($tabContent){
                     return $tabContent;
-                }, ['class' => 'tab-content']);
+                }, $elements['tabProperty']);
             }
             return $listing . $tabContent;
         }, $blockProperty);
