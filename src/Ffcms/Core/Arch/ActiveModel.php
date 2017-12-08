@@ -15,12 +15,18 @@ use Illuminate\Database\Eloquent\Model as LaravelModel;
  * @method static ActiveModel whereIn($field = null, array $values = [])
  * @method static ActiveModel orWhere($field = null, $compare = null, $value = null)
  * @method static ActiveModel orderBy($field, $sortType)
+ * @method ActiveModel groupBy($field)
  * @method static ActiveModel|null first()
  * @method static ActiveModel|null find($id)
  * @method static ActiveModel|null whereNotNull($field)
  * @method static ActiveModel|null orWhereNotNull($field)
  * @method ActiveModel skip($count)
  * @method ActiveModel take($count)
+ * @method static ActiveModel pluck($column, $key = null)
+ * @method ActiveModel whereYear($field = null, $compare = null, $value = null)
+ * @method ActiveModel whereMonth($field = null, $compare = null, $value = null)
+ * @method ActiveModel whereDay($field = null, $compare = null, $value = null)
+ * @method static ActiveModel select($columns = null)
  * @method int count()
  * @inheritdoc
  */
