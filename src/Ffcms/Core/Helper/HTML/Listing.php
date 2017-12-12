@@ -66,6 +66,9 @@ class Listing extends NativeGenerator
             return null;
         }
 
+        if (!isset($item['menuProperty']['class']))
+            $item['menuProperty']['class'] = 'dropdown-menu';
+
         return $dom->li(function() use($dom, $item){
             $dropdownLink = $dom->a(function() use ($dom, $item){
                 return self::applyEscape($item['text'], $item['html'], $item['!secure']) . ' ' . $dom->span(function(){}, ['class' => 'caret']);
@@ -77,7 +80,7 @@ class Listing extends NativeGenerator
                     $resp .= self::buildLink($dom, $obj, false);
                 }
                 return $resp;
-            }, ['class' => 'dropdown-menu']);
+            }, $item['menuProperty']);
 
             return $dropdownLink . $dropdownElements;
         }, $item['property']);
