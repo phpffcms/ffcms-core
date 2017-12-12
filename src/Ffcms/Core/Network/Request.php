@@ -364,6 +364,42 @@ class Request extends FoundationRequest
     }
 
     /**
+     * Set current controller name
+     * @param string $name
+     */
+    public function setController($name)
+    {
+        $this->controller = $name;
+    }
+
+    /**
+     * Set current action value
+     * @param string $name
+     */
+    public function setAction($name)
+    {
+        $this->action = $name;
+    }
+
+    /**
+     * Set current id argument value
+     * @param mixed $name
+     */
+    public function setId($name)
+    {
+        $this->argumentId = $name;
+    }
+
+    /**
+     * Set current add argument value
+     * @param mixed $name
+     */
+    public function setAdd($name)
+    {
+        $this->argumentAdd = $name;
+    }
+
+    /**
      * Get current $add argument for controller action
      * @return string|null
      */
