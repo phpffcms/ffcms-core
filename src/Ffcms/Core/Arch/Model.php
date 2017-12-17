@@ -7,6 +7,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
+use Ffcms\Core\Interfaces\iModel;
 use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Traits\ModelValidator;
 
@@ -14,7 +15,7 @@ use Ffcms\Core\Traits\ModelValidator;
  * Class Model. Classic constructor of models in MVC architecture with algorithm of passing attributes from user input data.
  * @package Ffcms\Core\Arch
  */
-class Model
+class Model implements iModel
 {
     use DynamicGlobal, ModelValidator {
         ModelValidator::initialize as private validatorConstructor;
@@ -66,7 +67,7 @@ class Model
      * Set attribute labels for model variables
      * @return array
      */
-    public function labels()
+    public function labels(): array
     {
         return [];
     }
@@ -75,7 +76,7 @@ class Model
      * Set of model validation rules
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [];
     }
@@ -85,7 +86,7 @@ class Model
      * Allowed sources: get, post, file
      * @return array
      */
-    public function sources()
+    public function sources(): array
     {
         return [];
     }
@@ -96,7 +97,7 @@ class Model
      * Ex: ['property1' => 'text', 'property2' => 'html']
      * @return array
      */
-    public function types()
+    public function types(): array
     {
         return [];
     }
@@ -106,7 +107,7 @@ class Model
      * @return bool
      * @throws SyntaxException
      */
-    final public function validate()
+    final public function validate(): bool
     {
         // validate csrf token if required
         if ($this->_tokenRequired && !$this->_tokenOk) {
@@ -155,7 +156,7 @@ class Model
      * Get all properties for current model in key=>value array
      * @return array|null
      */
-    public function getAllProperties()
+    public function getAllProperties(): ?array
     {
         $properties = null;
         // list all properties here, array_walk sucks on performance!
@@ -170,8 +171,9 @@ class Model
 
     /**
      * Cleanup all public model properties
+     * @return void
      */
-    public function clearProperties()
+    public function clearProperties(): void
     {
         foreach ($this as $property => $value) {
             if (!Str::startsWith('_', $property)) {
@@ -185,7 +187,7 @@ class Model
      * @param string $field
      * @return array
      */
-    final public function getValidationRule($field)
+    final public function getValidationRule($field): array
     {
         $rules = $this->rules();
         $response = [];

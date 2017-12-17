@@ -22,7 +22,7 @@
     "dflydev/dot-access-data": "1.1.*@stable",
     "swiftmailer/swiftmailer": "6.0.*@stable",
     "gregwar/captcha": "1.1.*@stable",
-    "phpfastcache/phpfastcache": "6.*@stable",
+    "symfony/cache": "3.4.*@stable",
     "suin/php-rss-writer": "1.6.*@stable",
     "hybridauth/hybridauth": "2.10.*@stable"
   },

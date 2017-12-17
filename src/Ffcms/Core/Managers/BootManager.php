@@ -4,6 +4,7 @@ namespace Ffcms\Core\Managers;
 
 
 use Ffcms\Core\App;
+use Ffcms\Core\Debug\DebugMeasure;
 use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Obj;
@@ -15,6 +16,8 @@ use Ffcms\Core\Helper\Type\Str;
  */
 class BootManager
 {
+    use DebugMeasure;
+
     CONST CACHE_TREE_TIME = 120;
 
     private $loader;
@@ -29,6 +32,7 @@ class BootManager
      */
     public function __construct($loader = false)
     {
+        $this->startMeasure(__METHOD__);
         // pass loader inside
         $this->loader = $loader;
         if ($this->loader !== false) {
@@ -38,19 +42,23 @@ class BootManager
         // check if cache is enabled
         if (App::$Cache !== null) {
             // try to get bootable class map from cache, or initialize parsing
-            if (App::$Cache->get('boot.' . env_name . '.class.map') !== null) {
-                $this->objects = App::$Cache->get('boot.' . env_name . '.class.map');
-            } else {
+            $cache = App::$Cache->getItem('boot.' . env_name . '.class.map');
+            if (!$cache->isHit()) {
                 $this->compileBootableClasses();
-                App::$Cache->set('boot.' . env_name . '.class.map', $this->objects, static::CACHE_TREE_TIME);
+                $cache->set($this->objects)->expiresAfter(static::CACHE_TREE_TIME);
+                App::$Cache->save($cache);
             }
+        } else {
+            $this->compileBootableClasses();
         }
+
+        $this->stopMeasure(__METHOD__);
     }
 
     /**
      * Find app's and widgets root directories over composer psr loader
      */
-    private function parseComposerLoader()
+    private function parseComposerLoader(): void
     {
         // get composer autoload map
         $map = $this->loader->getPrefixes();
@@ -83,8 +91,9 @@ class BootManager
 
     /**
      * Find all bootatble instances and set it to object map
+     * @return void
      */
-    public function compileBootableClasses()
+    public function compileBootableClasses(): void
     {
         // list app root's
         foreach ($this->appRoots as $app) {
@@ -121,8 +130,10 @@ class BootManager
      * Call bootable methods in apps and widgets
      * @return bool
      */
-    public function run()
+    public function run(): bool
     {
+        $this->startMeasure(__METHOD__);
+
         if (!Obj::isArray($this->objects)) {
             return false;
         }
@@ -130,6 +141,8 @@ class BootManager
         foreach ($this->objects as $class) {
             forward_static_call([$class, 'boot']);
         }
+
+        $this->stopMeasure(__METHOD__);
         return true;
     }
 }

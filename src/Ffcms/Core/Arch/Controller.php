@@ -3,9 +3,11 @@
 namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Debug\DebugMeasure;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Str;
+use Ffcms\Core\Interfaces\iController;
 use Ffcms\Core\Template\Variables;
 use Ffcms\Core\Traits\DynamicGlobal;
 
@@ -13,9 +15,9 @@ use Ffcms\Core\Traits\DynamicGlobal;
  * Class Controller. Classic carcase of controller in MVC architecture.
  * @package Ffcms\Core\Arch
  */
-class Controller
+class Controller implements iController
 {
-    use DynamicGlobal;
+    use DynamicGlobal, DebugMeasure;
 
     /** @var string */
     public $layout = 'main';
@@ -47,12 +49,15 @@ class Controller
     public function before() {}
     
     /** Global bootable method */
-    public static function boot() {}
+    public static function boot(): void {}
 
     /**
      * Build variables and display output html
+     * @return string
+     * @throws NativeException
+     * @throws \DebugBar\DebugBarException
      */
-    public function buildOutput()
+    public function buildOutput(): ?string
     {
         $this->after();
 
@@ -60,6 +65,8 @@ class Controller
         if ($this->layout === null) {
             $content = $this->output;
         } else {
+            $this->startMeasure(__METHOD__);
+
             $layoutPath = App::$Alias->currentViewPath . '/layout/' . $this->layout . '.php';
             if (!File::exist($layoutPath)) {
                 throw new NativeException('Layout not founded: ' . $layoutPath);
@@ -84,8 +91,11 @@ class Controller
                 $content = Str::replace('</head>', $cssIncludeCode . '</head>', $content);
             }
 
+
+            $this->stopMeasure(__METHOD__);
+
             // add debug bar
-            if (App::$Debug !== null) {
+            if (App::$Debug) {
                 $content = Str::replace(
                     ['</body>', '</head>'],
                     [App::$Debug->renderOut() . '</body>', App::$Debug->renderHead() . '</head>'],
@@ -105,17 +115,19 @@ class Controller
      * @param string $var
      * @param string $value
      * @param bool $html
+     * @return void
      */
-    public function setGlobalVar($var, $value, $html = false)
+    public function setGlobalVar(string $var, string $value, bool $html = false): void
     {
         Variables::instance()->setGlobal($var, $value, $html);
     }
 
     /**
      * Set global variables as array key=>value
-     * @param $array
+     * @param array $array
+     * @return void
      */
-    public function setGlobalVarArray(array $array)
+    public function setGlobalVarArray(array $array): void
     {
         Variables::instance()->setGlobalArray($array);
     }
@@ -123,8 +135,9 @@ class Controller
     /**
      * Special method to set response of action execution
      * @param string $output
+     * @return void
      */
-    public function setOutput($output)
+    public function setOutput($output): void
     {
         $this->output = $output;
     }
@@ -133,7 +146,7 @@ class Controller
      * Get response of action rendering
      * @return string
      */
-    public function getOutput()
+    public function getOutput(): ?string
     {
         return $this->output;
     }

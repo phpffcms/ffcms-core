@@ -98,6 +98,24 @@ class Manager
     }
 
     /**
+     * Start timeline measure
+     * @param string $key
+     */
+    public function startMeasure(string $key): void
+    {
+        $this->bar['time']->startMeasure($key);
+    }
+
+    /**
+     * Stop timeline measure
+     * @param string $key
+     */
+    public function stopMeasure(string $key): void
+    {
+        $this->bar['time']->stopMeasure($key);
+    }
+
+    /**
      * Check if debug bar is enabled. Method called before __construct() is initiated!!
      * @return bool
      */

@@ -37,7 +37,7 @@ class ActiveModel extends LaravelModel
      * @param string $attribute
      * @return array|null|string
      */
-    public function getLocaled($attribute)
+    public function getLocaled(string $attribute)
     {
         // if always decoded
         if (Obj::isArray($this->{$attribute})) {
@@ -89,7 +89,7 @@ class ActiveModel extends LaravelModel
      * @param string $key
      * @return bool
      */
-    public function isSerializeCastable($key)
+    public function isSerializeCastable(string $key)
     {
         return $this->hasCast($key, 'serialize');
     }
@@ -106,11 +106,11 @@ class ActiveModel extends LaravelModel
 
     /**
      * Unserialize value
-     * @param $value
+     * @param string $value
      * @return mixed
      */
-    public function fromSerialize($value)
+    public function fromSerialize(string $value)
     {
-        return unserialize($value);
+        return unserialize($value, ['allowed_classes' => false]);
     }
 }

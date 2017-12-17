@@ -4,6 +4,7 @@ namespace Ffcms\Core;
 
 use Ffcms\Core\Arch\View;
 use Ffcms\Core\Cache\MemoryObject;
+use Ffcms\Core\Debug\DebugMeasure;
 use Ffcms\Core\Debug\Manager as Debug;
 use Ffcms\Core\Exception\ForbiddenException;
 use Ffcms\Core\Exception\JsonException;
@@ -19,6 +20,7 @@ use Ffcms\Core\Managers\CronManager;
 use Ffcms\Core\Managers\EventManager;
 use Ffcms\Core\Network\Request;
 use Ffcms\Core\Network\Response;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * Class App. Provide later static callbacks as entry point from any places of ffcms.
@@ -26,6 +28,8 @@ use Ffcms\Core\Network\Response;
  */
 class App
 {
+    use DebugMeasure;
+
     /** @var \Ffcms\Core\Network\Request */
     public static $Request;
 
@@ -68,7 +72,7 @@ class App
     /** @var \Ffcms\Core\Interfaces\iCaptcha */
     public static $Captcha;
 
-    /** @var \phpFastCache\Drivers\files */
+    /** @var FilesystemAdapter */
     public static $Cache;
 
     /** @var EventManager */
@@ -94,6 +98,7 @@ class App
         $this->_loader = $loader;
         // initialize service links
         $this->nativeStaticLinks();
+        // notify load timeline
         $this->dynamicStaticLinks();
         // Initialize boot manager. This manager allow to auto-execute 'static boot()' methods in apps and widgets
         $bootManager = new BootManager($this->_loader);
@@ -106,9 +111,8 @@ class App
      * @param bool $loader
      * @return App
      * @throws \InvalidArgumentException
-     * @throws \Ffcms\Core\Exception\NativeException
      */
-    public static function factory(array $services = null, $loader = false)
+    public static function factory(array $services = null, $loader = false): self
     {
         return new self($services, $loader);
     }
@@ -116,9 +120,8 @@ class App
     /**
      * Prepare static symbolic links for app services
      * @throws \InvalidArgumentException
-     * @throws \Ffcms\Core\Exception\NativeException
      */
-    private function nativeStaticLinks()
+    private function nativeStaticLinks(): void
     {
         // initialize memory and properties controllers
         self::$Memory = MemoryObject::instance();
@@ -126,6 +129,7 @@ class App
         // initialize debugger
         if (isset($this->_services['Debug']) && $this->_services['Debug'] === true && Debug::isEnabled()) {
             self::$Debug = new Debug();
+            $this->startMeasure(__METHOD__);
         }
         // prepare request data
         self::$Request = Request::createFromGlobals();
@@ -137,14 +141,18 @@ class App
         self::$Alias = new Alias();
         self::$Event = new EventManager();
         self::$Cron = new CronManager();
+        // stop debug timeline
+        $this->stopMeasure(__METHOD__);
     }
 
     /**
      * Prepare dynamic static links from object configurations as anonymous functions
      * @throws NativeException
      */
-    private function dynamicStaticLinks()
+    private function dynamicStaticLinks(): void
     {
+        $this->startMeasure(__METHOD__);
+
         /** @var array $objects */
         $objects = App::$Properties->getAll('object');
         if (!Obj::isArray($objects)) {
@@ -164,14 +172,17 @@ class App
                 @call_user_func($instance);
             }
         }
+
+        $this->stopMeasure(__METHOD__);
     }
 
     /**
      * Run applications and display output
-     * @throws \DebugBar\DebugBarException
      */
     public function run()
     {
+        $this->startMeasure(__METHOD__);
+
         $html = null;
         // lets try to get html full content to page render
         try {
@@ -227,8 +238,10 @@ class App
                     ]));
                 }
 
+                $this->startMeasure($cName . '::' . $callMethod);
                 // make callback call to action in controller and get response
                 $actionResponse = call_user_func_array([$callClass, $callMethod], $actionQuery);
+                $this->stopMeasure($cName . '::' . $callMethod);
 
                 if ($actionResponse !== null && !Str::likeEmpty($actionResponse)) {
                     // set response to controller property object
@@ -258,6 +271,8 @@ class App
         self::$Response->setContent($html);
         // echo full response to user via http foundation
         self::$Response->send();
+
+        $this->stopMeasure(__METHOD__);
     }
 
 }

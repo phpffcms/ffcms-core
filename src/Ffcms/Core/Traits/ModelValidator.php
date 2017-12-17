@@ -311,40 +311,46 @@ trait ModelValidator
     }
 
     /**
-     * Get input param for current model form based on param name and request method
      * @param string $param
      * @param string|null $method
-     * @return string|null|array
-     * @throws \InvalidArgumentException
+     * @return mixed
      */
     public function getRequest($param, $method = null)
     {
-        // build param query for http foundation request
-        $paramQuery = $this->getFormName();
-        if (Str::contains('.', $param)) {
-            foreach (explode('.', $param) as $item) {
-                $paramQuery .= '[' . $item . ']';
-            }
-        } else {
-            $paramQuery .= '[' . $param . ']';
-        }
-
-        if ($method === null) {
+        if ($method === null)
             $method = $this->_sendMethod;
-        }
 
-        // get request based on method and param query
         $method = Str::lowerCase($method);
+        // get root request as array or string
         switch ($method) {
             case 'get':
-                return App::$Request->query->get($paramQuery, null, true);
+                $request = App::$Request->query->get($this->getFormName(), null);
+                break;
             case 'post':
-                return App::$Request->request->get($paramQuery, null, true);
+                $request = App::$Request->request->get($this->getFormName(), null);
+                break;
             case 'file':
-                return App::$Request->files->get($paramQuery, null, true);
+                $request = App::$Request->files->get($this->getFormName(), null);
+                break;
             default:
-                return App::$Request->get($paramQuery, null, true);
-
+                $request = App::$Request->get($this->getFormName(), null);
+                break;
         }
+
+        $response = null;
+        // param is a dot-separated array type
+        if (Str::contains('.', $param)) {
+            $response = $request;
+            foreach (explode('.', $param) as $path) {
+                if (!array_key_exists($path, $response))
+                    return null;
+                // find deep array nesting offset
+                $response = $response[$path];
+            }
+        } else {
+            $response = $request[$param];
+        }
+
+        return $response;
     }
 }
