@@ -181,11 +181,10 @@ class App
      */
     public function run()
     {
-        $this->startMeasure(__METHOD__);
-
         $html = null;
         // lets try to get html full content to page render
         try {
+            $this->startMeasure(__METHOD__ . '::callback');
             /** @var \Ffcms\Core\Arch\Controller $callClass */
             $callClass = null;
             $callMethod = 'action' . self::$Request->getAction();
@@ -208,6 +207,8 @@ class App
                     throw new NotFoundException('Application can not be runned. Initialized class not founded: ' . App::$Security->strip_tags($cName));
                 }
             }
+
+            $this->stopMeasure(__METHOD__ . '::callback');
 
             // try to call method of founded callback class
             if (method_exists($callClass, $callMethod)) {
@@ -267,12 +268,12 @@ class App
             $html = (new NativeException($e->getMessage()))->display();
         }
 
+
+
         // set full rendered content to response builder
         self::$Response->setContent($html);
         // echo full response to user via http foundation
         self::$Response->send();
-
-        $this->stopMeasure(__METHOD__);
     }
 
 }
