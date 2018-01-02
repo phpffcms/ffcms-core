@@ -311,6 +311,7 @@ trait ModelValidator
     }
 
     /**
+     * Get input value based on param path and request method
      * @param string $param
      * @param string|null $method
      * @return mixed

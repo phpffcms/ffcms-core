@@ -11,6 +11,7 @@ use Ffcms\Core\Exception\JsonException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Exception\TemplateException;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -97,9 +98,8 @@ class App
         $this->_services = $services;
         $this->_loader = $loader;
         // initialize service links
-        $this->nativeStaticLinks();
-        // notify load timeline
-        $this->dynamicStaticLinks();
+        $this->loadNativeServices();
+        $this->loadDynamicServices();
         // Initialize boot manager. This manager allow to auto-execute 'static boot()' methods in apps and widgets
         $bootManager = new BootManager($this->_loader);
         $bootManager->run();
@@ -118,10 +118,10 @@ class App
     }
 
     /**
-     * Prepare static symbolic links for app services
+     * Prepare native static symbolic links for app services
      * @throws \InvalidArgumentException
      */
-    private function nativeStaticLinks(): void
+    private function loadNativeServices(): void
     {
         // initialize memory and properties controllers
         self::$Memory = MemoryObject::instance();
@@ -149,7 +149,7 @@ class App
      * Prepare dynamic static links from object configurations as anonymous functions
      * @throws NativeException
      */
-    private function dynamicStaticLinks(): void
+    private function loadDynamicServices(): void
     {
         $this->startMeasure(__METHOD__);
 
@@ -177,9 +177,10 @@ class App
     }
 
     /**
-     * Run applications and display output
+     * Run applications and display output. Main entry point of system.
+     * @return void
      */
-    public function run()
+    final public function run(): void
     {
         $html = null;
         // lets try to get html full content to page render
@@ -189,90 +190,62 @@ class App
             $callClass = null;
             $callMethod = 'action' . self::$Request->getAction();
 
-            // founded callback injection alias
-            if (self::$Request->getCallbackAlias() !== false) {
-                $cName = self::$Request->getCallbackAlias();
-                if (class_exists($cName)) {
-                    $callClass = new $cName;
-                } else {
-                    throw new NotFoundException('Callback alias of class "' . App::$Security->strip_tags($cName) . '" is not founded');
-                }
-            } else { // typical parsing of native apps
-                $cName = '\Apps\Controller\\' . env_name . '\\' . self::$Request->getController();
+            // define callback class namespace/name full path
+            $cName = (self::$Request->getCallbackAlias() ?? '\Apps\Controller\\' . env_name . '\\' . self::$Request->getController());
+            if (!class_exists($cName))
+                throw new NotFoundException('Callback class not found: ' . App::$Security->strip_tags($cName));
 
-                // try to initialize class object
-                if (class_exists($cName)) {
-                    $callClass = new $cName;
-                } else {
-                    throw new NotFoundException('Application can not be runned. Initialized class not founded: ' . App::$Security->strip_tags($cName));
-                }
-            }
+            $callClass = new $cName;
+            // check if callback method (action) is exist in class object
+            if (!method_exists($callClass, $callMethod))
+                throw new NotFoundException('Method "' . App::$Security->strip_tags($callMethod) . '()" not founded in "' . get_class($callClass) . '"');
 
             $this->stopMeasure(__METHOD__ . '::callback');
-
-            // try to call method of founded callback class
-            if (method_exists($callClass, $callMethod)) {
-                $actionQuery = [];
-                // prepare action params for callback
-                if (!Str::likeEmpty(self::$Request->getID())) {
-                    $actionQuery[] = self::$Request->getID();
-                    if (!Str::likeEmpty(self::$Request->getAdd())) {
-                        $actionQuery[] = self::$Request->getAdd();
-                    }
-                }
-
-                // get controller method arguments count
-                $reflection = new \ReflectionMethod($callClass, $callMethod);
-                $argumentCount = 0;
-                foreach ($reflection->getParameters() as $arg) {
-                    if (!$arg->isOptional()) {
-                        $argumentCount++;
-                    }
-                }
-
-                // check method arguments count and current request count to prevent warnings
-                if (count($actionQuery) < $argumentCount) {
-                    throw new NotFoundException(__('Arguments for method %method% is not enough. Expected: %required%, got: %current%.', [
-                        'method' => $callMethod,
-                        'required' => $argumentCount,
-                        'current' => count($actionQuery)
-                    ]));
-                }
-
-                $this->startMeasure($cName . '::' . $callMethod);
-                // make callback call to action in controller and get response
-                $actionResponse = call_user_func_array([$callClass, $callMethod], $actionQuery);
-                $this->stopMeasure($cName . '::' . $callMethod);
-
-                if ($actionResponse !== null && !Str::likeEmpty($actionResponse)) {
-                    // set response to controller property object
-                    $callClass->setOutput($actionResponse);
-                }
-
-                // build full compiled output html data
-                $html = $callClass->buildOutput();
-            } else {
-                throw new NotFoundException('Method "' . App::$Security->strip_tags($callMethod) . '()" not founded in "' . get_class($callClass) . '"');
+            $params = [];
+            if (!Str::likeEmpty(self::$Request->getID())) {
+                $params[] = self::$Request->getID();
+                if (!Str::likeEmpty(self::$Request->getAdd()))
+                    $params[] = self::$Request->getAdd();
             }
-        } catch (NotFoundException $e) { // catch exceptions and set output
-            $html = $e->display();
-        } catch (ForbiddenException $e) {
-            $html = $e->display();
-        } catch (SyntaxException $e) {
-            $html = $e->display();
-        } catch (JsonException $e) {
-            $html = $e->display();
-        } catch (NativeException $e) {
-            $html = $e->display();
-        } catch (\Exception $e) { // catch all other exceptions
-            $html = (new NativeException($e->getMessage()))->display();
+
+            // get instance of callback object (class::method) as reflection
+            $instance = new \ReflectionMethod($callClass, $callMethod);
+            $argCount = 0;
+            // calculate method defined arguments count
+            foreach ($instance->getParameters() as $arg) {
+                if (!$arg->isOptional())
+                    $argCount++;
+            }
+            // compare method arg count with passed
+            if (count($params) < $argCount)
+                throw new NotFoundException(__('Arguments for method %method% is not enough. Expected: %required%, got: %current%.', [
+                    'method' => $callMethod,
+                    'required' => $argCount,
+                    'current' => count($params)
+                ]));
+
+            $this->startMeasure($cName . '::' . $callMethod);
+            // make callback call to action in controller and get response
+            $actionResponse = call_user_func_array([$callClass, $callMethod], $params);
+            $this->stopMeasure($cName . '::' . $callMethod);
+
+            // set response to controller attribute
+            if (!Str::likeEmpty($actionResponse))
+                $callClass->setOutput($actionResponse);
+
+            // build full compiled output html data with default layout and widgets
+            $html = $callClass->buildOutput();
+        } catch (\Exception $e) {
+            // check if exception is system-based throw
+            if ($e instanceof TemplateException)
+                $html = $e->display();
+            else // or hook exception to system based :)))
+                $html = (new NativeException($e->getMessage()))->display();
         }
-
-
 
         // set full rendered content to response builder
         self::$Response->setContent($html);
-        // echo full response to user via http foundation
+        // echo full response to user via symfony http foundation
         self::$Response->send();
     }
 

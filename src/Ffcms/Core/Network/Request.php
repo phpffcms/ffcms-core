@@ -20,9 +20,9 @@ class Request extends FoundationRequest
     protected $languageInPath = false;
 
     // special variable for route aliasing
-    protected $aliasPathTarget = false;
+    protected $aliasPathTarget;
     // special variable for route callback binding
-    protected $callbackClass = false;
+    protected $callbackClass;
 
     // fast access for controller building
     protected $controller;
@@ -301,12 +301,15 @@ class Request extends FoundationRequest
     public function getPathInfo()
     {
         $route = $this->languageInPath ? Str::sub(parent::getPathInfo(), Str::length($this->language) + 1) : parent::getPathInfo();
-        if (!Str::startsWith('/', $route)) {
+        if (!Str::startsWith('/', $route))
             $route = '/' . $route;
-        }
         return $route;
     }
 
+    /**
+     * Check if language used in path
+     * @return bool
+     */
     public function languageInPath()
     {
         return $this->languageInPath;
@@ -316,7 +319,7 @@ class Request extends FoundationRequest
      * Get current language
      * @return string|null
      */
-    public function getLanguage()
+    public function getLanguage(): ?string
     {
         return $this->language;
     }
@@ -326,7 +329,7 @@ class Request extends FoundationRequest
      * @param string $lang
      * @return bool
      */
-    public function setLanguage($lang)
+    public function setLanguage($lang): bool
     {
         if (Arr::in($lang, App::$Properties->get('languages'))) {
             $this->language = $lang;
@@ -340,7 +343,7 @@ class Request extends FoundationRequest
      * Get current controller name
      * @return string
      */
-    public function getController()
+    public function getController(): ?string
     {
         return $this->controller;
     }
@@ -349,7 +352,7 @@ class Request extends FoundationRequest
      * Get current controller action() name
      * @return string
      */
-    public function getAction()
+    public function getAction(): ?string
     {
         return $this->action;
     }
@@ -358,7 +361,7 @@ class Request extends FoundationRequest
      * Get current $id argument for controller action
      * @return string|null
      */
-    public function getID()
+    public function getID(): ?string
     {
         return urldecode($this->argumentId);
     }
@@ -367,7 +370,7 @@ class Request extends FoundationRequest
      * Set current controller name
      * @param string $name
      */
-    public function setController($name)
+    public function setController($name): void
     {
         $this->controller = $name;
     }
@@ -376,7 +379,7 @@ class Request extends FoundationRequest
      * Set current action value
      * @param string $name
      */
-    public function setAction($name)
+    public function setAction($name): void
     {
         $this->action = $name;
     }
@@ -385,7 +388,7 @@ class Request extends FoundationRequest
      * Set current id argument value
      * @param mixed $name
      */
-    public function setId($name)
+    public function setId($name): void
     {
         $this->argumentId = $name;
     }
@@ -394,7 +397,7 @@ class Request extends FoundationRequest
      * Set current add argument value
      * @param mixed $name
      */
-    public function setAdd($name)
+    public function setAdd($name): void
     {
         $this->argumentAdd = $name;
     }
@@ -403,25 +406,25 @@ class Request extends FoundationRequest
      * Get current $add argument for controller action
      * @return string|null
      */
-    public function getAdd()
+    public function getAdd(): ?string
     {
         return urldecode($this->argumentAdd);
     }
 
     /**
      * Get callback class alias if exist
-     * @return bool|string
+     * @return null|string
      */
-    public function getCallbackAlias()
+    public function getCallbackAlias(): ?string
     {
         return $this->callbackClass;
     }
 
     /**
      * Get static alias of pathway if exist
-     * @return bool
+     * @return null|string
      */
-    public function getStaticAlias()
+    public function getStaticAlias(): ?string
     {
         return $this->aliasPathTarget;
     }
@@ -430,21 +433,21 @@ class Request extends FoundationRequest
      * Check if current request is aliased by dynamic or static rule
      * @return bool
      */
-    public function isPathInjected()
+    public function isPathInjected(): bool
     {
-        return $this->callbackClass !== false || $this->aliasPathTarget !== false;
+        return $this->callbackClass !== null || $this->aliasPathTarget !== null;
     }
 
     /**
      * Get pathway without current controller/action path
      * @return string
      */
-    public function getPathWithoutControllerAction()
+    public function getPathWithoutControllerAction(): ?string
     {
         $path = trim($this->getPathInfo(), '/');
-        if ($this->aliasPathTarget !== false) {
+        if ($this->aliasPathTarget !== null)
             $path = trim($this->aliasPathTarget, '/');
-        }
+
         $pathArray = explode('/', $path);
         if ($pathArray[0] === Str::lowerCase($this->getController())) {
             // unset controller
@@ -461,7 +464,7 @@ class Request extends FoundationRequest
      * Get current full request URI
      * @return string
      */
-    public function getFullUrl()
+    public function getFullUrl(): string
     {
         return $this->getSchemeAndHttpHost() . $this->getRequestUri();
     }
@@ -470,7 +473,7 @@ class Request extends FoundationRequest
      * Get base path from current environment without basePath of subdirectories
      * @return string
      */
-    public function getInterfaceSlug()
+    public function getInterfaceSlug(): string
     {
         $path = $this->getBasePath();
         $subDir = App::$Properties->get('basePath');

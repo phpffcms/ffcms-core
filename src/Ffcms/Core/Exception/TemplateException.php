@@ -16,8 +16,6 @@ abstract class TemplateException extends \Exception
 
     /**
      * Display exception template
-     * @throws JsonException
-     * @throws \Exception
      * @return string
      */
     public function display()
@@ -38,9 +36,9 @@ abstract class TemplateException extends \Exception
         }
         
         // add notification in debug bar if exist
-        if (App::$Debug !== null) {
+        if (App::$Debug !== null)
             App::$Debug->addException($this);
-        }
+
         // return rendered result
         return $this->buildFakePage();
     }

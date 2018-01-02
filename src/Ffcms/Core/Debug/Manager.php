@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Debug;
 
+use Cassandra\Exception;
 use DebugBar\DataCollector\ConfigCollector;
 use DebugBar\StandardDebugBar;
 use Ffcms\Core\App;
@@ -58,13 +59,14 @@ class Manager
 
     /**
      * Add exception into debug bar and stop execute
-     * @param $e
-     * @throws \DebugBar\DebugBarException
+     * @param \Exception $e
      */
     public function addException($e)
     {
         if ($e instanceof \Exception) {
-            $this->bar->getCollector('exceptions')->addException($e);
+            try {
+                $this->bar->getCollector('exceptions')->addException($e);
+            } catch (\Exception $ie) {}
         }
     }
 
