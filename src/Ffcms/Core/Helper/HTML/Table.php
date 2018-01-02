@@ -57,7 +57,7 @@ class Table extends NativeGenerator
                                     $th = self::safe($title['text'], true);
                                 }
                             } else {
-                                $th = htmlentities($title['text']);
+                                $th = htmlentities($title['text'], null, "UTF-8");
                             }
                             // make global checkbox for selectable columns
                             if ($selectOptions !== false && $order + 1 === $selectOptions['attachOrder']) {
@@ -102,13 +102,13 @@ class Table extends NativeGenerator
                                             $text = self::safe($item['text'], true);
                                         }
                                     } else {
-                                        $text = htmlentities($item['text']);
+                                        $text = htmlentities($item['text'], null, 'UTF-8');
                                     }
                                     // check if selectable box is enabled and equal current order id
                                     if ($selectOptions !== false && $order === $selectOptions['attachOrder']) {
                                         $text = $dom->input(function (){
                                             return null;
-                                        }, Arr::merge($selectOptions['selector'], ['value' => htmlentities($text)])) . ' ' . $text;
+                                        }, Arr::merge($selectOptions['selector'], ['value' => htmlentities($text, null, 'UTF-8')])) . ' ' . $text;
                                     }
                                     return $text;
                                 }, $item['property']);

@@ -122,9 +122,9 @@ class Dom
             }
             // sounds like single standalone property, ex required, selected etc
             if ($value === null || $value === false) {
-                $build .= ' ' . htmlentities($property, ENT_QUOTES);
+                $build .= ' ' . htmlentities($property, ENT_QUOTES, "UTF-8");
             } else { // sounds like a classic key="value" property
-                $build .= ' ' . htmlentities($property, ENT_QUOTES) . '="' . htmlentities($value, ENT_QUOTES) . '"';
+                $build .= ' ' . htmlentities($property, ENT_QUOTES, "UTF-8") . '="' . htmlentities($value, ENT_QUOTES, "UTF-8") . '"';
             }
         }
         return $build;
