@@ -6,6 +6,7 @@ namespace Ffcms\Core\Helper\HTML\Form;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 
 class RadioField extends NativeGenerator implements iField
@@ -33,16 +34,15 @@ class RadioField extends NativeGenerator implements iField
     /**
      * Make function of current field type. Return compiled html response
      * @return string
-     * @throws \Ffcms\Core\Exception\NativeException
      * @throws \Ffcms\Core\Exception\SyntaxException
      */
     public function make()
     {
         // get options from properties
         $options = $this->properties['options'];
-        if (!Obj::isIterable($options)) {
+        if (!Any::isIterable($options))
             throw new SyntaxException('Radio field ' . self::nohtml($this->name) . ' have no iterable options');
-        }
+
         unset($this->properties['options'], $this->properties['value']);
 
         // options is defined as key->value array?

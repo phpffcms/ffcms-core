@@ -5,6 +5,7 @@ namespace Ffcms\Core\Arch;
 use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iModel;
@@ -125,7 +126,7 @@ class Model implements iModel
         // get not-passed validation fields as array
         $badAttributes = $this->getBadAttribute();
         // prevent warnings
-        if (Obj::isArray($badAttributes) && count($badAttributes) > 0) {
+        if (Any::isArray($badAttributes) && count($badAttributes) > 0) {
             foreach ($badAttributes as $attr) {
                 if (Str::contains('.', $attr)) { // sounds like dot-separated array attr
                     $attrName = strstr($attr, '.', true); // get attr name
@@ -142,9 +143,9 @@ class Model implements iModel
                 }
                 // add message about wrong attribute to session holder, later display it
                 $attrLabel = $attr;
-                if ($this->getLabel($attr) !== null) {
+                if ($this->getLabel($attr) !== null)
                     $attrLabel = $this->getLabel($attr);
-                }
+
                 App::$Session->getFlashBag()->add('warning', __('Field "%field%" is incorrect', ['field' => $attrLabel]));
             }
         }
@@ -161,9 +162,9 @@ class Model implements iModel
         $properties = null;
         // list all properties here, array_walk sucks on performance!
         foreach ($this as $property => $value) {
-            if (Str::startsWith('_', $property)) {
+            if (Str::startsWith('_', $property))
                 continue;
-            }
+
             $properties[$property] = $value;
         }
         return $properties;
@@ -176,9 +177,8 @@ class Model implements iModel
     public function clearProperties(): void
     {
         foreach ($this as $property => $value) {
-            if (!Str::startsWith('_', $property)) {
+            if (!Str::startsWith('_', $property))
                 $this->{$property} = null;
-            }
         }
     }
 
@@ -193,16 +193,14 @@ class Model implements iModel
         $response = [];
 
         foreach ($rules as $rule) {
-            if (Obj::isArray($rule[0])) { // 2 or more rules [['field1', 'field2'], 'filter', 'filter_argv']
+            if (Any::isArray($rule[0])) { // 2 or more rules [['field1', 'field2'], 'filter', 'filter_argv']
                 foreach ($rule[0] as $tfield) {
-                    if ($tfield == $field) {
+                    if ($tfield == $field)
                         $response[$rule[1]] = $rule[2]; // ['min_length' => 1, 'required' => null]
-                    }
                 }
             } else { // 1 rule ['field1', 'filter', 'filter_argv']
-                if ($rule[0] === $field) {
+                if ($rule[0] === $field)
                     $response[$rule[1]] = $rule[2];
-                }
             }
         }
 

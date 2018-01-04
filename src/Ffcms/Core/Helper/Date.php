@@ -3,8 +3,13 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 
+/**
+ * Class Date. Helper to work with dates and timestamps
+ * @package Ffcms\Core\Helper
+ */
 class Date
 {
     const FORMAT_TO_DAY = 'd.m.Y';
@@ -22,9 +27,10 @@ class Date
      */
     public static function convertToDatetime($rawDate, $format = 'd.m.Y')
     {
-        if (Obj::isLikeInt($rawDate)) { // convert timestamp to date format
+        // convert timestamp to date format
+        if (Any::isInt($rawDate))
             $rawDate = date(\DateTime::ATOM, $rawDate);
-        }
+
         try {
             $object = new \DateTime($rawDate);
             return $object->format($format);
@@ -38,7 +44,7 @@ class Date
      * @param string $date
      * @return int
      */
-    public static function convertToTimestamp($date)
+    public static function convertToTimestamp($date): int
     {
         // make clearly cast $date into string type
         // Some times, $date could be an object with __toString() magic
@@ -54,18 +60,16 @@ class Date
     {
         // convert to timestamp
         $timestamp = $raw;
-        if (!Obj::isInt($raw)) {
-            // raw can be instance of eloquent active record object, convert to str
+        // raw can be instance of eloquent active record object, convert to str
+        if (!Any::isInt($raw))
             $timestamp = self::convertToTimestamp((string)$timestamp);
-        }
 
         // calculate difference between tomorrow day midnight and passed date
         $diff = time() - $timestamp;
 
         // date in future, lets return as is
-        if ($diff < 0) {
+        if ($diff < 0)
             return self::convertToDatetime($timestamp, static::FORMAT_TO_SECONDS);
-        }
 
         // calculate delta and make offset sub. Maybe usage instance of Datetime is better, but localization is sucks!
         $deltaSec = $diff % 60;
@@ -81,9 +85,9 @@ class Date
 
         // sounds like more then 1 day's ago
         if ($deltaDays > 1) {
-            if ($deltaDays > 14) { // sounds like more then 2 week ago, just return as is
+            // sounds like more then 2 week ago, just return as is
+            if ($deltaDays > 14)
                 return self::convertToDatetime($timestamp, static::FORMAT_TO_HOUR);
-            }
 
             return App::$Translate->get('DateHuman', '%days% days ago', ['days' => (int)$deltaDays]);
         }

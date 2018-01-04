@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Helper;
 
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -20,12 +21,12 @@ class ModelFilters
      * @param $length
      * @return bool
      */
-    public static function length_min($object, $length)
+    public static function length_min($object, $length): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
-        return Str::length($object) >= $length;
+
+        return Str::length((string)$object) >= $length;
     }
 
     /**
@@ -34,12 +35,12 @@ class ModelFilters
      * @param $length
      * @return bool
      */
-    public static function length_max($object, $length)
+    public static function length_max($object, $length): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
-        return Str::length($object) <= $length;
+
+        return Str::length((string)$object) <= $length;
     }
 
     /**
@@ -48,18 +49,16 @@ class ModelFilters
      * @param array|null $handle
      * @return bool
      */
-    public static function in($object, array $handle)
+    public static function in($object, array $handle): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
 
         // allow empty, validate on required rule
-        if (Str::likeEmpty($object)) {
+        if (Any::isEmpty($object))
             return true;
-        }
 
-        $object = Obj::guessType($object);
+        $object = Any::guessValueType($object);
 
         return Arr::in($object, $handle);
     }
@@ -70,7 +69,7 @@ class ModelFilters
      * @param array $handle
      * @return bool
      */
-    public static function notin($object, array $handle)
+    public static function notin($object, array $handle): bool
     {
         return !self::in($object, $handle);
     }
@@ -80,9 +79,12 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function checked($object)
+    public static function checked($object): bool
     {
-        return (int)$object === 1;
+        if (!Any::isBool($object))
+            return false;
+
+        return (bool)$object;
     }
 
     /**
@@ -90,9 +92,9 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function string($object)
+    public static function string($object): bool
     {
-        return Obj::isString($object);
+        return Any::isStr($object);
     }
 
     /**
@@ -100,9 +102,9 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function arr($object)
+    public static function arr($object): bool
     {
-        return Obj::isArray($object);
+        return Any::isArray($object);
     }
 
     /**
@@ -110,9 +112,9 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function int($object)
+    public static function int($object): bool
     {
-        return Obj::isLikeInt($object);
+        return Any::isInt($object);
     }
 
     /**
@@ -120,9 +122,9 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function float($object)
+    public static function float($object): bool
     {
-        return Obj::isLikeFloat($object);
+        return Any::isFloat($object);
     }
 
     /**
@@ -130,9 +132,9 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function boolean($object)
+    public static function boolean($object): bool
     {
-        return Obj::isLikeBoolean($object);
+        return Any::isBool($object);
     }
 
     /**
@@ -140,12 +142,9 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function required($object)
+    public static function required($object): bool
     {
-        if (Obj::isArray($object)) {
-            return count($object) > 0;
-        }
-        return Str::length($object) > 0;
+        return !Any::isEmpty($object);
     }
 
     /**
@@ -153,16 +152,15 @@ class ModelFilters
      * @param $object
      * @return bool
      */
-    public static function email($object)
+    public static function email($object): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
 
+        // @todo: check this sh@t
         // allow empty, validate on required rule
-        if (Str::likeEmpty($object)) {
-            return true;
-        }
+        //if (Str::likeEmpty($object))
+        //    return true;
 
         return Str::isEmail($object);
     }
@@ -172,16 +170,16 @@ class ModelFilters
      * @param string $object
      * @return bool|int
      */
-    public static function phone($object)
+    public static function phone($object): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
 
+        // @todo: check it
         // allow empty, validate on required rule
-        if (Str::likeEmpty($object)) {
-            return true;
-        }
+        //if (Str::likeEmpty($object)) {
+        //    return true;
+        //}
 
         return Str::isPhone($object);
     }
@@ -191,16 +189,15 @@ class ModelFilters
      * @param string $object
      * @return bool
      */
-    public static function url($object)
+    public static function url($object): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
 
         // allow empty, validate on required rule
-        if (Str::likeEmpty($object)) {
-            return true;
-        }
+        //if (Str::likeEmpty($object)) {
+        //    return true;
+        //}
 
         return Str::isUrl($object);
     }
@@ -211,11 +208,10 @@ class ModelFilters
      * @param $value
      * @return bool
      */
-    public static function equal($object, $value = null)
+    public static function equal($object, $value = null): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
 
         return $object === $value;
     }
@@ -226,11 +222,10 @@ class ModelFilters
      * @param string $value
      * @return bool
      */
-    public static function notequal($object, $value = null)
+    public static function notequal($object, $value = null): bool
     {
-        if (Obj::isArray($object)) {
+        if (Any::isLine($object))
             return false;
-        }
 
         return $object !== $value;
     }
@@ -241,7 +236,7 @@ class ModelFilters
      * @param $value
      * @return bool
      */
-    public static function direct_match($object, $value)
+    public static function direct_match($object, $value): bool
     {
         return self::reg_match($object, $value);
     }
@@ -252,7 +247,8 @@ class ModelFilters
      * @param $value
      * @return bool
      */
-    public static function reverse_match($object, $value) {
+    public static function reverse_match($object, $value): bool
+    {
         return !self::reg_match($object, $value);
     }
 
@@ -262,15 +258,13 @@ class ModelFilters
      * @param $value
      * @return bool
      */
-    public static function reg_match($object, $value)
+    public static function reg_match($object, $value): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
 
-        if (Str::likeEmpty($object)) {
+        if (Str::likeEmpty($object))
             return true;
-        }
 
         // what the f*ck? -> return preg_match($value, $object) > 0;
         return (bool)preg_match($value, $object);
@@ -282,11 +276,11 @@ class ModelFilters
      * @param $value
      * @return bool
      */
-    public static function intList($object, $value)
+    public static function intList($object, $value): bool
     {
-        if (Obj::isArray($object)) {
+        if (!Any::isLine($object))
             return false;
-        }
+
         return !preg_match('/[^0-9\s,]/$', $object);
     }
 
@@ -296,16 +290,15 @@ class ModelFilters
      * @param $value
      * @return bool
      */
-    public static function isFile($object, $value)
+    public static function isFile($object, $value): bool
     {
         // allow empty fields, "required" option filter that
-        if ($object === null) {
+        if ($object === null)
             return true;
-        }
 
         $all = false;
         // if string is given
-        if (!Obj::isArray($value)) {
+        if (!Any::isArray($value)) {
             if ($value === '*') {
                 $all = true;
             } else {
@@ -314,17 +307,15 @@ class ModelFilters
         }
 
         // input file is not object?
-        if ($object === null || !Obj::isObject($object)) {
+        if ($object === null || !Any::isObj($object))
             return false;
-        }
 
         // get guess file type, based on mime-type
         $type = $object->guessExtension();
-        if ($type === null) {
+        if ($type === null)
             return false;
-        }
 
-        return $all ? true : Arr::in($type, $value);
+        return ($all ? true : Arr::in($type, $value));
     }
 
     /**
@@ -333,29 +324,25 @@ class ModelFilters
      * @param $value
      * @return bool
      */
-    public static function sizeFile($object, $value)
+    public static function sizeFile($object, $value): bool
     {
         // allow empty field, validate on filter 'required'
-        if ($object === null) {
+        if ($object === null)
             return true;
-        }
 
-        if (!Obj::isArray($value)) {
+        if (!Any::isArray($value)) {
             $value = [0, $value];
         }
 
         // input file is not object?
-        if ($object === null || !Obj::isObject($object)) {
+        if ($object === null || !Any::isObj($object))
             return false;
-        }
 
         // get file upload size in bytes
         $realSize = $object->getClientSize();
-        if ($realSize === null) {
+        if ($realSize === null)
             return false;
-        }
 
         return $realSize > $value[0] && $realSize <= $value[1];
     }
-
 }

@@ -9,61 +9,59 @@ namespace Ffcms\Core\Helper\Type;
  */
 class Str
 {
-
     /**
      * Check if string is empty (check null, false and '' values)
      * @param string|null $string
      * @return bool
      */
-    public static function likeEmpty($string = null)
+    public static function likeEmpty(?string $string = null): bool
     {
         return $string === null || $string === '' || $string === false;
     }
 
     /**
      * Check is $where starts with prefix $string
-     * @param string $string
+     * @param string $what
      * @param string $where
      * @return bool
      */
-    public static function startsWith($string, $where)
+    public static function startsWith(?string $what, ?string $where): bool
     {
         // check is not empty string
-        if (!Obj::isString($string) || !Obj::isString($where) || self::likeEmpty($string) || self::likeEmpty($where)) {
+        if (self::likeEmpty($what) || self::likeEmpty($where))
             return false;
-        }
 
-        $prefix = self::sub($where, 0, self::length($string));
-        return $prefix === $string;
+        $prefix = self::sub($where, 0, self::length($what));
+        return $prefix === $what;
     }
 
     /**
      * Check is $where ends with suffix $string
-     * @param string $string
+     * @param string $what
      * @param string $where
      * @return bool
      */
-    public static function endsWith($string, $where)
+    public static function endsWith(?string $what, ?string $where): bool
     {
         // check is not empty string
-        if (!Obj::isString($string) || !Obj::isString($where) || self::likeEmpty($string) || self::likeEmpty($where)) {
+        if (self::likeEmpty($what) || self::likeEmpty($where))
             return false;
-        }
-        $pharse_suffix = self::sub($where, -self::length($string));
-        return $pharse_suffix === $string;
+
+        $suffix = self::sub($where, -self::length($what));
+        return $suffix === $what;
     }
 
     /**
      * Find first entry in $string before $delimiter
      * @param string $string
      * @param string $delimiter
-     * @return string|bool
+     * @return string|null
      */
-    public static function firstIn($string, $delimiter)
+    public static function firstIn(?string $string, ?string $delimiter): ?string
     {
-        if (!Obj::isString($string) || !Obj::isString($delimiter)) {
-            return false;
-        }
+        if (self::likeEmpty($string) || self::likeEmpty($delimiter))
+            return null;
+
         return strstr($string, $delimiter, true);
     }
 
@@ -72,21 +70,21 @@ class Str
      * @param string $string
      * @param string $delimiter
      * @param bool $withoutDelimiter
-     * @return string|bool
+     * @return string|null
      */
-    public static function lastIn($string, $delimiter, $withoutDelimiter = false)
+    public static function lastIn(?string $string, ?string $delimiter, bool $withoutDelimiter = false): ?string
     {
-        if (!Obj::isString($string) || !Obj::isString($delimiter)) {
-            return false;
-        }
+        if (self::likeEmpty($string) || self::likeEmpty($delimiter))
+            return null;
+
         $pos = mb_strrpos($string, $delimiter);
         // if entry is not founded return false
-        if (!Obj::isInt($pos)) {
-            return false;
-        }
+        if (!Any::isInt($pos))
+            return null;
+
         // remove delimiter pointer
-        if (true === $withoutDelimiter) {
-            ++$pos;
+        if ($withoutDelimiter) {
+            $pos++;
         }
 
         return self::sub($string, $pos);
@@ -95,14 +93,13 @@ class Str
     /**
      * Remove extension from string
      * @param string $string
-     * @return string
+     * @return string|null
      */
-    public static function cleanExtension($string)
+    public static function cleanExtension(?string $string): ?string
     {
         // no extension in string is founded
-        if (!Obj::isString($string) || !self::contains('.', $string)) {
+        if (!self::contains('.', $string))
             return $string;
-        }
 
         $splited = explode('.', $string);
         array_pop($splited);
@@ -115,44 +112,46 @@ class Str
      * @param string $string
      * @return int
      */
-    public static function length($string)
+    public static function length(?string $string): int
     {
-        return mb_strlen((string)$string, 'UTF-8');
+        return mb_strlen($string, 'UTF-8');
     }
 
     /**
      * Change content to lower case. Analog of strtolower with UTF-8
-     * @param string $string
-     * @return string
+     * @param string|null $string
+     * @return string|null
      */
-    public static function lowerCase($string)
+    public static function lowerCase(?string $string): ?string
     {
-        return mb_strtolower((string)$string, 'UTF-8');
+        if ($string === null)
+            return null;
+
+        return mb_strtolower($string, 'UTF-8');
     }
 
     /**
      * Change content to upper case. Analog of strtoupper with UTF-8
-     * @param string $string
-     * @return string
+     * @param string|null $string
+     * @return string|null
      */
-    public static function upperCase($string)
+    public static function upperCase(?string $string = null): ?string
     {
-        return mb_strtoupper((string)$string, 'UTF-8');
+        if ($string === null)
+            return null;
+
+        return mb_strtoupper($string, 'UTF-8');
     }
 
     /**
      * Count string entries of search
-     * @param string $string
-     * @param string $search
+     * @param string $where
+     * @param string $what
      * @return int
      */
-    public static function entryCount($string, $search)
+    public static function entryCount(string $where, string $what): int
     {
-        if (!Obj::isString($string) || !Obj::isString($search)) {
-            return 0;
-        }
-
-        return mb_substr_count($string, $search, 'UTF-8');
+        return mb_substr_count($where, $what, 'UTF-8');
     }
 
     /**
@@ -161,7 +160,7 @@ class Str
      * @param string $glue
      * @return string
      */
-    public static function splitCamelCase($string, $glue = ' ')
+    public static function splitCamelCase(string $string, string $glue = ' '): string
     {
         $expression = '/(?#! splitCamelCase Rev:20140412)
                         # Split camelCase "words". Two global alternatives. Either g1of2:
@@ -192,7 +191,7 @@ class Str
      * @param string $encode
      * @return string
      */
-    public static function sub($string, $start, $length = null, $encode = 'UTF-8')
+    public static function sub(string $string, int $start, ?int $length = null, string $encode = 'UTF-8'): ?string
     {
         return mb_substr($string, $start, $length, $encode);
     }
@@ -204,11 +203,11 @@ class Str
      * @param string $haystack
      * @return string
      */
-    public static function replace($needle, $replacement, $haystack)
+    public static function replace($needle, $replacement, ?string $haystack): ?string
     {
-        if (!Obj::isString($haystack)) {
-            return $haystack;
-        }
+        if ($haystack === null)
+            return null;
+
         return str_replace($needle, $replacement, $haystack);
     }
 
@@ -219,22 +218,22 @@ class Str
      * @param string $haystack
      * @return string
      */
-    public static function ireplace($needle, $replacement, $haystack)
+    public static function ireplace($needle, $replacement, ?string $haystack): ?string
     {
+        if ($haystack === null)
+            return null;
+
         return str_ireplace($needle, $replacement, $haystack);
     }
 
     /**
-     * Search entery's in string $where by string $what
+     * Search substring $what is string $where
      * @param string $what
      * @param string $where
      * @return bool
      */
-    public static function contains($what, $where)
+    public static function contains(string $what, string $where): bool
     {
-        if (!Obj::isString($what) || !Obj::isString($where)) {
-            return false;
-        }
         return mb_strpos($where, $what, 0, 'UTF-8') !== false;
     }
 
@@ -243,7 +242,7 @@ class Str
      * @param string $string
      * @return bool
      */
-    public static function isUrl($string)
+    public static function isUrl(string $string): bool
     {
         return (!filter_var($string, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) === false);
     }
@@ -253,7 +252,7 @@ class Str
      * @param int $length
      * @return string
      */
-    public static function randomLatinNumeric($length)
+    public static function randomLatinNumeric(int $length): string
     {
         $ret = 97;
         $out = null;
@@ -279,7 +278,7 @@ class Str
      * @param int $length
      * @return string
      */
-    public static function randomLatin($length)
+    public static function randomLatin(int $length): string
     {
         $ret = 97;
         $out = null;
@@ -302,7 +301,7 @@ class Str
      * @param string $string
      * @return bool
      */
-    public static function isEmail($string)
+    public static function isEmail(string $string): bool
     {
         return filter_var($string, FILTER_VALIDATE_EMAIL) !== false;
     }
@@ -310,11 +309,11 @@ class Str
     /**
      * Check is $string sounds like a phone number
      * @param string $string
-     * @return int
+     * @return bool
      */
-    public static function isPhone($string)
+    public static function isPhone(?string $string = null): bool
     {
-        return preg_match('/^[+]?([\d]{0,3})?[\(\.\-\s]?([\d]{3})[\)\.\-\s]*([\d]{3})[\.\-\s]?([\d]{4})$/', $string) ? true : false;
+        return (bool)preg_match('/^[+]?([\d]{0,3})?[\(\.\-\s]?([\d]{3})[\)\.\-\s]*([\d]{3})[\.\-\s]?([\d]{4})$/', $string);
     }
 
     /**
@@ -344,7 +343,7 @@ class Str
      * @param string $var2
      * @return bool
      */
-    public static function equalIgnoreCase($var1, $var2)
+    public static function equalIgnoreCase(string $var1, string $var2): bool
     {
         return strcasecmp($var1, $var2) === 0;
     }

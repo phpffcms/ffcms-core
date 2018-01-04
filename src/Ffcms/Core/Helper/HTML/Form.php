@@ -9,6 +9,7 @@ use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\HTML\Form\Constructor;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -45,19 +46,17 @@ class Form extends NativeGenerator
     public function __construct($model, array $property = null, array $layerFiles = null)
     {
         // prevent white-screen locks when model is not passed or passed wrong
-        if (!$model instanceof Model) {
+        if (!$model instanceof Model)
             throw new SyntaxException('Bad model type passed in form builder. Check for init: new Form()');
-        }
 
         $this->model = $model;
         $this->name = $model->getFormName();
         
         // check if passed custom layer file
-        if (Obj::isArray($layerFiles) && count($layerFiles) > 0) {
+        if (Any::isArray($layerFiles) && count($layerFiles) > 0) {
             foreach (array_keys(static::$structLayer) as $type) {
-                if (isset($layerFiles[$type]) && Obj::isString($layerFiles[$type])) {
+                if (isset($layerFiles[$type]) && Any::isStr($layerFiles[$type]))
                     static::$structLayer[$type] = $layerFiles[$type];
-                }
             }
         }
         // set model submit method
@@ -65,9 +64,8 @@ class Form extends NativeGenerator
 
         $property['id'] = $this->name; // define form id
         // if action is not defined - define it
-        if (Str::likeEmpty($property['action'])) {
+        if (!$property['action'])
             $property['action'] = App::$Request->getFullUrl();
-        }
 
         // set property global for this form
         $this->formProperty = $property;
@@ -88,35 +86,32 @@ class Form extends NativeGenerator
 
     /**
      * Display form field. Allowed type: text, password, textarea, checkbox, select, checkboxes, file, captcha, email, hidden
-     * @param $object
-     * @param $type
+     * @param string $object
+     * @param string $type
      * @param null|array $property
      * @param null|string $helper
      * @param null|string $layerFile
      * @return null|string
-     * @throws NativeException
-     * @throws SyntaxException
      */
-    public function field($object, $type, $property = null, $helper = null, $layerFile = null)
+    public function field(string $object, string $type, ?array $property = null, ?string $helper = null, ?string $layerFile = null)
     {
         if ($this->model === null) {
-            if (App::$Debug !== null) {
+            if (App::$Debug)
                 App::$Debug->addMessage('Form model is not defined for field name: [' . strip_tags($object) . ']');
-            }
+
             return null;
         }
 
         // can be dots separated object
         $propertyName = $object;
-        if (Str::contains('.', $propertyName)) {
+        if (Str::contains('.', $propertyName))
             $propertyName = strstr($propertyName, '.', true);
-        }
 
         // check if model contains current tag name as property
         if (!property_exists($this->model, $propertyName)) {
-            if (App::$Debug !== null) {
+            if (App::$Debug)
                 App::$Debug->addMessage('Form field ["' . $object . '"] is not defined in model: [' . get_class($this->model) . ']', 'error');
-            }
+
             return null;
         }
         
@@ -154,14 +149,24 @@ class Form extends NativeGenerator
         if ($type === 'hidden') {
             return $elementDOM;
         }
+
+        // prepare output html
+        try {
+            $response = App::$View->render($layerFile, [
+                'name' => $labelFor,
+                'label' => $labelText,
+                'item' => $elementDOM,
+                'help' => self::nohtml($helper)
+            ]);
+        } catch (SyntaxException $e) {
+            if (App::$Debug)
+                App::$Debug->addException($e);
+
+            $response = null;
+        }
         
         // render output viewer
-        return App::$View->render($layerFile, [
-            'name' => $labelFor,
-            'label' => $labelText,
-            'item' => $elementDOM,
-            'help' => self::nohtml($helper)
-        ]);
+        return $response;
     }
 
     /**
@@ -199,11 +204,16 @@ class Form extends NativeGenerator
             if ($this->model !== null) {
                 $badAttr = $this->model->getBadAttribute();
                 $formName = $this->model->getFormName();
-                if (Obj::isArray($badAttr) && count($badAttr) > 0) {
+                if (Any::isArray($badAttr) && count($badAttr) > 0) {
                     foreach ($badAttr as $attr) {
                         $itemId = $formName . '-' . $attr;
-                        $render = App::$View->render(static::$structLayer['jsnotify'], ['itemId' => $itemId]);
-                        App::$Alias->addPlainCode('js', $render);
+                        try {
+                            $render = App::$View->render(static::$structLayer['jsnotify'], ['itemId' => $itemId]);
+                            App::$Alias->addPlainCode('js', $render);
+                        } catch (SyntaxException $e) {
+                            if (App::$Debug)
+                                App::$Debug->addException($e);
+                        }
                     }
                 }
             }

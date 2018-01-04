@@ -16,12 +16,12 @@ class Arr
      * @param bool $strict
      * @return bool
      */
-    public static function in($needle, $haystack, $strict = true)
+    public static function in(?string $needle, ?array $haystack = null, bool $strict = true): bool
     {
         // prevent errors
-        if (!Obj::isArray($haystack)) {
+        if (!Any::isArray($haystack) || $needle === null)
             return false;
-        }
+
         return in_array($needle, $haystack, $strict);
     }
 
@@ -29,13 +29,13 @@ class Arr
      * Alternative function for array_merge - safe for use with any-type params.
      * @return array
      */
-    public static function merge()
+    public static function merge(): array
     {
         $arguments = [];
         foreach (func_get_args() as $key => $val) {
-            if (!Obj::isArray($val)) {
+            if (!Any::isArray($val))
                 $val = [];
-            }
+
             $arguments[$key] = $val;
         }
         return call_user_func_array('array_merge', $arguments);
@@ -45,13 +45,13 @@ class Arr
      * Alternative function for array_merge_recursive - safe for use with any params
      * @return array
      */
-    public static function mergeRecursive()
+    public static function mergeRecursive(): array
     {
         $arguments = [];
         foreach (func_get_args() as $key => $val) {
-            if (!Obj::isArray($val)) {
+            if (!Any::isArray($val))
                 $val = [];
-            }
+
             $arguments[$key] = $val;
         }
         return call_user_func_array('array_merge_recursive', $arguments);
@@ -64,24 +64,22 @@ class Arr
      * @param string $delimiter
      * @return array|string|null
      */
-    public static function getByPath($path, $array = null, $delimiter = '.')
+    public static function getByPath(string $path, ?array $array = null, $delimiter = '.')
     {
         // path of nothing? interest
-        if (!Obj::isArray($array) || count($array) < 1 || !Obj::isString($path) || Str::likeEmpty($path)) {
+        if (!Any::isArray($array) || count($array) < 1 || !Any::isStr($path) || Str::likeEmpty($path))
             return null;
-        }
 
         // c'mon man, what the f*ck are you doing? ))
-        if (!Str::contains($delimiter, $path)) {
+        if (!Str::contains($delimiter, $path))
             return $array[$path];
-        }
 
         $output = $array;
         $pathArray = explode($delimiter, $path);
         foreach ($pathArray as $key) {
-            if (!Obj::isArray($output) || !array_key_exists($key, $output)) {
+            if (!Any::isArray($output) || !array_key_exists($key, $output))
                 return null;
-            }
+
             $output = $output[$key];
         }
         return $output;
@@ -93,21 +91,18 @@ class Arr
      * @param array $array
      * @return array
      */
-    public static function pluck($key, $array)
+    public static function pluck(?string $key = null, ?array $array = null): array
     {
-        if (!Obj::isArray($array) || !Obj::isString($key)) {
+        if (!Any::isArray($array) || !Any::isStr($key))
             return [];
-        }
 
         $output = [];
         foreach ($array as $item) {
             $object = $item[$key];
-            if (!self::in($object, $output)) {
+            if (!self::in($object, $output))
                 $output[] = $object;
-            }
         }
         return $output;
-
     }
 
     /**
@@ -151,11 +146,10 @@ class Arr
      * @param array $array
      * @return boolean
      */
-    public static function onlyNumericValues($array)
+    public static function onlyNumericValues(?array $array = null)
     {
-        if (!Obj::isArray($array)) {
+        if (!Any::isArray($array))
             return false;
-        }
 
         return is_numeric(implode('', $array));
     }

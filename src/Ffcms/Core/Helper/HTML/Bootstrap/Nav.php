@@ -5,6 +5,7 @@ namespace Ffcms\Core\Helper\HTML\Bootstrap;
 use Ffcms\Core\Helper\HTML\Listing;
 use Ffcms\Core\Helper\HTML\System\Dom;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -14,25 +15,23 @@ class Nav extends NativeGenerator
     /**
      * Display nav listing block
      * @param array $elements
+     * @return string|null
      */
-    public static function display($elements)
+    public static function display(array $elements): ?string
     {
         // check if elements isn't empty and contains rows
-        if (!Obj::isArray($elements) || count($elements['items']) < 1) {
+        if (!isset($elements['items']) || count($elements['items']) < 1)
             return null;
-        }
 
         // prepare tab order
-        if ($elements['tabAnchor'] === null) {
+        if ($elements['tabAnchor'] === null)
             $elements['tabAnchor'] = Str::randomLatin(mt_rand(6, 12));
-        }
 
         // set global element properties
         $blockProperty = [];
         if ($elements['blockProperty'] !== null) {
-            if (Obj::isArray($elements['blockProperty'])) {
+            if (Any::isArray($elements['blockProperty']))
                 $blockProperty = $elements['blockProperty'];
-            }
             unset($elements['blockProperty']);
         }
 
@@ -74,9 +73,8 @@ class Nav extends NativeGenerator
                 }
 
                 // mark active tab
-                if ($activeObject === true) {
+                if ($activeObject === true)
                     $item['property']['class'] .= (Str::length($item['property']['class']) > 0 ? ' ' : null) . 'active';
-                }
 
                 // tab special properties for bootstrap
                 $item['linkProperty']['aria-controls'] = $elements['tabAnchor'] . $tabIdx;

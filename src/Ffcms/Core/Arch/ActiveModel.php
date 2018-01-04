@@ -4,6 +4,7 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Serialize;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Illuminate\Database\Eloquent\Model as LaravelModel;
@@ -40,13 +41,11 @@ class ActiveModel extends LaravelModel
     public function getLocaled(string $attribute)
     {
         // if always decoded
-        if (Obj::isArray($this->{$attribute})) {
+        if (Any::isArray($this->{$attribute}))
             return $this->{$attribute}[App::$Request->getLanguage()];
-        }
 
-        if (!Obj::isString($attribute) || Str::likeEmpty($this->{$attribute})) {
+        if (!Any::isStr($attribute) || Str::likeEmpty($this->{$attribute}))
             return null;
-        }
 
         return Serialize::getDecodeLocale($this->{$attribute});
     }
@@ -59,9 +58,9 @@ class ActiveModel extends LaravelModel
      */
     public function setAttribute($key, $value)
     {
-        if ($value !== null && $this->isSerializeCastable($key)) {
+        if ($value !== null && $this->isSerializeCastable($key))
             $value = $this->asSerialize($value);
-        }
+
         return parent::setAttribute($key, $value);
     }
 
@@ -73,13 +72,11 @@ class ActiveModel extends LaravelModel
      */
     protected function castAttribute($key, $value)
     {
-        if ($value === null) {
+        if ($value === null)
             return $value;
-        }
 
-        if ($this->getCastType($key) === 'serialize') {
+        if ($this->getCastType($key) === 'serialize')
             return $this->fromSerialize($value);
-        }
 
         return parent::castAttribute($key, $value);
     }

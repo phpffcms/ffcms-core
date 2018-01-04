@@ -3,10 +3,16 @@
 namespace Ffcms\Core\Helper\HTML\Form;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Arch\Model;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
+/**
+ * Class Constructor. Form field construction manager.
+ * @package Ffcms\Core\Helper\HTML\Form
+ */
 class Constructor
 {
     const TYPE_TEXT = 'text';
@@ -31,98 +37,103 @@ class Constructor
     /**
      * Initialize Constructor. Pass model and type inside of current field inside.
      * @param \Ffcms\Core\Arch\Model $model
+     * @param string|null $formName
      * @param string $type
      */
-    public function __construct($model, $formName = false, $type = 'text')
+    public function __construct(Model $model, ?string $formName = null, ?string $type = 'text')
     {
         $this->model = $model;
         $this->formName = $formName;
         $this->type = $type;
     }
-    
-    
-    public function makeTag($name, $value = null, $properties = null)
+
+    /**
+     * @param string|array $name
+     * @param string|array|null $value
+     * @param array|null $properties
+     * @return null|string
+     */
+    public function makeTag($name, $value = null, ?array $properties = null): ?string
     {
         // check if properties is passed well
-        if ($properties !== null && !Obj::isArray($properties)) {
-            throw new SyntaxException('Property must be passed as array or null! Field: ' . $name);
-        }
+        if ($properties !== null && !Any::isArray($properties))
+            return null;
         
         // add properties to autovalidation by js (properties passed by ref)
-        $this->validatorProperties($name, $properties);
-        // prepare properties name and id to autobuild
-        $this->globalProperties($name, $value, $properties);
+        $this->addValidationProperties($name, $properties);
+        // set default form data as properties: name="", value="", id="" based tag info
+        $this->setDefaultProperties($name, $value, $properties);
         
         // initialize build model depend of current type
         switch ($this->type) {
             case static::TYPE_TEXT: // for <input type="text">
                 $builder = new TextField($properties, $name);
-                return $builder->make();
+                break;
             case static::TYPE_CHECKBOX:
                 $builder = new CheckboxField($properties, $name, $value);
-                return $builder->make();
+                break;
             case static::TYPE_PASSWORD:
                 $builder = new PasswordField($properties, $name);
-                return $builder->make();
+                break;
             case static::TYPE_EMAIL:
                 $builder = new EmailField($properties, $name);
-                return $builder->make();
+                break;
             case static::TYPE_SELECT:
                 $builder = new SelectField($properties, $name, $value);
-                return $builder->make();
+                break;
             case static::TYPE_TEXTAREA:
                 $builder = new TextareaField($properties, $name, $value);
-                return $builder->make();
+                break;
             case static::TYPE_MULTI_CHECKBOXES:
                 $builder = new MultiCheckboxField($properties, $name, $value);
-                return $builder->make();
+                break;
             case static::TYPE_CAPTCHA:
                 $builder = new CaptchaField($properties, $name);
-                return $builder->make();
+                break;
             case static::TYPE_FILE:
                 $builder = new FileField($properties, $name);
-                return $builder->make();
+                break;
             case static::TYPE_HIDDEN:
                 $builder = new HiddenField($properties, $name, $value);
-                return $builder->make();
+                break;
             case static::TYPE_DIV_FAKE:
                 $builder = new DivFakeField($properties, $name, $value);
-                return $builder->make();
+                break;
             case static::TYPE_MULTISELECT:
                 $builder = new MultiSelectField($properties, $name, $value);
-                return $builder->make();
+                break;
             case static::TYPE_RADIO:
                 $builder = new RadioField($properties, $name, $value);
-                return $builder->make();
+                break;
+            default:
+                if (App::$Debug)
+                    App::$Debug->addMessage('Field has unknown type: ' . App::$Security->strip_tags($name));
         }
-        
-        // if field is unknown type add notification in debugbar
-        if (App::$Debug !== null) {
-            App::$Debug->addMessage('Field with name [' . App::$Security->strip_tags($name) . '] have unknown type [' . $this->type . ']', 'error');
-        }
-        return 'No data: ' . App::$Security->strip_tags($name);
+
+        return $builder->make();
     }
     
     /**
      * Set validator options to current properties
      * @param string $name
-     * @param array $properties
+     * @param array|null $properties
+     * @return void
      */
-    private function validatorProperties($name, &$properties)
+    private function addValidationProperties(string $name, ?array &$properties = null): void
     {
         // jquery validation quick-build some rules
         $rules = $this->model->getValidationRule($name);
         if (count($rules) > 0) {
-            foreach ($rules as $rule_name => $rule_value) {
-                switch ($rule_name) {
+            foreach ($rules as $type => $value) {
+                switch ($type) {
                     case 'required':
                         $properties['required'] = null;
                         break;
                     case 'length_min':
-                        $properties['minlength'] = $rule_value;
+                        $properties['minlength'] = $value;
                         break;
                     case 'length_max':
-                        $properties['maxlength'] = $rule_value;
+                        $properties['maxlength'] = $value;
                         break;
                 }
             }
@@ -133,15 +144,14 @@ class Constructor
      * Prepare field global properties - name, id and value
      * @param string $name
      * @param string|null $value
-     * @param array $properties
+     * @param array|null $properties
      */
-    private function globalProperties($name, $value = null, &$properties)
+    private function setDefaultProperties(string $name, $value = null, array &$properties = null): void
     {
         // standard property data definition
         $properties['name'] = $properties['id'] = $this->formName; // form global name
-        if ($value !== null && !Str::likeEmpty($value)) {
+        if ($value !== null && !Any::isEmpty($value))
             $properties['value'] = $value;
-        }
         
         // sounds like a array-path based obj name
         if (Str::contains('.', $name)) {

@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Template;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Traits\Singleton;
 
@@ -33,11 +34,8 @@ class Variables
      */
     public function setGlobalArray(array $array)
     {
-        if (!Obj::isArray($array)) {
-            return;
-        }
         foreach ($array as $var => $value) {
-            $this->globalVars[$var] = Obj::isString($value) ? App::$Security->strip_tags($value) : $value;
+            $this->globalVars[$var] = Any::isStr($value) ? App::$Security->strip_tags($value) : $value;
         }
     }
 

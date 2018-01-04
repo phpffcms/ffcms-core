@@ -5,6 +5,7 @@ namespace Ffcms\Core;
 
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -23,9 +24,8 @@ class Properties
      */
     public function __construct()
     {
-        if ($this->load('default') === false) {
+        if (!$this->load('default'))
             throw new NativeException('Default configurations is not founded: /Private/Config/Default.php');
-        }
     }
 
     /**
@@ -34,12 +34,11 @@ class Properties
      * @param bool $overload
      * @return bool
      */
-    private function load($configName, $overload = false)
+    private function load(string $configName, $overload = false): bool
     {
         // check if always loaded
-        if (Obj::isArray($this->data) && array_key_exists($configName, $this->data) && $overload === false) {
+        if (Any::isArray($this->data) && array_key_exists($configName, $this->data) && !$overload)
             return true;
-        }
 
         // try to load from file
         $configFile = ucfirst(Str::lowerCase($configName)) . '.php';
@@ -55,21 +54,19 @@ class Properties
      * Get config value by config key from configuration file
      * @param string $configKey
      * @param string $configFile
-     * @param bool|false $parseType
+     * @param string|null $parseType
      * @return mixed
      */
-    public function get($configKey, $configFile = 'default', $parseType = false)
+    public function get(string $configKey, string $configFile = 'default', ?string $parseType = null)
     {
         $this->load($configFile);
         // check if configs for this file is loaded
-        if (!isset($this->data[$configFile])) {
+        if (!isset($this->data[$configFile]))
             return false;
-        }
 
         // check if config key is exist
-        if (!isset($this->data[$configFile][$configKey])) {
+        if (!isset($this->data[$configFile][$configKey]))
             return false;
-        }
 
         $response = $this->data[$configFile][$configKey];
 
@@ -98,14 +95,13 @@ class Properties
     /**
      * Get all configuration data of selected file
      * @param string $configFile
-     * @return bool|array
+     * @return array|null
      */
-    public function getAll($configFile = 'default')
+    public function getAll($configFile = 'default'): ?array
     {
         $this->load($configFile);
-        if (!Obj::isArray($this->data) || !array_key_exists($configFile, $this->data)) {
-            return false;
-        }
+        if (!Any::isArray($this->data) || !array_key_exists($configFile, $this->data))
+            return null;
 
         return $this->data[$configFile];
     }
@@ -117,19 +113,14 @@ class Properties
      * @param bool $mergeDeep
      * @return bool
      */
-    public function updateConfig($configFile, array $newData, $mergeDeep = false)
+    public function updateConfig(string $configFile, array $newData, ?bool $mergeDeep = false): bool
     {
         $this->load($configFile);
-        if (!isset($this->data[$configFile])) {
+        if (!isset($this->data[$configFile]))
             return false;
-        }
 
-        if ($mergeDeep) {
-            $saveData = Arr::mergeRecursive($this->data[$configFile], $newData);
-        } else {
-            $saveData = Arr::merge($this->data[$configFile], $newData);
-        }
-
+        $oldData = $this->data[$configFile];
+        $saveData = ($mergeDeep ? Arr::mergeRecursive($oldData, $newData) : Arr::merge($oldData, $newData));
         return $this->writeConfig($configFile, $saveData);
     }
 
@@ -139,12 +130,12 @@ class Properties
      * @param array $data
      * @return bool
      */
-    public function writeConfig($configFile, array $data)
+    public function writeConfig(string $configFile, array $data): bool
     {
         $path = '/Private/Config/' . ucfirst(Str::lowerCase($configFile)) . '.php';
-        if (!File::exist($path) || !File::writable($path)) {
+        if (!File::exist($path) || !File::writable($path))
             return false;
-        }
+
         $saveData = '<?php return ' . Arr::exportVar($data) . ';';
         File::write($path, $saveData);
         // overload config values if changed

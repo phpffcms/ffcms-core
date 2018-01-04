@@ -5,6 +5,7 @@ namespace Ffcms\Core\Helper;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -35,7 +36,6 @@ class Url extends NativeGenerator
      */
     public static function buildPathway(array $to = null, $encode = true)
     {
-        
         // if empty passed - let show main page
         if ($to === null) {
             return null;
@@ -88,10 +88,10 @@ class Url extends NativeGenerator
         }
 
         // parse get attributes
-        if (isset($to[3]) && Obj::isArray($to[3]) && count($to[3]) > 0) {
+        if (isset($to[3]) && Any::isArray($to[3]) && count($to[3]) > 0) {
             // check if anchor bindig is exist
             $anchor = false;
-            if (isset($to[3]['#']) && Obj::isString($to[3]['#']) && Str::startsWith('#', $to[3]['#'])) {
+            if (isset($to[3]['#']) && Any::isStr($to[3]['#']) && Str::startsWith('#', $to[3]['#'])) {
                 $anchor = $to[3]['#'];
                 unset($to[3]['#']);
             }
@@ -105,7 +105,7 @@ class Url extends NativeGenerator
         }
         
         // parse anchor link part #item-related-id-1
-        if (isset($to[4]) && Obj::isString($to[4]) && Str::startsWith('#', $to[4])) {
+        if (isset($to[4]) && Any::isStr($to[4]) && Str::startsWith('#', $to[4])) {
             $response .= $to[4];
         }
 
@@ -136,10 +136,9 @@ class Url extends NativeGenerator
     public static function link($to, $name, array $property = null)
     {
         $compile_property = self::applyProperty($property);
-
-        if (!Obj::isArray($to)) { // callback magic (:
+        if (!Any::isArray($to))
             $to = [$to];
-        }
+
         // call Url::to(args)
         $callbackTo = call_user_func_array([__NAMESPACE__ . '\Url', 'to'], $to);
 

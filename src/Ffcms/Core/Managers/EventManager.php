@@ -2,6 +2,7 @@
 namespace Ffcms\Core\Managers;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 
 /**
@@ -29,12 +30,11 @@ class EventManager
      * @param string|array $event            
      * @param \Closure $callback            
      */
-    public function on($event, \Closure $callback)
+    public function on($event, \Closure $callback): void
     {
         // check if event is a single string and parse it to array single item
-        if (!Obj::isArray($event)) {
+        if (!Any::isArray($event))
             $event = [$event];
-        }
         
         foreach ($event as $item) {
             $this->events[$item][] = $callback;
@@ -50,15 +50,13 @@ class EventManager
     public function listen($event, \Closure $callback)
     {
         // check if $event is a single string and set it as array with one item
-        if (!Obj::isArray($event)) {
+        if (!Any::isArray($event))
             $event = [$event];
-        }
         
         // each every one event in array
         foreach ($event as $item) {
-            if (Obj::isArray($this->runned) && array_key_exists($item, $this->runned)) {
+            if (Any::isArray($this->runned) && array_key_exists($item, $this->runned))
                 return call_user_func_array($callback, $this->runned[$item]);
-            }    
         }
         
         return false;
@@ -73,9 +71,8 @@ class EventManager
         // dynamicly parse input params
         $args = func_get_args();
         
-        if (count($args) < 1) {
+        if (count($args) < 1)
             return false;
-        }
         
         // get event name
         $eventName = array_shift($args);
@@ -83,7 +80,7 @@ class EventManager
         $eventArgs = @array_shift($args);
         
         // if event is registered
-        if (isset($this->events[$eventName]) && Obj::isArray($this->events[$eventName])) {
+        if (isset($this->events[$eventName]) && Any::isArray($this->events[$eventName])) {
             foreach ($this->events[$eventName] as $callback) {
                 // call anonymous function with args if passed
                 return call_user_func_array($callback, $eventArgs);
@@ -104,5 +101,4 @@ class EventManager
         App::$Memory->set('events.runned.save', $this->runned);
         
     }
-    
 }

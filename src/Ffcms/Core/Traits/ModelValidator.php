@@ -7,6 +7,7 @@ use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\ModelFilters;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
@@ -58,26 +59,24 @@ trait ModelValidator
     public function runValidate(array $rules = null)
     {
         // skip validation on empty rules
-        if ($rules === null || !Obj::isArray($rules)) {
+        if ($rules === null)
             return true;
-        }
 
         $success = true;
         // list each rule as single one
         foreach ($rules as $rule) {
             // 0 = field (property) name, 1 = filter name, 2 = filter value
-            if ($rule[0] === null || $rule[1] === null) {
+            if ($rule[0] === null || $rule[1] === null)
                 continue;
-            }
+
             $propertyName = $rule[0];
             $validationRule = $rule[1];
             $validationValue = null;
-            if (isset($rule[2])) {
+            if (isset($rule[2]))
                 $validationValue = $rule[2];
-            }
 
             // check if target field defined as array and make recursive validation
-            if (Obj::isArray($propertyName)) {
+            if (Any::isArray($propertyName)) {
                 $cumulateValidation = true;
                 foreach ($propertyName as $attrNme) {
                     // end false condition
@@ -171,9 +170,9 @@ trait ModelValidator
                 if ($propertyName !== $field_set_name) { // array-based property
                     $dot_path = trim(strstr($propertyName, '.'), '.');
                     // prevent throws any exceptions for null and false objects
-                    if (!Obj::isArray($this->{$field_set_name})) {
+                    if (!Any::isArray($this->{$field_set_name}))
                         $this->{$field_set_name} = [];
-                    }
+
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
                     $dotData->set($dot_path, $fieldValue); // todo: check me!!! Here can be bug of fail parsing dots and passing path-value
@@ -202,21 +201,14 @@ trait ModelValidator
         $sources = $this->sources();
         $types = $this->types();
         // validate sources for current field
-        if (Obj::isArray($sources) && array_key_exists($propertyName, $sources)) {
+        if (array_key_exists($propertyName, $sources))
             $inputType = Str::lowerCase($sources[$propertyName]);
-        }
-        if (Obj::isArray($types)) {
-            // check if field is array-nested element by dots and use first element as general
-            $filterField = $propertyName;
-            /** @todo - i have no idea why before i use only first element of dot-nested array. Probably bug.
-            // check if field_name is dot-separated array and use general part
-            if (Str::contains('.', $propertyName)) {
-                $filterField = Str::firstIn($propertyName, '.');
-            }*/
-            if (array_key_exists($filterField, $types)) {
-                $filterType = Str::lowerCase($types[$filterField]);
-            }
-        }
+
+
+        // check if field is array-nested element by dots and use first element as general
+        $filterField = $propertyName;
+        if (array_key_exists($filterField, $types))
+            $filterType = Str::lowerCase($types[$filterField]);
 
         // get clear field value
         $propertyValue = $this->getRequest($propertyName, $inputType);

@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper\HTML\System;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
@@ -53,14 +54,13 @@ abstract class NativeGenerator
     /**
      * Build property for html element from array.
      * IMPORTANT: $property can be null-string (some times this happend's) - do not remove NULL!!
-     * @param array $property
+     * @param array|null $property
      * @return null|string
      */
     public static function applyProperty(array $property = null)
     {
-        if (!Obj::isArray($property) || count($property) < 1) {
+        if ($property === null || count($property) < 1)
             return null;
-        }
         
         $build = null;
         foreach ($property as $p => $v) {
@@ -96,9 +96,8 @@ abstract class NativeGenerator
     public static function buildContainerTag($tagName, array $property = null, $value = null, $valueHtml = false)
     {
         $tagName = self::nohtml($tagName);
-        if ($valueHtml !== true) {
+        if ($valueHtml !== true)
             $value = self::nohtml($value);
-        }
         
         return '<' . $tagName . self::applyProperty($property) . '>' . $value . '</' . $tagName . '>';
     }
@@ -112,9 +111,9 @@ abstract class NativeGenerator
     public static function safeUri($string, $encode = true)
     {
         $string = self::nohtml($string);
-        if ($encode === true) {
+        if ($encode === true)
             $string = self::encode($string);
-        }
+
         return $string;
     }
 
@@ -166,7 +165,7 @@ abstract class NativeGenerator
         }
 
         // check if current uri equals with aliases
-        if (Obj::isArray($aliases) && count($aliases) > 0) {
+        if (Any::isArray($aliases) && count($aliases) > 0) {
             foreach ($aliases as $activeUri) {
                 $activeUri = trim($activeUri, '/');
                 if (Str::endsWith('*', $activeUri)) {
@@ -212,7 +211,7 @@ abstract class NativeGenerator
     public static function convertLink($uri)
     {
         $link = App::$Alias->baseUrl . '/';
-        if (Obj::isArray($uri)) {
+        if (Any::isArray($uri)) {
             $link .= Url::buildPathway($uri);
         } elseif (Str::startsWith('http', $uri)) {
             $link = self::nohtml($uri);
@@ -226,15 +225,16 @@ abstract class NativeGenerator
 
     /**
      * Encode safe uri links with slashes
-     * @param $uri
+     * @param string $uri
      * @return string
      */
-    public static function encode($uri)
+    public static function encode(?string $uri = null)
     {
+        if (Str::likeEmpty($uri))
+            return null;
+
         return implode('/', array_map(function($v){
             return urlencode($v);
         }, explode('/', $uri)));
     }
-
-
 }

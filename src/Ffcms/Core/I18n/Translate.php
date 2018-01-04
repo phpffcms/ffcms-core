@@ -7,6 +7,7 @@ use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\FileSystem\Normalize;
 use Ffcms\Core\Helper\Serialize;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -17,7 +18,6 @@ use Ffcms\Core\Helper\Type\Str;
  */
 class Translate
 {
-
     protected $cached = [];
     protected $indexes = [];
 
@@ -40,20 +40,19 @@ class Translate
      * @param array|null $params
      * @return string
      */
-    public function get($index, $text, array $params = null)
+    public function get(?string $index, string $text, ?array $params = null)
     {
         if (App::$Request->getLanguage() !== App::$Properties->get('baseLanguage')) {
-            if ($index !== null && !Arr::in($index, $this->indexes)) {
+            if ($index && !Arr::in($index, $this->indexes)) {
                 $this->cached = Arr::merge($this->cached, $this->load($index));
                 $this->indexes[] = $index;
             }
 
-            if ($this->cached !== null && Obj::isString($text) && isset($this->cached[$text])) {
+            if ($this->cached && Any::isStr($text) && isset($this->cached[$text]))
                 $text = $this->cached[$text];
-            }
         }
 
-        if (Obj::isArray($params) && count($params) > 0) {
+        if (Any::isArray($params) && count($params) > 0) {
             foreach ($params as $var => $value) {
                 $text = Str::replace('%' . $var . '%', $value, $text);
             }
@@ -67,7 +66,7 @@ class Translate
      * @param array $params
      * @return string
      */
-    public function translate($text, array $params = [])
+    public function translate(string $text, array $params = null)
     {
         $index = null;
         $namespace = 'Apps\Controller\\' . env_name . '\\';
@@ -84,12 +83,12 @@ class Translate
      * @param string $index
      * @return array|null
      */
-    protected function load($index)
+    protected function load(string $index): ?array
     {
         $file = root . '/I18n/' . env_name . '/' . App::$Request->getLanguage() . '/' . $index . '.php';
-        if (!File::exist($file)) {
+        if (!File::exist($file))
             return [];
-        }
+
         return require($file);
     }
 
@@ -98,19 +97,17 @@ class Translate
      * @param string $path
      * @return bool
      */
-    public function append($path)
+    public function append($path): bool
     {
         $path = Normalize::diskFullPath($path);
         // check if file exist
-        if (!File::exist($path)) {
+        if (!File::exist($path))
             return false;
-        }
 
         // load file translations
         $addTranslation = require($path);
-        if (!Obj::isArray($addTranslation)) {
+        if (!Any::isArray($addTranslation))
             return false;
-        }
 
         // merge data
         $this->cached = Arr::merge($this->cached, $addTranslation);
@@ -121,7 +118,7 @@ class Translate
      * Get available languages in the filesystem
      * @return array
      */
-    public function getAvailableLangs()
+    public function getAvailableLangs(): array
     {
         $langs = ['en'];
         $scan = Directory::scan(root . '/I18n/' . env_name . '/', GLOB_ONLYDIR, true);
@@ -138,20 +135,18 @@ class Translate
      * @param string|null $default
      * @return string|null
      */
-    public function getLocaleText($input, $lang = null, $default = null)
+    public function getLocaleText($input, ?string $lang = null, ?string $default = null): ?string
     {
         // define language if empty
         if ($lang === null) {
             $lang = App::$Request->getLanguage();
         }
         // unserialize from string to array
-        if (Obj::isString($input)) {
+        if (Any::isStr($input))
             $input = Serialize::decode($input);
-        }
 
-        if (Obj::isArray($input) && array_key_exists($lang, $input)) {
+        if (Any::isArray($input) && array_key_exists($lang, $input))
             return $input[$lang];
-        }
 
         return $default;
     }

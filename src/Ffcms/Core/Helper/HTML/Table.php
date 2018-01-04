@@ -5,6 +5,7 @@ namespace Ffcms\Core\Helper\HTML;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\HTML\System\Dom;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 
@@ -18,18 +19,12 @@ class Table extends NativeGenerator
     /**
      * Construct table based on passed elements as array: properties, thead, tbody, rows, items etc
      * @param array $elements
-     * @return null
+     * @return string|null
      */
-    public static function display($elements)
+    public static function display(array $elements): ?string
     {
-        // check passed data
-        if (!Obj::isArray($elements) || count($elements) < 1) {
+        if (!array_key_exists('tbody', $elements) || !Any::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1)
             return null;
-        }
-
-        if (!isset($elements['tbody']) || !Obj::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1) {
-            return null;
-        }
 
         $selectOptions = false;
         if (isset($elements['selectableBox'])) {
@@ -43,7 +38,7 @@ class Table extends NativeGenerator
         $table = $dom->table(function () use ($dom, $elements, $selectOptions) {
             $res = null;
             // check if thead is defined
-            if (isset($elements['thead']) && Obj::isArray($elements['thead']) && count($elements['thead']) > 0 && Obj::isArray($elements['thead']['titles'])) {
+            if (isset($elements['thead']) && Any::isArray($elements['thead']) && count($elements['thead']) > 0 && Any::isArray($elements['thead']['titles'])) {
                 // add thead container
                 $res .= $dom->thead(function () use ($dom, $elements, $selectOptions) {
                     return $dom->tr(function () use ($dom, $elements, $selectOptions) {
@@ -76,7 +71,7 @@ class Table extends NativeGenerator
                 }, $elements['thead']['property']);
             }
             // parse tbody array elements
-            if (isset($elements['tbody']) && Obj::isArray($elements['tbody']) && isset($elements['tbody']['items']) && Obj::isArray($elements['tbody']['items'])) {
+            if (isset($elements['tbody']) && Any::isArray($elements['tbody']) && isset($elements['tbody']['items']) && Any::isArray($elements['tbody']['items'])) {
                 // add tbody container
                 $res .= $dom->tbody(function() use ($dom, $elements, $selectOptions){
                     $tr = null;
@@ -88,9 +83,9 @@ class Table extends NativeGenerator
                         $tr .= $dom->tr(function () use ($dom, $row, $selectOptions) {
                             $td = null;
                             foreach ($row as $order => $item) {
-                                if (!Obj::isInt($order)) {
+                                if (!Any::isInt($order))
                                     continue;
-                                }
+
                                 // collect td item
                                 $td .= $dom->td(function () use ($dom, $order, $item, $selectOptions) {
                                     $text = null;
@@ -127,15 +122,15 @@ class Table extends NativeGenerator
         }, $elements['table']);
 
         // check if select box is defined and used
-        if ($selectOptions !== false || Obj::isArray($selectOptions)) {
+        if ($selectOptions !== false || Any::isArray($selectOptions)) {
             // build js code for "selectAll" checkbox
             self::buildSelectorHtml($selectOptions);
             // return response inside "form" tag
             return $dom->form(function () use ($dom, $selectOptions, $table) {
                 foreach ($selectOptions['buttons'] as $btn) {
-                    if (!Obj::isArray($btn)) {
+                    if (!Any::isArray($btn))
                         continue;
-                    }
+
                     $table .= $dom->input(function(){
                         return null;
                     }, $btn) . ' ';
@@ -163,5 +158,4 @@ class Table extends NativeGenerator
         });';
         App::$Alias->addPlainCode('js', $js);
     }
-
 }

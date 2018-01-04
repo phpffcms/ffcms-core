@@ -14,7 +14,7 @@ interface iUser
      * Get current user id if auth
      * @return int
      */
-    public function getId();
+    public function getId(): ?int;
 
     /**
      * Get user param
@@ -22,83 +22,54 @@ interface iUser
      * @param null|string $defaultValue
      * @return string|null
      */
-    public function getParam($param, $defaultValue = null);
+    public function getParam(string $param, ?string $defaultValue = null): ?string;
 
     /**
      * Check if current user session is auth
      * @return bool
      */
-    public static function isAuth();
+    public static function isAuth(): bool;
 
     /**
      * Check if user with $id exist
-     * @param int $id
+     * @param string|int|null $id
      * @return bool
      */
-    public static function isExist($id);
+    public static function isExist(?string $id = null): bool;
 
     /**
      * Get user person all data like a object
-     * @param null|int $id
-     * @return null|iUser
+     * @param string|int|null $id
+     * @return null|self
      */
-    public static function identity($id = null);
+    public static function identity(?string $id = null);
 
     /**
      * Check if use with $email is exist
-     * @param string $email
+     * @param string|null $email
      * @return bool
      */
-    public static function isMailExist($email);
+    public static function isMailExist(?string $email = null): bool;
 
     /**
      * Check if user with $login is exist
-     * @param string $login
+     * @param string|null $login
      * @return bool
      */
-    public static function isLoginExist($login);
+    public static function isLoginExist(?string $login = null): bool;
 
     /**
      * Get user person like a object via email
-     * @param string $email
-     * @return iUser|null
+     * @param string|null $email
+     * @return null|self
      */
-    public static function getIdentityViaEmail($email);
+    public static function getIdentityViaEmail(?string $email = null);
 
-    /**
-     * Get user wall post object
-     * @return WallPost
-     */
-    public function getWall();
-
-    /**
-     * Get user role data
-     * @return Role
-     */
-    public function getRole();
-
-    /**
-     * Get user profile data. Call like (new User())->Profile->column;
-     * @return Profile
-     */
-    public function getProfile();
-
-    /**
-     * Get user logs relation.
-     * @return UserLog
-     */
-    public function getLogs();
-
-    /**
-     * Get user social openid providers relation.
-     * @return UserProvider
-     */
-    public function getProviders();
 
     /**
      * Check if target user with $target_id in blacklist for current session user_id
-     * @param int $target_id
+     * @param string|int|bool $target
      * @return bool
      */
-    public function inBlacklist($target_id);
+    public function inBlacklist(?string $target = null): bool;
 }

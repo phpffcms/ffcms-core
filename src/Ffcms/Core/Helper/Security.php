@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -37,13 +38,9 @@ class Security
      * @param string|array $data
      * @return string
      */
-    public function secureHtml($data)
+    public function secureHtml($data): ?string
     {
-        if (Obj::isArray($data)) {
-            return $this->purifier->purifyArray($data);
-        }
-
-        return $this->purifier->purify($data);
+        return (Any::isArray($data) ? $this->purifier->purifyArray($data) : $this->purifier->purify($data));
     }
 
     /**
@@ -55,7 +52,7 @@ class Security
     public function strip_tags($html, $escapeQuotes = true)
     {
         // recursive usage
-        if (Obj::isArray($html)) {
+        if (Any::isArray($html)) {
             foreach ($html as $key=>$value) {
                 $html[$key] = $this->strip_tags($value, $escapeQuotes);
             }
@@ -63,9 +60,9 @@ class Security
         }
 
         $text = strip_tags($html);
-        if ($escapeQuotes) {
+        if ($escapeQuotes)
             $text = $this->escapeQuotes($text);
-        }
+
         return $text;
     }
 
@@ -116,22 +113,22 @@ class Security
      */
     public static function password_hash($password, $salt = null)
     {
-        if ($salt === null || !Obj::isString($salt) || Str::length($salt) < 1) {
+        if ($salt === null || !Any::isStr($salt) || Str::length($salt) < 1)
             $salt = App::$Properties->get('passwordSalt');
-        }
+
         return crypt($password, $salt);
     }
 
     /**
      * Generate simple hash of 8 chars (32bit) for string. This method is NOT SECURE for crypt reason!
      * @param string $string
-     * @return string|false
+     * @return string|null
      */
-    public static function simpleHash($string)
+    public static function simpleHash($string): ?string
     {
-        if (Obj::isArray($string) || Obj::isObject($string)) {
-            return false;
-        }
+        if (!Any::isLine($string))
+            return null;
+
         return dechex(crc32($string));
     }
 }

@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Network;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -81,10 +82,10 @@ class Request extends FoundationRequest
             $this->language = App::$Properties->get('singleLanguage');
         } else {
             // maybe its a language domain alias?
-            if (Obj::isArray(App::$Properties->get('languageDomainAlias'))) {
+            if (Any::isArray(App::$Properties->get('languageDomainAlias'))) {
                 /** @var array $domainAlias */
                 $domainAlias = App::$Properties->get('languageDomainAlias');
-                if (Obj::isArray($domainAlias) && !Str::likeEmpty($domainAlias[$this->getHost()])) {
+                if (Any::isArray($domainAlias) && !Str::likeEmpty($domainAlias[$this->getHost()])) {
                     $this->language = $domainAlias[$this->getHost()];
                 }
             } else {
@@ -105,7 +106,7 @@ class Request extends FoundationRequest
                 if ($this->language === null) {
                     $userLang = App::$Properties->get('singleLanguage');
                     $browserAccept = $this->getLanguages();
-                    if (Obj::isArray($browserAccept) && count($browserAccept) > 0) {
+                    if (Any::isArray($browserAccept) && count($browserAccept) > 0) {
                         foreach ($browserAccept as $bLang) {
                             if (Arr::in($bLang, App::$Properties->get('languages'))) {
                                 $userLang = $bLang;
@@ -140,24 +141,21 @@ class Request extends FoundationRequest
         $routing = App::$Properties->getAll('Routing');
 
         // try to work with static aliases
-        if (Obj::isArray($routing) && isset($routing['Alias'], $routing['Alias'][env_name])) {
+        if (Any::isArray($routing) && isset($routing['Alias'], $routing['Alias'][env_name]))
             $pathway = $this->findStaticAliases($routing['Alias'][env_name], $pathway);
-        }
 
         $this->setPathdata(explode('/', trim($pathway, '/')));
 
         // set default controller and action for undefined data
-        if ($this->action == null) {
+        if (!$this->action)
             $this->action = 'Index';
-        }
 
         // empty or contains backslashes? set to main
-        if ($this->controller == null || Str::contains('\\', $this->controller)) {
+        if (!$this->controller || Str::contains('\\', $this->controller))
             $this->controller = 'Main';
-        }
 
         // find callback injection in routing configs (calculated in App::run())
-        if (Obj::isArray($routing) && isset($routing['Callback'], $routing['Callback'][env_name])) {
+        if (Any::isArray($routing) && isset($routing['Callback'], $routing['Callback'][env_name])) {
             $this->findDynamicCallbacks($routing['Callback'][env_name], $this->controller);
         }
     }
@@ -172,9 +170,8 @@ class Request extends FoundationRequest
         /** @var array $routing */
         $routing = App::$Properties->getAll('Routing');
 
-        if (!Obj::isArray($routing) || !isset($routing['Redirect']) || !Obj::isArray($routing['Redirect'])) {
+        if (!Any::isArray($routing) || !isset($routing['Redirect']) || !Any::isArray($routing['Redirect']))
             return;
-        }
 
         // check if source uri is key in redirect target map
         if (array_key_exists($pathway, $routing['Redirect'])) {
@@ -231,11 +228,10 @@ class Request extends FoundationRequest
      * @param array|null $map
      * @param string|null $controller
      */
-    private function findDynamicCallbacks(array $map = null, $controller = null)
+    private function findDynamicCallbacks(array $map = null, ?string $controller = null)
     {
-        if ($map === null) {
+        if ($map === null)
             return;
-        }
 
         // try to find global callback for this controller slug
         if (array_key_exists($controller, $map)) {
@@ -252,9 +248,8 @@ class Request extends FoundationRequest
     private function loadTrustedProxies()
     {
         $proxies = App::$Properties->get('trustedProxy');
-        if ($proxies === null || Str::likeEmpty($proxies)) {
+        if ($proxies === null || Str::likeEmpty($proxies))
             return;
-        }
 
         $pList = explode(',', $proxies);
         $resultList = [];
@@ -268,11 +263,10 @@ class Request extends FoundationRequest
      * Working with path array data
      * @param array|null $pathArray
      */
-    private function setPathdata(array $pathArray = null)
+    private function setPathdata(?array $pathArray = null)
     {
-        if (!Obj::isArray($pathArray) || count($pathArray) < 1) {
+        if (!Any::isArray($pathArray) || count($pathArray) < 1)
             return;
-        }
 
         // check if array length is more then 4 basic elements and slice it recursive
         if (count($pathArray) > 4) {

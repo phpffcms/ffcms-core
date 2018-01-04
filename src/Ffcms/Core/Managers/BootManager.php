@@ -7,6 +7,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Debug\DebugMeasure;
 use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\FileSystem\File;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
@@ -18,7 +19,7 @@ class BootManager
 {
     use DebugMeasure;
 
-    CONST CACHE_TREE_TIME = 120;
+    const CACHE_TREE_TIME = 120;
 
     private $loader;
     private $appRoots = [];
@@ -62,7 +63,7 @@ class BootManager
     {
         // get composer autoload map
         $map = $this->loader->getPrefixes();
-        if (Obj::isArray($map)) {
+        if (Any::isArray($map)) {
             // get all available apps root dirs by psr loader for apps
             if (array_key_exists('Apps\\', $map)) {
                 foreach ($map['Apps\\'] as $appPath) {
@@ -80,13 +81,11 @@ class BootManager
         }
 
         // set default root path if not found anything else
-        if (count($this->appRoots) < 1) {
+        if (count($this->appRoots) < 1)
             $this->appRoots = [root];
-        }
 
-        if (count($this->widgetRoots) < 1) {
+        if (count($this->widgetRoots) < 1)
             $this->widgetRoots = [root];
-        }
     }
 
     /**
@@ -114,9 +113,9 @@ class BootManager
             $widget .= '/Widgets/' . env_name;
             // widgets are packed in directory, classname should be the same with root directory name
             $dirs = Directory::scan($widget, GLOB_ONLYDIR, true);
-            if (!Obj::isArray($dirs)) {
+            if (!Any::isArray($dirs))
                 continue;
-            }
+
             foreach ($dirs as $instance) {
                 $class = 'Widgets\\' . env_name . '\\' . $instance . '\\' . $instance;
                 if (class_exists($class) && method_exists($class, 'boot') && is_a($class, 'Ffcms\Core\Arch\Widget', true)) {
@@ -134,9 +133,8 @@ class BootManager
     {
         $this->startMeasure(__METHOD__);
 
-        if (!Obj::isArray($this->objects)) {
+        if (!Any::isArray($this->objects))
             return false;
-        }
 
         foreach ($this->objects as $class) {
             forward_static_call([$class, 'boot']);

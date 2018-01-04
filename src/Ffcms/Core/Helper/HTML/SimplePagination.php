@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core\Helper\HTML;
 
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 
@@ -33,23 +34,20 @@ class SimplePagination
      * @param array|null $property
      * @return null|string
      */
-    public function display(array $property = null)
+    public function display(array $property = null): ?string
     {
         // total items is less to pagination requirement
-        if (($this->page * $this->step) + 1 > $this->total) {
+        if (($this->page * $this->step) + 1 > $this->total)
             return null;
-        }
 
         $lastPage = ceil($this->total / $this->step); // 6/5 ~ 2 = 0..2
 
-        if ($lastPage <= 1) {
+        if ($lastPage <= 1)
             return null;
-        }
 
         // prevent hack-boy's any try
-        if ($this->page > $lastPage) {
+        if ($this->page > $lastPage)
             return null;
-        }
 
         $items = [];
         // more then 10 items in pagination
@@ -92,7 +90,6 @@ class SimplePagination
                 // add latest 2 items
                 $items = Arr::merge($items, $this->generateItems($lastPage - 2, $lastPage));
             }
-
         } else { // less then 10 items in pagination
             $items = $this->generateItems(0, $lastPage);
         }
@@ -106,10 +103,10 @@ class SimplePagination
 
     /**
      * Set GET param to property array
-     * @param int|string $page_id
+     * @param int|string $pageId
      * @return array
      */
-    protected function setUrlPage($page_id)
+    protected function setUrlPage($pageId)
     {
         $url = $this->url;
         switch (count($url)) { // check nulls if not set
@@ -123,13 +120,9 @@ class SimplePagination
         }
 
         // add page param if > 0
-        if ((int)$page_id > 0) {
+        if ((int)$pageId > 0) {
             // merge with ?page if query is not empty
-            if (Obj::isArray($url[3])) {
-                $url[3] = Arr::merge($url[3], ['page' => $page_id]);
-            } else { // just set ?page=$page_id
-                $url[3] = ['page' => $page_id];
-            }
+            $url[3] = (Any::isArray($url[3]) ? Arr::merge($url[3], ['page' => $pageId]) : ['page' => $pageId]);
         }
 
         return $url;
@@ -144,9 +137,9 @@ class SimplePagination
     protected function generateItems($start, $end)
     {
         // prevent any shit's
-        if ($end <= $start) {
+        if ($end <= $start)
             return null;
-        }
+
         $items = [];
         for ($i = $start; $i < $end; $i++) {
             $items[] = [

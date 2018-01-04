@@ -3,6 +3,7 @@ namespace Ffcms\Core\Helper\HTML\Form;
 
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 
@@ -35,9 +36,9 @@ class MultiSelectField extends NativeGenerator implements iField
         // check if options is defined
         $options = $this->properties['options'];
         $optionsKey = (bool)$this->properties['optionsKey'];
-        if (!Obj::isIterable($options)) {
+        if (!Any::isIterable($options))
             throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not iterable');
-        }
+
         unset($this->properties['options']);
         
         // set global field type
@@ -55,13 +56,11 @@ class MultiSelectField extends NativeGenerator implements iField
             if ($optionsKey === true) {
                 $optionProperty['value'] = $val;
                 // check if current element is active
-                if (Obj::isArray($this->value) && Arr::in((string)$val, $this->value)) {
+                if (Any::isArray($this->value) && Arr::in((string)$val, $this->value))
                     $optionProperty['selected'] = 'selected';
-                }
             } else {
-                if (Obj::isArray($this->value) && Arr::in((string)$text, $this->value)) {
+                if (Any::isArray($this->value) && Arr::in((string)$text, $this->value))
                     $optionProperty['selected'] = 'selected';
-                }
             }
             $optionsDOM .= self::buildContainerTag('option', $optionProperty, $text);
         }

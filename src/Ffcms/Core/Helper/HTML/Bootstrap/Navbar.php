@@ -5,6 +5,7 @@ namespace Ffcms\Core\Helper\HTML\Bootstrap;
 use Ffcms\Core\Helper\HTML\Listing;
 use Ffcms\Core\Helper\HTML\System\Dom;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Helper\Url;
@@ -18,27 +19,24 @@ class Navbar extends NativeGenerator
     /**
      * Build bootstrap navbar
      * @param array $elements
-     * @return NULL|string
+     * @return string|null
      */
-    public static function display($elements)
+    public static function display(array $elements): ?string
     {
         // check if elements passed well
-        if (!Obj::isArray($elements) || count($elements['items']) < 1) {
+        if (!isset($elements['items']) || count($elements['items']) < 1)
             return null;
-        }
 
         // set default bootstrap properties if not defined
         $elements['property']['class'] = Str::concat(' ', 'nav', $elements['property']['class']);
         $elements['nav']['class'] = Str::concat(' ', 'navbar', $elements['nav']['class']);
-        if ($elements['container'] === null) {
+        if (!$elements['container'])
             $elements['container'] = 'container-fluid';
-        }
 
         // set mobile collapse id for toggle
         $mobCollapseId = $elements['collapseId'];
-        if (Str::likeEmpty($mobCollapseId)) {
+        if (Any::isEmpty($mobCollapseId))
             $mobCollapseId = Str::randomLatin(mt_rand(6,12)) . mt_rand(1, 99);
-        }
 
         // set element id for toggle
         $ulId = 1;
@@ -49,7 +47,7 @@ class Navbar extends NativeGenerator
         $itemsStatic = null;
 
         foreach ($elements['items'] as $item) {
-            if (Obj::isString($item)) { // sounds like a static object w/o render request
+            if (Any::isStr($item)) { // sounds like a static object w/o render request
                 $itemsStatic .= $item;
             } else {
                 if ($item['type'] === 'dropdown') {

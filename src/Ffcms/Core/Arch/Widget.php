@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Arch;
 
 use Apps\ActiveRecord\App as AppRecord;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iWidget;
@@ -30,11 +31,10 @@ class Widget implements iWidget
 
         // init class and pass properties
         $object = new self::$class;
-        if (Obj::isArray($params) && count($params) > 0) {
+        if (Any::isArray($params) && count($params) > 0) {
             foreach ($params as $property => $value) {
-                if (property_exists($object, $property)) {
-                    $object->$property = $value;
-                }
+                if (property_exists($object, $property))
+                    $object->{$property} = $value;
             }
         }
 
@@ -53,6 +53,7 @@ class Widget implements iWidget
     /**
      * Get widget configs from admin part as array $cfg=>$value
      * @return array|null|string
+     * @throws \Ffcms\Core\Exception\SyntaxException
      */
     public function getConfigs()
     {

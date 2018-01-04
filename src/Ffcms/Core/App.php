@@ -13,6 +13,7 @@ use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Exception\TemplateException;
 use Ffcms\Core\Helper\Security;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\I18n\Translate;
@@ -55,7 +56,7 @@ class App
     /** @var \Ffcms\Core\I18n\Translate */
     public static $Translate;
 
-    /** @var \Ffcms\Core\Interfaces\iUser */
+    /** @var \Ffcms\Core\Interfaces\iUser|\Apps\ActiveRecord\User */
     public static $User;
 
     /** @var \Symfony\Component\HttpFoundation\Session\Session */
@@ -155,9 +156,8 @@ class App
 
         /** @var array $objects */
         $objects = App::$Properties->getAll('object');
-        if (!Obj::isArray($objects)) {
+        if (!Any::isArray($objects))
             throw new NativeException('Object configurations is not loaded: /Private/Config/Object.php');
-        }
 
         // each all objects as service_name => service_instance()
         foreach ($objects as $name => $instance) {
@@ -237,10 +237,17 @@ class App
             $html = $callClass->buildOutput();
         } catch (\Exception $e) {
             // check if exception is system-based throw
-            if ($e instanceof TemplateException)
+            if ($e instanceof TemplateException) {
                 $html = $e->display();
-            else // or hook exception to system based :)))
-                $html = (new NativeException($e->getMessage()))->display();
+            } else { // or hook exception to system based :)))
+                if (App::$Debug) {
+                    $msg = $e->getMessage() . $e->getTraceAsString();
+                    $html = (new NativeException($msg))->display();
+                } else {
+                    $html = (new NativeException($e->getMessage()))->display();
+                }
+
+            }
         }
 
         // set full rendered content to response builder

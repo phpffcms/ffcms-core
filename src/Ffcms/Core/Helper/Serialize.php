@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 
 /**
@@ -41,9 +42,9 @@ class Serialize
      */
     public static function getDecoded($data, $key)
     {
-        if (!Obj::isArray($data)) {
+        if (!Any::isArray($data))
             $data = self::decode($data);
-        }
+
         return $data === false ? null : $data[$key];
     }
 

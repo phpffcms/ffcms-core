@@ -4,6 +4,7 @@ namespace Ffcms\Core\Helper\HTML;
 
 use Ffcms\Core\Helper\HTML\System\Dom;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
@@ -23,9 +24,8 @@ class Listing extends NativeGenerator
     public static function display($elements)
     {
         // check input elements
-        if (!Arr::in($elements['type'], ['ul', 'ol']) || count($elements['items']) < 1) {
+        if (!Arr::in($elements['type'], ['ul', 'ol']) || count($elements['items']) < 1)
             return null;
-        }
 
         // initialize new DOM model
         $dom = new Dom();
@@ -62,9 +62,8 @@ class Listing extends NativeGenerator
      */
     private static function buildDropdown($dom, $item)
     {
-        if (!Obj::isArray($item['items'])) {
+        if (!Any::isArray($item['items']))
             return null;
-        }
 
         if (!isset($item['menuProperty']['class']))
             $item['menuProperty']['class'] = 'dropdown-menu';
@@ -115,12 +114,12 @@ class Listing extends NativeGenerator
         $properties = $item['property'];
 
         // try to parse link format for controller/action definition (must be array: 'main/index' to ['main/index'])
-        if (!Obj::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
+        if (!Any::isArray($item['link']) && !Str::startsWith('http', $item['link']) && !Str::startsWith('#', $item['link'])) {
             $item['link'] = [$item['link']];
         }
 
         // if its a controller/action definition try to work with active class
-        if (Obj::isArray($item['link'])) {
+        if (Any::isArray($item['link'])) {
             // check if css class for active item is defined
             if (!isset($item['activeClass'])) {
                 $item['activeClass'] = 'active';

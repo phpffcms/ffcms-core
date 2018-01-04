@@ -4,8 +4,10 @@ namespace Ffcms\Core\Debug;
 
 use Cassandra\Exception;
 use DebugBar\DataCollector\ConfigCollector;
+use DebugBar\DebugBarException;
 use DebugBar\StandardDebugBar;
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
 
 /**
@@ -19,14 +21,15 @@ class Manager
     public $render;
 
     /**
-     * Manager constructor. Construct debug manager - build debug bar, javascripts and initialize configs
+     * Manager constructor. Construct debug manager - build debug bar, javascripts and initialize config
      */
     public function __construct()
     {
         $this->bar = new StandardDebugBar();
         $this->render = $this->bar->getJavascriptRenderer();
-
-        $this->bar->addCollector(new ConfigCollector());
+        try {
+            $this->bar->addCollector(new ConfigCollector());
+        } catch (\Exception $oe){}
     }
 
     /**
@@ -66,7 +69,7 @@ class Manager
         if ($e instanceof \Exception) {
             try {
                 $this->bar->getCollector('exceptions')->addException($e);
-            } catch (\Exception $ie) {}
+            } catch (\Exception $ie) {} // mute exceptions there
         }
     }
 
@@ -74,29 +77,31 @@ class Manager
      * Add message into debug bar
      * @param string $m
      * @param string $type
-     * @throws \DebugBar\DebugBarException
      */
     public function addMessage($m, $type = 'info')
     {
-        if (!Obj::isString($m) || !Obj::isString($type)) {
+        if (!Any::isStr($m) || !Any::isStr($type))
             return;
-        }
-        $m = App::$Security->secureHtml($m);
-        $mCollector = $this->bar->getCollector('messages');
 
-        if (method_exists($mCollector, $type)) {
-            $this->bar->getCollector('messages')->{$type}($m);
-        }
+        $m = App::$Security->secureHtml($m);
+        try {
+            $mCollector = $this->bar->getCollector('messages');
+
+            if (method_exists($mCollector, $type)) {
+                $this->bar->getCollector('messages')->{$type}($m);
+            }
+        } catch (\Exception $e) {} // mute exceptions there
     }
 
     /**
      * Add message debug data to bar
-     * @param $data
-     * @throws \DebugBar\DebugBarException
+     * @param mixed $data
      */
     public function vardump($data)
     {
-        $this->bar->getCollector('messages')->info($data);
+        try {
+            $this->bar->getCollector('messages')->info($data);
+        } catch (\Exception $e) {}
     }
 
     /**

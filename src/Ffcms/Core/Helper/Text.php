@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Helper;
 
-use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
 class Text
@@ -15,13 +14,8 @@ class Text
      * @param int $length
      * @return string
      */
-    public static function snippet($text, $length = 150)
+    public static function snippet(string $text, int $length = 150)
     {
-        // check if valid string is passed
-        if (!Obj::isString($text)) {
-            return null;
-        }
-
         $breakerPos = mb_strpos($text, self::WYSIWYG_BREAK_HTML, null, 'UTF-8');
         // offset is founded, try to split preview from full text
         if ($breakerPos !== false) {
@@ -58,7 +52,7 @@ class Text
      * @param int $end
      * @return string
      */
-    public static function cut($text, $start = 0, $end = 0)
+    public static function cut(string $text, int $start = 0, int $end = 0)
     {
         return Str::sub($text, $start, $end);
     }
