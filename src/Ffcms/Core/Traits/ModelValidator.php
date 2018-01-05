@@ -139,7 +139,6 @@ trait ModelValidator
                     } else {
                         throw new SyntaxException('Filter callback execution failed: ' . $filterName);
                     }
-
                 }
             }
 
@@ -158,8 +157,12 @@ trait ModelValidator
         } else {
             throw new SyntaxException('Filter "' . $filterName . '" is not exist');
         }
-        if ($check !== true) { // if one from all validation tests is fail - mark as incorrect attribute
+
+        // if one from all validation tests is fail - mark as incorrect attribute
+        if ($check !== true) {
             $this->_badAttr[] = $propertyName;
+            if (App::$Debug)
+                App::$Debug->addMessage('Validation failed. Property: ' . $propertyName . ', filter: ' . $filterName, 'warning');
         } else {
             $field_set_name = $propertyName;
             // prevent array-type setting

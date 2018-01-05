@@ -25,7 +25,7 @@ class Manager
      */
     public function __construct()
     {
-        $this->bar = new StandardDebugBar();
+        $this->bar = new FfcmsDebugBar();
         $this->render = $this->bar->getJavascriptRenderer();
         try {
             $this->bar->addCollector(new ConfigCollector());

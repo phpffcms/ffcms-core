@@ -11,12 +11,12 @@ class Arr
 
     /**
      * Check is $needle in $haystack. Alias to function in_array().
-     * @param string $needle
+     * @param string|int|float $needle
      * @param array $haystack
      * @param bool $strict
      * @return bool
      */
-    public static function in(?string $needle, ?array $haystack = null, bool $strict = true): bool
+    public static function in($needle, ?array $haystack = null, bool $strict = true): bool
     {
         // prevent errors
         if (!Any::isArray($haystack) || $needle === null)

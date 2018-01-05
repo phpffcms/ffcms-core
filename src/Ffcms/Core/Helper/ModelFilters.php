@@ -60,7 +60,8 @@ class ModelFilters
 
         $object = Any::guessValueType($object);
 
-        return Arr::in($object, $handle);
+        $res = Arr::in($object, $handle);
+        return $res;
     }
 
     /**
@@ -154,13 +155,11 @@ class ModelFilters
      */
     public static function email($object): bool
     {
+        if (Any::isEmpty($object)) // allow empty
+            return true;
+
         if (!Any::isLine($object))
             return false;
-
-        // @todo: check this sh@t
-        // allow empty, validate on required rule
-        //if (Str::likeEmpty($object))
-        //    return true;
 
         return Str::isEmail($object);
     }
@@ -172,14 +171,11 @@ class ModelFilters
      */
     public static function phone($object): bool
     {
+        if (Any::isEmpty($object)) // allow empty
+            return true;
+
         if (!Any::isLine($object))
             return false;
-
-        // @todo: check it
-        // allow empty, validate on required rule
-        //if (Str::likeEmpty($object)) {
-        //    return true;
-        //}
 
         return Str::isPhone($object);
     }
@@ -191,13 +187,11 @@ class ModelFilters
      */
     public static function url($object): bool
     {
+        if (Any::isEmpty($object)) // allow empty
+            return true;
+
         if (!Any::isLine($object))
             return false;
-
-        // allow empty, validate on required rule
-        //if (Str::likeEmpty($object)) {
-        //    return true;
-        //}
 
         return Str::isUrl($object);
     }
@@ -224,7 +218,7 @@ class ModelFilters
      */
     public static function notequal($object, $value = null): bool
     {
-        if (Any::isLine($object))
+        if (!Any::isLine($object))
             return false;
 
         return $object !== $value;

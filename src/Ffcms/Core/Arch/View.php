@@ -78,7 +78,7 @@ class View
      * @return string
      * @throws SyntaxException
      */
-    public function render()
+    public function render(): ?string
     {
         // get call arguments
         $arguments = func_get_args();
@@ -121,7 +121,7 @@ class View
      * @return null|string
      * @throws SyntaxException
      */
-    private function findViewer($path, $source = null)
+    private function findViewer(string $path, ?string $source = null): ?string
     {
         $tmpPath = null;
 
@@ -133,7 +133,7 @@ class View
                 $tmpPath = Normalize::diskPath($this->themePath . '/' . $path . '.php');
         } else { // sounds like a object-depended view call from controller or etc
             // get stack trace of callbacks
-            $calledLog = debug_backtrace();
+            $calledLog = @debug_backtrace();
             $calledController = null;
 
             // lets try to find controller in backtrace
