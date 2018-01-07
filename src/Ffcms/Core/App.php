@@ -246,7 +246,6 @@ class App
                 } else {
                     $html = (new NativeException($e->getMessage()))->display();
                 }
-
             }
         }
 

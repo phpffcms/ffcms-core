@@ -8,6 +8,7 @@ use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\HTML\Form\Constructor;
+use Ffcms\Core\Helper\HTML\Form\FieldSelector;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
@@ -35,6 +36,9 @@ class Form extends NativeGenerator
     /** @var Model */
     private $model;
 
+    /** @var FieldSelector */
+    public $field;
+
 
     /**
      * Form constructor. Build form based on model properties
@@ -59,6 +63,9 @@ class Form extends NativeGenerator
                     static::$structLayer[$type] = $layerFiles[$type];
             }
         }
+        // initialize field selector helper
+        $this->field = new FieldSelector($model, static::$structLayer);
+
         // set model submit method
         $property['method'] = $this->model->getSubmitMethod();
 
@@ -78,94 +85,28 @@ class Form extends NativeGenerator
     public function start()
     {
         $form = self::buildSingleTag('form', $this->formProperty, false);
-        if ($this->model->_tokenRequired) {
-            $form .= PHP_EOL . $this->field('_csrf_token', 'hidden', ['value' => $this->model->_csrf_token]);
-        }
+        if ($this->model->_tokenRequired)
+            $form .= PHP_EOL . $this->field->hidden('_csrf_token', ['value' => $this->model->_csrf_token]);
+
         return $form;
     }
 
     /**
-     * Display form field. Allowed type: text, password, textarea, checkbox, select, checkboxes, file, captcha, email, hidden
+     * Use $this->field->type() instead. Deprecated!
      * @param string $object
      * @param string $type
      * @param null|array $property
      * @param null|string $helper
      * @param null|string $layerFile
      * @return null|string
+     * @deprecated
      */
     public function field(string $object, string $type, ?array $property = null, ?string $helper = null, ?string $layerFile = null)
     {
-        if ($this->model === null) {
-            if (App::$Debug)
-                App::$Debug->addMessage('Form model is not defined for field name: [' . strip_tags($object) . ']');
-
-            return null;
-        }
-
-        // can be dots separated object
-        $propertyName = $object;
-        if (Str::contains('.', $propertyName))
-            $propertyName = strstr($propertyName, '.', true);
-
-        // check if model contains current tag name as property
-        if (!property_exists($this->model, $propertyName)) {
-            if (App::$Debug)
-                App::$Debug->addMessage('Form field ["' . $object . '"] is not defined in model: [' . get_class($this->model) . ']', 'error');
-
-            return null;
-        }
-        
-        // prepare layer template file path
-        if ($layerFile === null) {
-            switch ($type) {
-                case 'checkbox':
-                    $layerFile = static::$structLayer['checkbox'];
-                    break;
-                case 'radio':
-                    $layerFile = static::$structLayer['radio'];
-                    break;
-                default:
-                    $layerFile = static::$structLayer['base'];
-                    break;
-            }
-        }
-        
-        // prepare labels text and label "for" attr 
-        $labelFor = $this->name . '-' . $propertyName;
-        $labelText = $this->model->getLabel($object);
-        $itemValue = $this->model->{$propertyName};
-        // sounds like a dot-separated $object
-        if ($propertyName !== $object) {
-            $nesting = trim(strstr($object, '.'), '.');
-            $labelFor .= '-' . Str::replace('.', '-', $nesting);
-            $itemValue = Arr::getByPath($nesting, $itemValue);
-        }
-
-        // initialize form fields constructor and build output dom html value
-        $constructor = new Constructor($this->model, $this->name, $type);
-        $elementDOM = $constructor->makeTag($object, $itemValue, $property);
-        
-        // if item is hidden - return tag without assign of global template
-        if ($type === 'hidden') {
-            return $elementDOM;
-        }
-
-        // prepare output html
+        $response = null;
         try {
-            $response = App::$View->render($layerFile, [
-                'name' => $labelFor,
-                'label' => $labelText,
-                'item' => $elementDOM,
-                'help' => self::nohtml($helper)
-            ]);
-        } catch (SyntaxException $e) {
-            if (App::$Debug)
-                App::$Debug->addException($e);
-
-            $response = null;
-        }
-        
-        // render output viewer
+            $response = $this->field->{$type}($object, $property, $helper, $layerFile);
+        } catch (\Exception $e){}
         return $response;
     }
 

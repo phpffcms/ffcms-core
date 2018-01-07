@@ -41,9 +41,8 @@ trait ModelValidator
             // if request is submited for this model - try to validate input data
             if ($this->send()) {
                 // token is wrong - update bool state
-                if ($currentToken !== $this->getRequest('_csrf_token', 'all')) {
+                if ($currentToken !== $this->getRequest('_csrf_token'))
                     $this->_tokenOk = false;
-                }
             }
             // set token data to display
             $this->_csrf_token = $newToken;
