@@ -12,6 +12,7 @@ use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Exception\TemplateException;
+use Ffcms\Core\Helper\Mailer;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
@@ -68,7 +69,7 @@ class App
     /** @var \Ffcms\Core\Cache\MemoryObject */
     public static $Memory;
 
-    /** @var \Swift_Mailer */
+    /** @var Mailer */
     public static $Mailer;
 
     /** @var \Ffcms\Core\Interfaces\iCaptcha */

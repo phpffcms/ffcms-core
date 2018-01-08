@@ -15,7 +15,6 @@ class Mailer
     private $from;
 
     private $message;
-    private $tpl;
 
     /**
      * Mailer constructor. Construct object with ref to swiftmailer and sender info
@@ -40,7 +39,7 @@ class Mailer
     }
 
     /**
-     *
+     * Set tpl file
      * @param string $tpl
      * @param array|null $params
      * @param null|string $dir
@@ -54,7 +53,14 @@ class Mailer
         return $this;
     }
 
-    public function send(string $to, string $subject, ?string $message = null)
+    /**
+     * Set mail to address
+     * @param string $address
+     * @param string $subject
+     * @param null|string $message
+     * @return bool
+     */
+    public function send(string $address, string $subject, ?string $message = null): bool
     {
         // try to get message from global if not passed direct
         if ($message === null)
@@ -67,14 +73,16 @@ class Mailer
             // try to build message and send it
             $message = (new \Swift_Message($subject))
                 ->setFrom($this->from)
-                ->setTo($to)
-                ->setBody($message);
+                ->setTo($address)
+                ->setBody($message, 'text/html');
             $this->swift->send($message);
+            return true;
         } catch (\Exception $e) {
             if (App::$Debug) {
                 App::$Debug->addException($e);
                 App::$Debug->addMessage('Send mail failed! Info: ' . $e->getMessage(), 'error');
             }
+            return false;
         }
     }
 }

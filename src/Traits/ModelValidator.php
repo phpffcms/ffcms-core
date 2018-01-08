@@ -337,7 +337,7 @@ trait ModelValidator
         if (Str::contains('.', $param)) {
             $response = $request;
             foreach (explode('.', $param) as $path) {
-                if (!array_key_exists($path, $response))
+                if ($response !== null && !array_key_exists($path, $response))
                     return null;
                 // find deep array nesting offset
                 $response = $response[$path];
