@@ -2,7 +2,11 @@
   "name": "phpffcms/ffcms-core",
   "description": "Core package for FFCMS 3 version",
   "type": "library",
-  "keywords": ["php", "mvc", "framework"],
+  "keywords": [
+    "php",
+    "mvc",
+    "framework"
+  ],
   "homepage": "http://ffcms.org",
   "license": "MIT",
   "authors": [
@@ -27,6 +31,8 @@
     "hybridauth/hybridauth": "2.10.*@stable"
   },
   "autoload": {
-    "psr-0": { "Ffcms\\": "src/" }
+    "psr-4": {
+      "Ffcms\\Core\\": "src/"
+    }
   }
 }
