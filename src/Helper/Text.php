@@ -56,5 +56,4 @@ class Text
     {
         return Str::sub($text, $start, $end);
     }
-
 }

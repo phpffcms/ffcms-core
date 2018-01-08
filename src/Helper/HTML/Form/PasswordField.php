@@ -30,8 +30,9 @@ class PasswordField extends NativeGenerator implements iField
      */
     public function make()
     {
-        if (isset($this->properties['value']))
+        if (isset($this->properties['value'])) {
             unset($this->properties['value']);
+        }
 
         $this->properties['type'] = 'password';
         

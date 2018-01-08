@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Exception;
 
-
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Controller;
 use Ffcms\Core\Helper\Type\Str;
@@ -36,8 +35,9 @@ abstract class TemplateException extends \Exception
         }
         
         // add notification in debug bar if exist
-        if (App::$Debug !== null)
+        if (App::$Debug !== null) {
             App::$Debug->addException($this);
+        }
 
         // return rendered result
         return $this->buildFakePage();
@@ -74,5 +74,4 @@ abstract class TemplateException extends \Exception
         // return compiled html output
         return $fakeController->buildOutput();
     }
-
 }

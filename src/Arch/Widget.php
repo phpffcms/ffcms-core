@@ -33,8 +33,9 @@ class Widget implements iWidget
         $object = new self::$class;
         if (Any::isArray($params) && count($params) > 0) {
             foreach ($params as $property => $value) {
-                if (property_exists($object, $property))
+                if (property_exists($object, $property)) {
                     $object->{$property} = $value;
+                }
             }
         }
 
@@ -61,8 +62,12 @@ class Widget implements iWidget
         return AppRecord::getConfigs('widget', $realName);
     }
 
-    public function display() {}
-    public function init() {}
+    public function display()
+    {
+    }
+    public function init()
+    {
+    }
 
     /**
      * Check if widget is enabled. For native widget is always enabled

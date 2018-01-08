@@ -26,6 +26,7 @@ class FfcmsDebugBar extends DebugBar
             $this->addCollector(new TimeDataCollector());
             $this->addCollector(new MemoryCollector());
             $this->addCollector(new ExceptionsCollector());
-        } catch (\Exception $e){} // mute
+        } catch (\Exception $e) {
+        } // mute
     }
 }

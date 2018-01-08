@@ -15,7 +15,8 @@ class NativeException extends \Exception
      * NativeException constructor. Pass message insde the exception
      * @param string|null $message
      */
-    public function __construct($message = null) {
+    public function __construct($message = null)
+    {
         if ($message !== null) {
             $this->message = $message;
         }
@@ -65,7 +66,7 @@ class NativeException extends \Exception
      * @param string|null $message
      * @return string
      */
-    protected function sendJSON($message = NULL) 
+    protected function sendJSON($message = null)
     {
         header('Content-Type: application/json');
         return json_encode(['status' => 0, 'message' => $message]);

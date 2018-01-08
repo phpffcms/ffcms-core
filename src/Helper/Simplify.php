@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Helper;
 
-
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
@@ -21,13 +20,15 @@ class Simplify
      */
     public static function parseUserNick($userId = null, $onEmpty = 'guest'): ?string
     {
-        if (!Any::isInt($userId))
+        if (!Any::isInt($userId)) {
             return \App::$Security->strip_tags($onEmpty);
+        }
 
         // try to find user active record as object
         $identity = App::$User->identity($userId);
-        if (!$identity)
+        if (!$identity) {
             return \App::$Security->strip_tags($onEmpty);
+        }
 
         // return user nickname from profile
         return $identity->profile->getNickname();
@@ -44,10 +45,10 @@ class Simplify
     {
         $nick = self::parseUserNick($userId, $onEmpty);
         // new name is not found, lets return default
-        if ($nick === $onEmpty || (int)$userId < 1)
+        if ($nick === $onEmpty || (int)$userId < 1) {
             return $nick;
+        }
 
         return Url::link([$controllerAction, (int)$userId], $nick);
     }
-
 }

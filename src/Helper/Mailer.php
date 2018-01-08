@@ -1,6 +1,7 @@
 <?php
 
 namespace Ffcms\Core\Helper;
+
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 
@@ -49,7 +50,8 @@ class Mailer
     {
         try {
             $this->message = App::$View->render($tpl, $params, $dir);
-        } catch (SyntaxException $e){}
+        } catch (SyntaxException $e) {
+        }
         return $this;
     }
 
@@ -63,12 +65,14 @@ class Mailer
     public function send(string $address, string $subject, ?string $message = null): bool
     {
         // try to get message from global if not passed direct
-        if ($message === null)
+        if ($message === null) {
             $message = $this->message;
+        }
 
         try {
-            if ($message === null)
+            if ($message === null) {
                 throw new \Exception('Message body is empty!');
+            }
 
             // try to build message and send it
             $message = (new \Swift_Message($subject))

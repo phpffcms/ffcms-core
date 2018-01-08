@@ -23,6 +23,4 @@ interface iCaptcha
      * @return bool
      */
     public static function validate($data = null);
-
-
 }

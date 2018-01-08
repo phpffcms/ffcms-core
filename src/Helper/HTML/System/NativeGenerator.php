@@ -59,8 +59,9 @@ abstract class NativeGenerator
      */
     public static function applyProperty(array $property = null)
     {
-        if ($property === null || count($property) < 1)
+        if ($property === null || count($property) < 1) {
             return null;
+        }
         
         $build = null;
         foreach ($property as $p => $v) {
@@ -96,8 +97,9 @@ abstract class NativeGenerator
     public static function buildContainerTag($tagName, array $property = null, $value = null, $valueHtml = false)
     {
         $tagName = self::nohtml($tagName);
-        if ($valueHtml !== true)
+        if ($valueHtml !== true) {
             $value = self::nohtml($value);
+        }
         
         return '<' . $tagName . self::applyProperty($property) . '>' . $value . '</' . $tagName . '>';
     }
@@ -111,8 +113,9 @@ abstract class NativeGenerator
     public static function safeUri($string, $encode = true)
     {
         $string = self::nohtml($string);
-        if ($encode === true)
+        if ($encode === true) {
             $string = self::encode($string);
+        }
 
         return $string;
     }
@@ -230,10 +233,11 @@ abstract class NativeGenerator
      */
     public static function encode(?string $uri = null)
     {
-        if (Str::likeEmpty($uri))
+        if (Str::likeEmpty($uri)) {
             return null;
+        }
 
-        return implode('/', array_map(function($v){
+        return implode('/', array_map(function ($v) {
             return urlencode($v);
         }, explode('/', $uri)));
     }

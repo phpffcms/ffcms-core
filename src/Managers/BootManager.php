@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Managers;
 
-
 use Ffcms\Core\App;
 use Ffcms\Core\Debug\DebugMeasure;
 use Ffcms\Core\Helper\FileSystem\Directory;
@@ -81,11 +80,13 @@ class BootManager
         }
 
         // set default root path if not found anything else
-        if (count($this->appRoots) < 1)
+        if (count($this->appRoots) < 1) {
             $this->appRoots = [root];
+        }
 
-        if (count($this->widgetRoots) < 1)
+        if (count($this->widgetRoots) < 1) {
             $this->widgetRoots = [root];
+        }
     }
 
     /**
@@ -113,8 +114,9 @@ class BootManager
             $widget .= '/Widgets/' . env_name;
             // widgets are packed in directory, classname should be the same with root directory name
             $dirs = Directory::scan($widget, GLOB_ONLYDIR, true);
-            if (!Any::isArray($dirs))
+            if (!Any::isArray($dirs)) {
                 continue;
+            }
 
             foreach ($dirs as $instance) {
                 $class = 'Widgets\\' . env_name . '\\' . $instance . '\\' . $instance;
@@ -133,8 +135,9 @@ class BootManager
     {
         $this->startMeasure(__METHOD__);
 
-        if (!Any::isArray($this->objects))
+        if (!Any::isArray($this->objects)) {
             return false;
+        }
 
         foreach ($this->objects as $class) {
             forward_static_call([$class, 'boot']);

@@ -4,7 +4,6 @@ namespace Ffcms\Core\Exception;
 
 class NotFoundException extends TemplateException
 {
-
     public function display()
     {
         $this->status = 404;

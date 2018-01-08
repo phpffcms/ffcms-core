@@ -46,10 +46,14 @@ class Controller implements iController
     }
 
     /** Before action call method */
-    public function before() {}
+    public function before()
+    {
+    }
     
     /** Global bootable method */
-    public static function boot(): void {}
+    public static function boot(): void
+    {
+    }
 
     /**
      * Build variables and display output html
@@ -99,16 +103,18 @@ class Controller implements iController
                 $content = Str::replace(
                     ['</body>', '</head>'],
                     [App::$Debug->renderOut() . '</body>', App::$Debug->renderHead() . '</head>'],
-                    $content);
+                    $content
+                );
             }
-
         }
 
         return $content;
     }
 
     /** After action called method */
-    public function after() {}
+    public function after()
+    {
+    }
 
     /**
      * Set single global variable
@@ -150,5 +156,4 @@ class Controller implements iController
     {
         return $this->output;
     }
-
 }

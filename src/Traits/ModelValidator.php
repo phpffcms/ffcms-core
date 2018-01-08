@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Traits;
 
-
 use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
@@ -41,8 +40,9 @@ trait ModelValidator
             // if request is submited for this model - try to validate input data
             if ($this->send()) {
                 // token is wrong - update bool state
-                if ($currentToken !== $this->getRequest('_csrf_token'))
+                if ($currentToken !== $this->getRequest('_csrf_token')) {
                     $this->_tokenOk = false;
+                }
             }
             // set token data to display
             $this->_csrf_token = $newToken;
@@ -58,21 +58,24 @@ trait ModelValidator
     public function runValidate(array $rules = null)
     {
         // skip validation on empty rules
-        if ($rules === null)
+        if ($rules === null) {
             return true;
+        }
 
         $success = true;
         // list each rule as single one
         foreach ($rules as $rule) {
             // 0 = field (property) name, 1 = filter name, 2 = filter value
-            if ($rule[0] === null || $rule[1] === null)
+            if ($rule[0] === null || $rule[1] === null) {
                 continue;
+            }
 
             $propertyName = $rule[0];
             $validationRule = $rule[1];
             $validationValue = null;
-            if (isset($rule[2]))
+            if (isset($rule[2])) {
                 $validationValue = $rule[2];
+            }
 
             // check if target field defined as array and make recursive validation
             if (Any::isArray($propertyName)) {
@@ -160,8 +163,9 @@ trait ModelValidator
         // if one from all validation tests is fail - mark as incorrect attribute
         if ($check !== true) {
             $this->_badAttr[] = $propertyName;
-            if (App::$Debug)
+            if (App::$Debug) {
                 App::$Debug->addMessage('Validation failed. Property: ' . $propertyName . ', filter: ' . $filterName, 'warning');
+            }
         } else {
             $field_set_name = $propertyName;
             // prevent array-type setting
@@ -172,8 +176,9 @@ trait ModelValidator
                 if ($propertyName !== $field_set_name) { // array-based property
                     $dot_path = trim(strstr($propertyName, '.'), '.');
                     // prevent throws any exceptions for null and false objects
-                    if (!Any::isArray($this->{$field_set_name}))
+                    if (!Any::isArray($this->{$field_set_name})) {
                         $this->{$field_set_name} = [];
+                    }
 
                     // use dot-data provider to compile output array
                     $dotData = new DotData($this->{$field_set_name});
@@ -203,14 +208,16 @@ trait ModelValidator
         $sources = $this->sources();
         $types = $this->types();
         // validate sources for current field
-        if (array_key_exists($propertyName, $sources))
+        if (array_key_exists($propertyName, $sources)) {
             $inputType = Str::lowerCase($sources[$propertyName]);
+        }
 
 
         // check if field is array-nested element by dots and use first element as general
         $filterField = $propertyName;
-        if (array_key_exists($filterField, $types))
+        if (array_key_exists($filterField, $types)) {
             $filterType = Str::lowerCase($types[$filterField]);
+        }
 
         // get clear field value
         $propertyValue = $this->getRequest($propertyName, $inputType);
@@ -312,8 +319,9 @@ trait ModelValidator
      */
     public function getRequest($param, $method = null)
     {
-        if ($method === null)
+        if ($method === null) {
             $method = $this->_sendMethod;
+        }
 
         $method = Str::lowerCase($method);
         // get root request as array or string
@@ -337,8 +345,9 @@ trait ModelValidator
         if (Str::contains('.', $param)) {
             $response = $request;
             foreach (explode('.', $param) as $path) {
-                if ($response !== null && !array_key_exists($path, $response))
+                if ($response !== null && !array_key_exists($path, $response)) {
                     return null;
+                }
                 // find deep array nesting offset
                 $response = $response[$path];
             }

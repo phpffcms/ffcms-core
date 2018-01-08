@@ -14,7 +14,6 @@ use Ffcms\Core\Helper\Type\Str;
  */
 class Security
 {
-
     protected $purifier;
 
     /**
@@ -60,8 +59,9 @@ class Security
         }
 
         $text = strip_tags($html);
-        if ($escapeQuotes)
+        if ($escapeQuotes) {
             $text = $this->escapeQuotes($text);
+        }
 
         return $text;
     }
@@ -89,7 +89,8 @@ class Security
      * @param null $indent
      * @return mixed|string
      */
-    public function var_export54($var, $indent = null, $guessTypes = false) {
+    public function var_export54($var, $indent = null, $guessTypes = false)
+    {
         return Arr::exportVar($var, $indent, $guessTypes);
     }
 
@@ -113,8 +114,9 @@ class Security
      */
     public static function password_hash($password, $salt = null)
     {
-        if ($salt === null || !Any::isStr($salt) || Str::length($salt) < 1)
+        if ($salt === null || !Any::isStr($salt) || Str::length($salt) < 1) {
             $salt = App::$Properties->get('passwordSalt');
+        }
 
         return crypt($password, $salt);
     }
@@ -126,8 +128,9 @@ class Security
      */
     public static function simpleHash($string): ?string
     {
-        if (!Any::isLine($string))
+        if (!Any::isLine($string)) {
             return null;
+        }
 
         return dechex(crc32($string));
     }

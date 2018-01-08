@@ -141,18 +141,21 @@ class Request extends FoundationRequest
         $routing = App::$Properties->getAll('Routing');
 
         // try to work with static aliases
-        if (Any::isArray($routing) && isset($routing['Alias'], $routing['Alias'][env_name]))
+        if (Any::isArray($routing) && isset($routing['Alias'], $routing['Alias'][env_name])) {
             $pathway = $this->findStaticAliases($routing['Alias'][env_name], $pathway);
+        }
 
         $this->setPathdata(explode('/', trim($pathway, '/')));
 
         // set default controller and action for undefined data
-        if (!$this->action)
+        if (!$this->action) {
             $this->action = 'Index';
+        }
 
         // empty or contains backslashes? set to main
-        if (!$this->controller || Str::contains('\\', $this->controller))
+        if (!$this->controller || Str::contains('\\', $this->controller)) {
             $this->controller = 'Main';
+        }
 
         // find callback injection in routing configs (calculated in App::run())
         if (Any::isArray($routing) && isset($routing['Callback'], $routing['Callback'][env_name])) {
@@ -170,8 +173,9 @@ class Request extends FoundationRequest
         /** @var array $routing */
         $routing = App::$Properties->getAll('Routing');
 
-        if (!Any::isArray($routing) || !isset($routing['Redirect']) || !Any::isArray($routing['Redirect']))
+        if (!Any::isArray($routing) || !isset($routing['Redirect']) || !Any::isArray($routing['Redirect'])) {
             return;
+        }
 
         // check if source uri is key in redirect target map
         if (array_key_exists($pathway, $routing['Redirect'])) {
@@ -230,8 +234,9 @@ class Request extends FoundationRequest
      */
     private function findDynamicCallbacks(array $map = null, ?string $controller = null)
     {
-        if ($map === null)
+        if ($map === null) {
             return;
+        }
 
         // try to find global callback for this controller slug
         if (array_key_exists($controller, $map)) {
@@ -248,8 +253,9 @@ class Request extends FoundationRequest
     private function loadTrustedProxies()
     {
         $proxies = App::$Properties->get('trustedProxy');
-        if ($proxies === null || Str::likeEmpty($proxies))
+        if ($proxies === null || Str::likeEmpty($proxies)) {
             return;
+        }
 
         $pList = explode(',', $proxies);
         $resultList = [];
@@ -265,8 +271,9 @@ class Request extends FoundationRequest
      */
     private function setPathdata(?array $pathArray = null)
     {
-        if (!Any::isArray($pathArray) || count($pathArray) < 1)
+        if (!Any::isArray($pathArray) || count($pathArray) < 1) {
             return;
+        }
 
         // check if array length is more then 4 basic elements and slice it recursive
         if (count($pathArray) > 4) {
@@ -278,10 +285,13 @@ class Request extends FoundationRequest
         switch (count($pathArray)) {
             case 4:
                 $this->argumentAdd = $pathArray[3];
+                // no break
             case 3:
                 $this->argumentId = $pathArray[2];
+                // no break
             case 2:
                 $this->action = ucfirst(Str::lowerCase($pathArray[1]));
+                // no break
             case 1:
                 $this->controller = ucfirst(Str::lowerCase($pathArray[0]));
                 break;
@@ -295,8 +305,9 @@ class Request extends FoundationRequest
     public function getPathInfo()
     {
         $route = $this->languageInPath ? Str::sub(parent::getPathInfo(), Str::length($this->language) + 1) : parent::getPathInfo();
-        if (!Str::startsWith('/', $route))
+        if (!Str::startsWith('/', $route)) {
             $route = '/' . $route;
+        }
         return $route;
     }
 
@@ -439,8 +450,9 @@ class Request extends FoundationRequest
     public function getPathWithoutControllerAction(): ?string
     {
         $path = trim($this->getPathInfo(), '/');
-        if ($this->aliasPathTarget !== null)
+        if ($this->aliasPathTarget !== null) {
             $path = trim($this->aliasPathTarget, '/');
+        }
 
         $pathArray = explode('/', $path);
         if ($pathArray[0] === Str::lowerCase($this->getController())) {
@@ -477,5 +489,4 @@ class Request extends FoundationRequest
         }
         return $path;
     }
-
 }

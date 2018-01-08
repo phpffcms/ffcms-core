@@ -23,8 +23,9 @@ class Table extends NativeGenerator
      */
     public static function display(array $elements): ?string
     {
-        if (!array_key_exists('tbody', $elements) || !Any::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1)
+        if (!array_key_exists('tbody', $elements) || !Any::isArray($elements['tbody']['items']) || count($elements['tbody']['items']) < 1) {
             return null;
+        }
 
         $selectOptions = false;
         if (isset($elements['selectableBox'])) {
@@ -73,7 +74,7 @@ class Table extends NativeGenerator
             // parse tbody array elements
             if (isset($elements['tbody']) && Any::isArray($elements['tbody']) && isset($elements['tbody']['items']) && Any::isArray($elements['tbody']['items'])) {
                 // add tbody container
-                $res .= $dom->tbody(function() use ($dom, $elements, $selectOptions){
+                $res .= $dom->tbody(function () use ($dom, $elements, $selectOptions) {
                     $tr = null;
                     // each all items by row (tr)
                     foreach ($elements['tbody']['items'] as $row) {
@@ -83,8 +84,9 @@ class Table extends NativeGenerator
                         $tr .= $dom->tr(function () use ($dom, $row, $selectOptions) {
                             $td = null;
                             foreach ($row as $order => $item) {
-                                if (!Any::isInt($order))
+                                if (!Any::isInt($order)) {
                                     continue;
+                                }
 
                                 // collect td item
                                 $td .= $dom->td(function () use ($dom, $order, $item, $selectOptions) {
@@ -101,7 +103,7 @@ class Table extends NativeGenerator
                                     }
                                     // check if selectable box is enabled and equal current order id
                                     if ($selectOptions !== false && $order === $selectOptions['attachOrder']) {
-                                        $text = $dom->input(function (){
+                                        $text = $dom->input(function () {
                                             return null;
                                         }, Arr::merge($selectOptions['selector'], ['value' => htmlentities($text, null, 'UTF-8')])) . ' ' . $text;
                                     }
@@ -128,10 +130,11 @@ class Table extends NativeGenerator
             // return response inside "form" tag
             return $dom->form(function () use ($dom, $selectOptions, $table) {
                 foreach ($selectOptions['buttons'] as $btn) {
-                    if (!Any::isArray($btn))
+                    if (!Any::isArray($btn)) {
                         continue;
+                    }
 
-                    $table .= $dom->input(function(){
+                    $table .= $dom->input(function () {
                         return null;
                     }, $btn) . ' ';
                 }

@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core;
 
-
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\Type\Any;
@@ -24,8 +23,9 @@ class Properties
      */
     public function __construct()
     {
-        if (!$this->load('default'))
+        if (!$this->load('default')) {
             throw new NativeException('Default configurations is not founded: /Private/Config/Default.php');
+        }
     }
 
     /**
@@ -37,8 +37,9 @@ class Properties
     private function load(string $configName, $overload = false): bool
     {
         // check if always loaded
-        if (Any::isArray($this->data) && array_key_exists($configName, $this->data) && !$overload)
+        if (Any::isArray($this->data) && array_key_exists($configName, $this->data) && !$overload) {
             return true;
+        }
 
         // try to load from file
         $configFile = ucfirst(Str::lowerCase($configName)) . '.php';
@@ -61,12 +62,14 @@ class Properties
     {
         $this->load($configFile);
         // check if configs for this file is loaded
-        if (!isset($this->data[$configFile]))
+        if (!isset($this->data[$configFile])) {
             return false;
+        }
 
         // check if config key is exist
-        if (!isset($this->data[$configFile][$configKey]))
+        if (!isset($this->data[$configFile][$configKey])) {
             return false;
+        }
 
         $response = $this->data[$configFile][$configKey];
 
@@ -100,8 +103,9 @@ class Properties
     public function getAll($configFile = 'default'): ?array
     {
         $this->load($configFile);
-        if (!Any::isArray($this->data) || !array_key_exists($configFile, $this->data))
+        if (!Any::isArray($this->data) || !array_key_exists($configFile, $this->data)) {
             return null;
+        }
 
         return $this->data[$configFile];
     }
@@ -116,8 +120,9 @@ class Properties
     public function updateConfig(string $configFile, array $newData, ?bool $mergeDeep = false): bool
     {
         $this->load($configFile);
-        if (!isset($this->data[$configFile]))
+        if (!isset($this->data[$configFile])) {
             return false;
+        }
 
         $oldData = $this->data[$configFile];
         $saveData = ($mergeDeep ? Arr::mergeRecursive($oldData, $newData) : Arr::merge($oldData, $newData));
@@ -133,8 +138,9 @@ class Properties
     public function writeConfig(string $configFile, array $data): bool
     {
         $path = '/Private/Config/' . ucfirst(Str::lowerCase($configFile)) . '.php';
-        if (!File::exist($path) || !File::writable($path))
+        if (!File::exist($path) || !File::writable($path)) {
             return false;
+        }
 
         $saveData = '<?php return ' . Arr::exportVar($data) . ';';
         File::write($path, $saveData);

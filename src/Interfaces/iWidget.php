@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Interfaces;
 
-
 interface iWidget
 {
     /**

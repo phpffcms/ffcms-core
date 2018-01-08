@@ -16,7 +16,6 @@ use Ffcms\Core\Helper\Type\Obj;
  */
 class Manager
 {
-
     public $bar;
     public $render;
 
@@ -29,7 +28,8 @@ class Manager
         $this->render = $this->bar->getJavascriptRenderer();
         try {
             $this->bar->addCollector(new ConfigCollector());
-        } catch (\Exception $oe){}
+        } catch (\Exception $oe) {
+        }
     }
 
     /**
@@ -69,7 +69,8 @@ class Manager
         if ($e instanceof \Exception) {
             try {
                 $this->bar->getCollector('exceptions')->addException($e);
-            } catch (\Exception $ie) {} // mute exceptions there
+            } catch (\Exception $ie) {
+            } // mute exceptions there
         }
     }
 
@@ -80,8 +81,9 @@ class Manager
      */
     public function addMessage($m, $type = 'info')
     {
-        if (!Any::isStr($m) || !Any::isStr($type))
+        if (!Any::isStr($m) || !Any::isStr($type)) {
             return;
+        }
 
         $m = App::$Security->secureHtml($m);
         try {
@@ -90,7 +92,8 @@ class Manager
             if (method_exists($mCollector, $type)) {
                 $this->bar->getCollector('messages')->{$type}($m);
             }
-        } catch (\Exception $e) {} // mute exceptions there
+        } catch (\Exception $e) {
+        } // mute exceptions there
     }
 
     /**
@@ -101,7 +104,8 @@ class Manager
     {
         try {
             $this->bar->getCollector('messages')->info($data);
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
     }
 
     /**

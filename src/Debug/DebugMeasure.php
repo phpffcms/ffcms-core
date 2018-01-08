@@ -16,8 +16,9 @@ trait DebugMeasure
      */
     public function startMeasure(string $name): void
     {
-        if (App::$Debug)
+        if (App::$Debug) {
             App::$Debug->startMeasure($name);
+        }
     }
 
     /**
@@ -26,7 +27,8 @@ trait DebugMeasure
      */
     public function stopMeasure(string $name): void
     {
-        if (App::$Debug)
+        if (App::$Debug) {
             App::$Debug->stopMeasure($name);
+        }
     }
 }

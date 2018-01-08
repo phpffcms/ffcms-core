@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Debug\Collectors;
 
-
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 

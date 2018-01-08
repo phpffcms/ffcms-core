@@ -136,8 +136,9 @@ class Url extends NativeGenerator
     public static function link($to, $name, array $property = null)
     {
         $compile_property = self::applyProperty($property);
-        if (!Any::isArray($to))
+        if (!Any::isArray($to)) {
             $to = [$to];
+        }
 
         // call Url::to(args)
         $callbackTo = call_user_func_array([__NAMESPACE__ . '\Url', 'to'], $to);
@@ -197,5 +198,4 @@ class Url extends NativeGenerator
     {
         return File::getFromUrl($url);
     }
-
 }

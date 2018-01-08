@@ -22,17 +22,26 @@ trait Singleton
         return static::$instance;
     }
     
-    public static function boot() {}
+    public static function boot()
+    {
+    }
 
     /**
      * Override constructor
      */
-    final private function __construct() {
+    final private function __construct()
+    {
         $this->init();
     }
 
     // disable some magic
-    protected function init() {}
-    final private function __wakeup() {}
-    final private function __clone() {}
+    protected function init()
+    {
+    }
+    final private function __wakeup()
+    {
+    }
+    final private function __clone()
+    {
+    }
 }

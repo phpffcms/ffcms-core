@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Helper\Type;
 
-
 /**
  * Class Any. Work with unknown variable types. Some magic and drugs inside. Use careful!
  * @package Ffcms\Core\Helper\Type
@@ -17,12 +16,14 @@ class Any
     public static function isEmpty($var = null): bool
     {
         // var is array type?
-        if (is_array($var))
+        if (is_array($var)) {
             return count($var) < 1;
+        }
 
         // var seems to be object?
-        if (is_object($var))
+        if (is_object($var)) {
             return count(get_object_vars($var)) < 1;
+        }
 
         // float,int,string,bool and null left. Check if not empty. Int and float will never equal to null.
         return ($var === null || $var === '' || $var === false);
@@ -123,14 +124,17 @@ class Any
     public static function guessValueType($var = null)
     {
         // pass var by reference and guess var type
-        if (self::isInt($var))
+        if (self::isInt($var)) {
             return $var;
+        }
 
-        if (self::isFloat($var))
+        if (self::isFloat($var)) {
             return $var;
+        }
 
-        if (self::isBool($var))
+        if (self::isBool($var)) {
             return $var;
+        }
 
 
         return $var;

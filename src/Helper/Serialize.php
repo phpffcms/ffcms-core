@@ -42,8 +42,9 @@ class Serialize
      */
     public static function getDecoded($data, $key)
     {
-        if (!Any::isArray($data))
+        if (!Any::isArray($data)) {
             $data = self::decode($data);
+        }
 
         return $data === false ? null : $data[$key];
     }

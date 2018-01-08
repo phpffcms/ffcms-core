@@ -37,17 +37,20 @@ class SimplePagination
     public function display(array $property = null): ?string
     {
         // total items is less to pagination requirement
-        if (($this->page * $this->step) + 1 > $this->total)
+        if (($this->page * $this->step) + 1 > $this->total) {
             return null;
+        }
 
         $lastPage = ceil($this->total / $this->step); // 6/5 ~ 2 = 0..2
 
-        if ($lastPage <= 1)
+        if ($lastPage <= 1) {
             return null;
+        }
 
         // prevent hack-boy's any try
-        if ($this->page > $lastPage)
+        if ($this->page > $lastPage) {
             return null;
+        }
 
         $items = [];
         // more then 10 items in pagination
@@ -137,8 +140,9 @@ class SimplePagination
     protected function generateItems($start, $end)
     {
         // prevent any shit's
-        if ($end <= $start)
+        if ($end <= $start) {
             return null;
+        }
 
         $items = [];
         for ($i = $start; $i < $end; $i++) {

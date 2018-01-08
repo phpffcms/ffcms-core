@@ -4,7 +4,6 @@ namespace Ffcms\Core\Exception;
 
 class SyntaxException extends TemplateException
 {
-
     public function display()
     {
         $this->title = 'Code syntax exception';

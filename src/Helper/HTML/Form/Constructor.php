@@ -56,8 +56,9 @@ class Constructor
     public function makeTag($name, $value = null, ?array $properties = null): ?string
     {
         // check if properties is passed well
-        if ($properties !== null && !Any::isArray($properties))
+        if ($properties !== null && !Any::isArray($properties)) {
             return null;
+        }
         
         // add properties to autovalidation by js (properties passed by ref)
         $this->addValidationProperties($name, $properties);
@@ -106,8 +107,9 @@ class Constructor
                 $builder = new RadioField($properties, $name, $value);
                 break;
             default:
-                if (App::$Debug)
+                if (App::$Debug) {
                     App::$Debug->addMessage('Field has unknown type: ' . App::$Security->strip_tags($name));
+                }
         }
 
         return $builder->make();
@@ -150,8 +152,9 @@ class Constructor
     {
         // standard property data definition
         $properties['name'] = $properties['id'] = $this->formName; // form global name
-        if ($value !== null && !Any::isEmpty($value))
+        if ($value !== null && !Any::isEmpty($value)) {
             $properties['value'] = $value;
+        }
         
         // sounds like a array-path based obj name
         if (Str::contains('.', $name)) {

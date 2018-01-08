@@ -19,8 +19,9 @@ class Arr
     public static function in($needle, ?array $haystack = null, bool $strict = true): bool
     {
         // prevent errors
-        if (!Any::isArray($haystack) || $needle === null)
+        if (!Any::isArray($haystack) || $needle === null) {
             return false;
+        }
 
         return in_array($needle, $haystack, $strict);
     }
@@ -33,8 +34,9 @@ class Arr
     {
         $arguments = [];
         foreach (func_get_args() as $key => $val) {
-            if (!Any::isArray($val))
+            if (!Any::isArray($val)) {
                 $val = [];
+            }
 
             $arguments[$key] = $val;
         }
@@ -49,8 +51,9 @@ class Arr
     {
         $arguments = [];
         foreach (func_get_args() as $key => $val) {
-            if (!Any::isArray($val))
+            if (!Any::isArray($val)) {
                 $val = [];
+            }
 
             $arguments[$key] = $val;
         }
@@ -67,18 +70,21 @@ class Arr
     public static function getByPath(string $path, ?array $array = null, $delimiter = '.')
     {
         // path of nothing? interest
-        if (!Any::isArray($array) || count($array) < 1 || !Any::isStr($path) || Str::likeEmpty($path))
+        if (!Any::isArray($array) || count($array) < 1 || !Any::isStr($path) || Str::likeEmpty($path)) {
             return null;
+        }
 
         // c'mon man, what the f*ck are you doing? ))
-        if (!Str::contains($delimiter, $path))
+        if (!Str::contains($delimiter, $path)) {
             return $array[$path];
+        }
 
         $output = $array;
         $pathArray = explode($delimiter, $path);
         foreach ($pathArray as $key) {
-            if (!Any::isArray($output) || !array_key_exists($key, $output))
+            if (!Any::isArray($output) || !array_key_exists($key, $output)) {
                 return null;
+            }
 
             $output = $output[$key];
         }
@@ -93,14 +99,16 @@ class Arr
      */
     public static function pluck(?string $key = null, ?array $array = null): array
     {
-        if (!Any::isArray($array) || !Any::isStr($key))
+        if (!Any::isArray($array) || !Any::isStr($key)) {
             return [];
+        }
 
         $output = [];
         foreach ($array as $item) {
             $object = $item[$key];
-            if (!self::in($object, $output))
+            if (!self::in($object, $output)) {
                 $output[] = $object;
+            }
         }
         return $output;
     }
@@ -137,7 +145,7 @@ class Arr
             case 'boolean':
                 return $var ? 'true' : 'false';
             default:
-                return var_export($var, TRUE);
+                return var_export($var, true);
         }
     }
     
@@ -148,8 +156,9 @@ class Arr
      */
     public static function onlyNumericValues(?array $array = null)
     {
-        if (!Any::isArray($array))
+        if (!Any::isArray($array)) {
             return false;
+        }
 
         return is_numeric(implode('', $array));
     }

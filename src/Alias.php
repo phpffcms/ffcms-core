@@ -5,7 +5,6 @@ namespace Ffcms\Core;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Str;
 
-
 /**
  * Class Alias - fast alias for core property's
  * @package Ffcms\Core
@@ -191,6 +190,4 @@ class Alias
     {
         return $this->plainCode[$type];
     }
-
-
 }

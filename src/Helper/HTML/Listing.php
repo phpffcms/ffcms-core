@@ -24,8 +24,9 @@ class Listing extends NativeGenerator
     public static function display($elements)
     {
         // check input elements
-        if (!Arr::in($elements['type'], ['ul', 'ol']) || count($elements['items']) < 1)
+        if (!Arr::in($elements['type'], ['ul', 'ol']) || count($elements['items']) < 1) {
             return null;
+        }
 
         // initialize new DOM model
         $dom = new Dom();
@@ -62,18 +63,21 @@ class Listing extends NativeGenerator
      */
     private static function buildDropdown($dom, $item)
     {
-        if (!Any::isArray($item['items']))
+        if (!Any::isArray($item['items'])) {
             return null;
+        }
 
-        if (!isset($item['menuProperty']['class']))
+        if (!isset($item['menuProperty']['class'])) {
             $item['menuProperty']['class'] = 'dropdown-menu';
+        }
 
-        return $dom->li(function() use($dom, $item){
-            $dropdownLink = $dom->a(function() use ($dom, $item){
-                return self::applyEscape($item['text'], $item['html'], $item['!secure']) . ' ' . $dom->span(function(){}, ['class' => 'caret']);
+        return $dom->li(function () use ($dom, $item) {
+            $dropdownLink = $dom->a(function () use ($dom, $item) {
+                return self::applyEscape($item['text'], $item['html'], $item['!secure']) . ' ' . $dom->span(function () {
+                }, ['class' => 'caret']);
             }, $item['dropdown']);
 
-            $dropdownElements = $dom->ul(function() use ($dom, $item){
+            $dropdownElements = $dom->ul(function () use ($dom, $item) {
                 $resp = null;
                 foreach ($item['items'] as $obj) {
                     $resp .= self::buildLink($dom, $obj, false);
@@ -83,7 +87,6 @@ class Listing extends NativeGenerator
 
             return $dropdownLink . $dropdownElements;
         }, $item['property']);
-
     }
 
     /**
@@ -95,7 +98,7 @@ class Listing extends NativeGenerator
     private static function buildText($dom, $item)
     {
         $text = self::applyEscape($item['text'], $item['html'], $item['!secure']);
-        return $dom->li(function() use ($text){
+        return $dom->li(function () use ($text) {
             return $text;
         }, $item['property']);
     }
@@ -136,7 +139,7 @@ class Listing extends NativeGenerator
 
         // build output <li@params><a @params>@text</li>
         return $dom->li(function () use ($dom, $text, $item) {
-            return $dom->a(function() use ($text) {
+            return $dom->a(function () use ($text) {
                 return $text;
             }, $item['linkProperty']);
         }, $properties);

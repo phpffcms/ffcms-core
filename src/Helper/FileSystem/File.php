@@ -44,7 +44,8 @@ class File
      * @param string $path
      * @return bool
      */
-    public static function readable($path) {
+    public static function readable($path)
+    {
         return self::exist($path);
     }
 
@@ -321,5 +322,4 @@ class File
 
         return true;
     }
-
 }

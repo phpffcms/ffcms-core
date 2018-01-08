@@ -94,7 +94,7 @@ class Dom
         // looks like a single tag, <img src="" class="" />, <hr class="" />
         if (Arr::in($name, self::$singleTags)) {
             return '<' . $name . self::applyProperties($properties) . ' />';
-        } elseif(Arr::in($name, self::$containerTags)) { // looks like a container tag, <div class=""></div>
+        } elseif (Arr::in($name, self::$containerTags)) { // looks like a container tag, <div class=""></div>
             return '<' . $name . self::applyProperties($properties) . '>' . $content . '</' . $name . '>';
         }
 

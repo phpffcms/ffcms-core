@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Migrations;
 
-
 /**
  * Interface MigrationInterface. Basic migrations architecture interface
  * @package Ffcms\Console\Migrations

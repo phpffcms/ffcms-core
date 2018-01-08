@@ -1,7 +1,6 @@
 <?php
 namespace Ffcms\Core\Helper\HTML\Form;
 
-
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
 

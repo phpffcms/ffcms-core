@@ -23,8 +23,9 @@ class ModelFilters
      */
     public static function length_min($object, $length): bool
     {
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return Str::length((string)$object) >= $length;
     }
@@ -37,8 +38,9 @@ class ModelFilters
      */
     public static function length_max($object, $length): bool
     {
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return Str::length((string)$object) <= $length;
     }
@@ -51,12 +53,14 @@ class ModelFilters
      */
     public static function in($object, array $handle): bool
     {
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         // allow empty, validate on required rule
-        if (Any::isEmpty($object))
+        if (Any::isEmpty($object)) {
             return true;
+        }
 
         $object = Any::guessValueType($object);
 
@@ -82,8 +86,9 @@ class ModelFilters
      */
     public static function checked($object): bool
     {
-        if (!Any::isBool($object))
+        if (!Any::isBool($object)) {
             return false;
+        }
 
         return (bool)$object;
     }
@@ -155,11 +160,13 @@ class ModelFilters
      */
     public static function email($object): bool
     {
-        if (Any::isEmpty($object)) // allow empty
+        if (Any::isEmpty($object)) { // allow empty
             return true;
+        }
 
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return Str::isEmail($object);
     }
@@ -171,11 +178,13 @@ class ModelFilters
      */
     public static function phone($object): bool
     {
-        if (Any::isEmpty($object)) // allow empty
+        if (Any::isEmpty($object)) { // allow empty
             return true;
+        }
 
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return Str::isPhone($object);
     }
@@ -187,11 +196,13 @@ class ModelFilters
      */
     public static function url($object): bool
     {
-        if (Any::isEmpty($object)) // allow empty
+        if (Any::isEmpty($object)) { // allow empty
             return true;
+        }
 
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return Str::isUrl($object);
     }
@@ -204,8 +215,9 @@ class ModelFilters
      */
     public static function equal($object, $value = null): bool
     {
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return $object === $value;
     }
@@ -218,8 +230,9 @@ class ModelFilters
      */
     public static function notequal($object, $value = null): bool
     {
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return $object !== $value;
     }
@@ -254,11 +267,13 @@ class ModelFilters
      */
     public static function reg_match($object, $value): bool
     {
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
-        if (Str::likeEmpty($object))
+        if (Str::likeEmpty($object)) {
             return true;
+        }
 
         // what the f*ck? -> return preg_match($value, $object) > 0;
         return (bool)preg_match($value, $object);
@@ -272,8 +287,9 @@ class ModelFilters
      */
     public static function intList($object, $value): bool
     {
-        if (!Any::isLine($object))
+        if (!Any::isLine($object)) {
             return false;
+        }
 
         return !preg_match('/[^0-9\s,]/$', $object);
     }
@@ -287,8 +303,9 @@ class ModelFilters
     public static function isFile($object, $value): bool
     {
         // allow empty fields, "required" option filter that
-        if ($object === null)
+        if ($object === null) {
             return true;
+        }
 
         $all = false;
         // if string is given
@@ -301,13 +318,15 @@ class ModelFilters
         }
 
         // input file is not object?
-        if ($object === null || !Any::isObj($object))
+        if ($object === null || !Any::isObj($object)) {
             return false;
+        }
 
         // get guess file type, based on mime-type
         $type = $object->guessExtension();
-        if ($type === null)
+        if ($type === null) {
             return false;
+        }
 
         return ($all ? true : Arr::in($type, $value));
     }
@@ -321,21 +340,24 @@ class ModelFilters
     public static function sizeFile($object, $value): bool
     {
         // allow empty field, validate on filter 'required'
-        if ($object === null)
+        if ($object === null) {
             return true;
+        }
 
         if (!Any::isArray($value)) {
             $value = [0, $value];
         }
 
         // input file is not object?
-        if ($object === null || !Any::isObj($object))
+        if ($object === null || !Any::isObj($object)) {
             return false;
+        }
 
         // get file upload size in bytes
         $realSize = $object->getClientSize();
-        if ($realSize === null)
+        if ($realSize === null) {
             return false;
+        }
 
         return $realSize > $value[0] && $realSize <= $value[1];
     }

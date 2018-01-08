@@ -157,8 +157,9 @@ class App
 
         /** @var array $objects */
         $objects = App::$Properties->getAll('object');
-        if (!Any::isArray($objects))
+        if (!Any::isArray($objects)) {
             throw new NativeException('Object configurations is not loaded: /Private/Config/Object.php');
+        }
 
         // each all objects as service_name => service_instance()
         foreach ($objects as $name => $instance) {
@@ -193,20 +194,23 @@ class App
 
             // define callback class namespace/name full path
             $cName = (self::$Request->getCallbackAlias() ?? '\Apps\Controller\\' . env_name . '\\' . self::$Request->getController());
-            if (!class_exists($cName))
+            if (!class_exists($cName)) {
                 throw new NotFoundException('Callback class not found: ' . App::$Security->strip_tags($cName));
+            }
 
             $callClass = new $cName;
             // check if callback method (action) is exist in class object
-            if (!method_exists($callClass, $callMethod))
+            if (!method_exists($callClass, $callMethod)) {
                 throw new NotFoundException('Method "' . App::$Security->strip_tags($callMethod) . '()" not founded in "' . get_class($callClass) . '"');
+            }
 
             $this->stopMeasure(__METHOD__ . '::callback');
             $params = [];
             if (!Str::likeEmpty(self::$Request->getID())) {
                 $params[] = self::$Request->getID();
-                if (!Str::likeEmpty(self::$Request->getAdd()))
+                if (!Str::likeEmpty(self::$Request->getAdd())) {
                     $params[] = self::$Request->getAdd();
+                }
             }
 
             // get instance of callback object (class::method) as reflection
@@ -214,16 +218,18 @@ class App
             $argCount = 0;
             // calculate method defined arguments count
             foreach ($instance->getParameters() as $arg) {
-                if (!$arg->isOptional())
+                if (!$arg->isOptional()) {
                     $argCount++;
+                }
             }
             // compare method arg count with passed
-            if (count($params) < $argCount)
+            if (count($params) < $argCount) {
                 throw new NotFoundException(__('Arguments for method %method% is not enough. Expected: %required%, got: %current%.', [
                     'method' => $callMethod,
                     'required' => $argCount,
                     'current' => count($params)
                 ]));
+            }
 
             $this->startMeasure($cName . '::' . $callMethod);
             // make callback call to action in controller and get response
@@ -231,8 +237,9 @@ class App
             $this->stopMeasure($cName . '::' . $callMethod);
 
             // set response to controller attribute
-            if (!Str::likeEmpty($actionResponse))
+            if (!Str::likeEmpty($actionResponse)) {
                 $callClass->setOutput($actionResponse);
+            }
 
             // build full compiled output html data with default layout and widgets
             $html = $callClass->buildOutput();
@@ -255,5 +262,4 @@ class App
         // echo full response to user via symfony http foundation
         self::$Response->send();
     }
-
 }

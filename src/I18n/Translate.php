@@ -48,8 +48,9 @@ class Translate
                 $this->indexes[] = $index;
             }
 
-            if ($this->cached && Any::isStr($text) && isset($this->cached[$text]))
+            if ($this->cached && Any::isStr($text) && isset($this->cached[$text])) {
                 $text = $this->cached[$text];
+            }
         }
 
         if (Any::isArray($params) && count($params) > 0) {
@@ -86,8 +87,9 @@ class Translate
     protected function load(string $index): ?array
     {
         $file = root . '/I18n/' . env_name . '/' . App::$Request->getLanguage() . '/' . $index . '.php';
-        if (!File::exist($file))
+        if (!File::exist($file)) {
             return [];
+        }
 
         return require($file);
     }
@@ -101,13 +103,15 @@ class Translate
     {
         $path = Normalize::diskFullPath($path);
         // check if file exist
-        if (!File::exist($path))
+        if (!File::exist($path)) {
             return false;
+        }
 
         // load file translations
         $addTranslation = require($path);
-        if (!Any::isArray($addTranslation))
+        if (!Any::isArray($addTranslation)) {
             return false;
+        }
 
         // merge data
         $this->cached = Arr::merge($this->cached, $addTranslation);
@@ -142,11 +146,13 @@ class Translate
             $lang = App::$Request->getLanguage();
         }
         // unserialize from string to array
-        if (Any::isStr($input))
+        if (Any::isStr($input)) {
             $input = Serialize::decode($input);
+        }
 
-        if (Any::isArray($input) && array_key_exists($lang, $input))
+        if (Any::isArray($input) && array_key_exists($lang, $input)) {
             return $input[$lang];
+        }
 
         return $default;
     }

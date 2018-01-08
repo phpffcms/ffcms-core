@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Exception;
 
-
 class JsonException extends \Exception
 {
 

@@ -24,19 +24,22 @@ class Navbar extends NativeGenerator
     public static function display(array $elements): ?string
     {
         // check if elements passed well
-        if (!isset($elements['items']) || count($elements['items']) < 1)
+        if (!isset($elements['items']) || count($elements['items']) < 1) {
             return null;
+        }
 
         // set default bootstrap properties if not defined
         $elements['property']['class'] = Str::concat(' ', 'nav', $elements['property']['class']);
         $elements['nav']['class'] = Str::concat(' ', 'navbar', $elements['nav']['class']);
-        if (!$elements['container'])
+        if (!$elements['container']) {
             $elements['container'] = 'container-fluid';
+        }
 
         // set mobile collapse id for toggle
         $mobCollapseId = $elements['collapseId'];
-        if (Any::isEmpty($mobCollapseId))
-            $mobCollapseId = Str::randomLatin(mt_rand(6,12)) . mt_rand(1, 99);
+        if (Any::isEmpty($mobCollapseId)) {
+            $mobCollapseId = Str::randomLatin(mt_rand(6, 12)) . mt_rand(1, 99);
+        }
 
         // set element id for toggle
         $ulId = 1;
@@ -96,24 +99,24 @@ class Navbar extends NativeGenerator
 
         // generate output dom of bootstrap navbar
         $dom = new Dom();
-        $body = $dom->div(function() use ($leftBuild, $rightBuild, $itemsStatic){
+        $body = $dom->div(function () use ($leftBuild, $rightBuild, $itemsStatic) {
             return $leftBuild . $itemsStatic . $rightBuild;
         }, ['class' => 'collapse navbar-collapse', 'id' => $mobCollapseId]);
 
         // drow <nav @properties>@next</nav>
-        return $dom->nav(function() use ($dom, $elements, $mobCollapseId, $body) {
+        return $dom->nav(function () use ($dom, $elements, $mobCollapseId, $body) {
             // drow <div @container>@next</div>
-            return $dom->div(function() use ($dom, $elements, $mobCollapseId, $body) {
+            return $dom->div(function () use ($dom, $elements, $mobCollapseId, $body) {
                 // drow <div @navbar-header>@next</div>
-                $header = $dom->div(function() use ($dom, $elements, $mobCollapseId){
+                $header = $dom->div(function () use ($dom, $elements, $mobCollapseId) {
                     // drow <button @collapse>@next</button>
-                    $collapseButton = $dom->button(function() use ($dom){
-                        $toggleItem = $dom->span(function(){
+                    $collapseButton = $dom->button(function () use ($dom) {
+                        $toggleItem = $dom->span(function () {
                             return 'Toggle menu';
                         }, ['class' => 'sr-only']);
                         $toggleIcon = null;
                         for ($i = 0; $i < 3; $i++) {
-                            $toggleIcon .= $dom->span(function(){
+                            $toggleIcon .= $dom->span(function () {
                                 return null;
                             }, ['class' => 'icon-bar']);
                         }
@@ -128,7 +131,7 @@ class Navbar extends NativeGenerator
                         if (isset($elements['brand']['link'])) {
                             $brand = Url::link($elements['brand']['link'], $elements['brand']['text'], $elements['brand']['property']);
                         } else {
-                            $brand = (new Dom())->span(function() use ($elements){
+                            $brand = (new Dom())->span(function () use ($elements) {
                                 return $elements['brand']['text'];
                             }, $elements['brand']['property']);
                         }

@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Helper\HTML\Form;
 
-
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Model;
 use Ffcms\Core\Exception\SyntaxException;
@@ -52,32 +51,38 @@ class FieldSelector extends NativeGenerator
      */
     public function __call(string $field, ?array $arguments = null): ?string
     {
-        if ($arguments === null || count($arguments) < 1)
+        if ($arguments === null || count($arguments) < 1) {
             return null;
+        }
 
         // get named arguments from passed array
         $name = (string)$arguments[0];
         $rootName = $name;
         // set root element name if array dot-nested notation found
-        if (Str::contains('.', $name))
+        if (Str::contains('.', $name)) {
             $rootName = strstr($rootName, '.', true);
+        }
         // define properties, helper and layer
         $properties = null;
         $helper = null;
         $layer = null;
-        if (isset($arguments[1]))
+        if (isset($arguments[1])) {
             $properties = (array)$arguments[1];
+        }
 
-        if (isset($arguments[2]))
+        if (isset($arguments[2])) {
             $helper = (string)$arguments[2];
+        }
 
-        if (isset($arguments[3]))
+        if (isset($arguments[3])) {
             $layer = (string)$arguments[3];
+        }
 
         // check if model has attribute
         if (!property_exists($this->model, $rootName)) {
-            if (App::$Debug)
+            if (App::$Debug) {
                 App::$Debug->addMessage('Field "' . $name . '" (' . $field . ') is not defined in model: [' . get_class($this->model) . ']', 'error');
+            }
 
             return null;
         }
@@ -100,8 +105,9 @@ class FieldSelector extends NativeGenerator
         $elementDOM = $constructor->makeTag($name, $value, $properties);
 
         // if item is hidden - return tag without assign of global template
-        if ($field === 'hidden')
+        if ($field === 'hidden') {
             return $elementDOM;
+        }
 
         // prepare output html
         try {
@@ -112,8 +118,9 @@ class FieldSelector extends NativeGenerator
                 'help' => self::nohtml($helper)
             ]);
         } catch (SyntaxException $e) {
-            if (App::$Debug)
+            if (App::$Debug) {
                 App::$Debug->addException($e);
+            }
             return null;
         }
     }
@@ -126,8 +133,9 @@ class FieldSelector extends NativeGenerator
      */
     private function findFieldLayer(?string $type = null, ?string $layer = null): ?string
     {
-        if ($layer !== null)
+        if ($layer !== null) {
             return $layer;
+        }
 
         switch ($type) {
             case 'checkbox':

@@ -50,8 +50,9 @@ class Form extends NativeGenerator
     public function __construct($model, array $property = null, array $layerFiles = null)
     {
         // prevent white-screen locks when model is not passed or passed wrong
-        if (!$model instanceof Model)
+        if (!$model instanceof Model) {
             throw new SyntaxException('Bad model type passed in form builder. Check for init: new Form()');
+        }
 
         $this->model = $model;
         $this->name = $model->getFormName();
@@ -59,8 +60,9 @@ class Form extends NativeGenerator
         // check if passed custom layer file
         if (Any::isArray($layerFiles) && count($layerFiles) > 0) {
             foreach (array_keys(static::$structLayer) as $type) {
-                if (isset($layerFiles[$type]) && Any::isStr($layerFiles[$type]))
+                if (isset($layerFiles[$type]) && Any::isStr($layerFiles[$type])) {
                     static::$structLayer[$type] = $layerFiles[$type];
+                }
             }
         }
         // initialize field selector helper
@@ -71,8 +73,9 @@ class Form extends NativeGenerator
 
         $property['id'] = $this->name; // define form id
         // if action is not defined - define it
-        if (!$property['action'])
+        if (!$property['action']) {
             $property['action'] = App::$Request->getFullUrl();
+        }
 
         // set property global for this form
         $this->formProperty = $property;
@@ -85,8 +88,9 @@ class Form extends NativeGenerator
     public function start()
     {
         $form = self::buildSingleTag('form', $this->formProperty, false);
-        if ($this->model->_tokenRequired)
+        if ($this->model->_tokenRequired) {
             $form .= PHP_EOL . $this->field->hidden('_csrf_token', ['value' => $this->model->_csrf_token]);
+        }
 
         return $form;
     }
@@ -106,7 +110,8 @@ class Form extends NativeGenerator
         $response = null;
         try {
             $response = $this->field->{$type}($object, $property, $helper, $layerFile);
-        } catch (\Exception $e){}
+        } catch (\Exception $e) {
+        }
         return $response;
     }
 
@@ -152,8 +157,9 @@ class Form extends NativeGenerator
                             $render = App::$View->render(static::$structLayer['jsnotify'], ['itemId' => $itemId]);
                             App::$Alias->addPlainCode('js', $render);
                         } catch (SyntaxException $e) {
-                            if (App::$Debug)
+                            if (App::$Debug) {
                                 App::$Debug->addException($e);
+                            }
                         }
                     }
                 }

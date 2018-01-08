@@ -27,7 +27,7 @@ class MultiSelectField extends NativeGenerator implements iField
     }
 
     /**
-     * Build <select @properties>@optionsDOM</select> container 
+     * Build <select @properties>@optionsDOM</select> container
      * {@inheritDoc}
      * @see \Ffcms\Core\Helper\HTML\Form\iField::make()
      */
@@ -36,8 +36,9 @@ class MultiSelectField extends NativeGenerator implements iField
         // check if options is defined
         $options = $this->properties['options'];
         $optionsKey = (bool)$this->properties['optionsKey'];
-        if (!Any::isIterable($options))
+        if (!Any::isIterable($options)) {
             throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not iterable');
+        }
 
         unset($this->properties['options']);
         
@@ -56,11 +57,13 @@ class MultiSelectField extends NativeGenerator implements iField
             if ($optionsKey === true) {
                 $optionProperty['value'] = $val;
                 // check if current element is active
-                if (Any::isArray($this->value) && Arr::in((string)$val, $this->value))
+                if (Any::isArray($this->value) && Arr::in((string)$val, $this->value)) {
                     $optionProperty['selected'] = 'selected';
+                }
             } else {
-                if (Any::isArray($this->value) && Arr::in((string)$text, $this->value))
+                if (Any::isArray($this->value) && Arr::in((string)$text, $this->value)) {
                     $optionProperty['selected'] = 'selected';
+                }
             }
             $optionsDOM .= self::buildContainerTag('option', $optionProperty, $text);
         }

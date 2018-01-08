@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Helper\HTML\Form;
 
-
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\HTML\System\NativeGenerator;
@@ -40,8 +39,9 @@ class RadioField extends NativeGenerator implements iField
     {
         // get options from properties
         $options = $this->properties['options'];
-        if (!Any::isIterable($options))
+        if (!Any::isIterable($options)) {
             throw new SyntaxException('Radio field ' . self::nohtml($this->name) . ' have no iterable options');
+        }
 
         unset($this->properties['options'], $this->properties['value']);
 

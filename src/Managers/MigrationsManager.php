@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Managers;
 
-
 use Apps\ActiveRecord\Migration;
 use Ffcms\Core\Helper\FileSystem\File;
 use Ffcms\Core\Helper\FileSystem\Normalize;
@@ -30,14 +29,16 @@ class MigrationsManager
      */
     public function __construct(?string $dir = null, ?string $connectionName = null)
     {
-        if ($dir === null)
+        if ($dir === null) {
             $dir = static::DEFAULT_DIR;
+        }
 
         $this->dir = rtrim($dir, '/');
         $this->connection = $connectionName;
 
-        if ($this->dir !== static::DEFAULT_DIR)
+        if ($this->dir !== static::DEFAULT_DIR) {
             $this->customDir = true;
+        }
     }
 
     /**
@@ -50,16 +51,18 @@ class MigrationsManager
     {
         // initialize db migration record
         $records = new Migration();
-        if ($this->connection !== null)
+        if ($this->connection !== null) {
             $records->setConnection($this->connection);
+        }
 
         // get installed migrations
         $dbmigrations = Arr::pluck('migration', $records->get()->toArray());
 
         // list migrations
         $migrations = File::listFiles($this->dir, ['.php'], true);
-        if (!Any::isArray($migrations) || count($migrations) < 1)
+        if (!Any::isArray($migrations) || count($migrations) < 1) {
             return false;
+        }
 
         $found = false;
         foreach ($migrations as $migration) {
@@ -100,8 +103,9 @@ class MigrationsManager
         }
 
         // check if migration file is exists
-        if (!File::exist($this->dir . '/' . $file))
+        if (!File::exist($this->dir . '/' . $file)) {
             return false;
+        }
 
         // check if migration file located in extend directory and copy to default
         if (Normalize::diskFullPath($this->dir) !== Normalize::diskFullPath(static::DEFAULT_DIR)) {
@@ -114,8 +118,9 @@ class MigrationsManager
         $class = Str::firstIn($fullName, '-');
 
         // check if class is instance of migration interface
-        if (!class_exists($class) || !is_a($class, 'Ffcms\Core\Migrations\MigrationInterface', true))
+        if (!class_exists($class) || !is_a($class, 'Ffcms\Core\Migrations\MigrationInterface', true)) {
             return false;
+        }
 
         // implement migration
         $init = new $class($fullName, $this->connection);
@@ -144,8 +149,9 @@ class MigrationsManager
         }
 
         // check if exists
-        if (!File::exist($this->dir . '/' . $file))
+        if (!File::exist($this->dir . '/' . $file)) {
             return false;
+        }
 
         File::inc($this->dir . '/' . $file, false, false);
         $fullName = Str::cleanExtension($file);

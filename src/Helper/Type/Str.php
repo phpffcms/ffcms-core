@@ -28,8 +28,9 @@ class Str
     public static function startsWith(?string $what, ?string $where): bool
     {
         // check is not empty string
-        if (self::likeEmpty($what) || self::likeEmpty($where))
+        if (self::likeEmpty($what) || self::likeEmpty($where)) {
             return false;
+        }
 
         $prefix = self::sub($where, 0, self::length($what));
         return $prefix === $what;
@@ -44,8 +45,9 @@ class Str
     public static function endsWith(?string $what, ?string $where): bool
     {
         // check is not empty string
-        if (self::likeEmpty($what) || self::likeEmpty($where))
+        if (self::likeEmpty($what) || self::likeEmpty($where)) {
             return false;
+        }
 
         $suffix = self::sub($where, -self::length($what));
         return $suffix === $what;
@@ -59,8 +61,9 @@ class Str
      */
     public static function firstIn(?string $string, ?string $delimiter): ?string
     {
-        if (self::likeEmpty($string) || self::likeEmpty($delimiter))
+        if (self::likeEmpty($string) || self::likeEmpty($delimiter)) {
             return null;
+        }
 
         return strstr($string, $delimiter, true);
     }
@@ -74,13 +77,15 @@ class Str
      */
     public static function lastIn(?string $string, ?string $delimiter, bool $withoutDelimiter = false): ?string
     {
-        if (self::likeEmpty($string) || self::likeEmpty($delimiter))
+        if (self::likeEmpty($string) || self::likeEmpty($delimiter)) {
             return null;
+        }
 
         $pos = mb_strrpos($string, $delimiter);
         // if entry is not founded return false
-        if (!Any::isInt($pos))
+        if (!Any::isInt($pos)) {
             return null;
+        }
 
         // remove delimiter pointer
         if ($withoutDelimiter) {
@@ -98,8 +103,9 @@ class Str
     public static function cleanExtension(?string $string): ?string
     {
         // no extension in string is founded
-        if (!self::contains('.', $string))
+        if (!self::contains('.', $string)) {
             return $string;
+        }
 
         $splited = explode('.', $string);
         array_pop($splited);
@@ -124,8 +130,9 @@ class Str
      */
     public static function lowerCase(?string $string): ?string
     {
-        if ($string === null)
+        if ($string === null) {
             return null;
+        }
 
         return mb_strtolower($string, 'UTF-8');
     }
@@ -137,8 +144,9 @@ class Str
      */
     public static function upperCase(?string $string = null): ?string
     {
-        if ($string === null)
+        if ($string === null) {
             return null;
+        }
 
         return mb_strtoupper($string, 'UTF-8');
     }
@@ -205,8 +213,9 @@ class Str
      */
     public static function replace($needle, $replacement, ?string $haystack): ?string
     {
-        if ($haystack === null)
+        if ($haystack === null) {
             return null;
+        }
 
         return str_replace($needle, $replacement, $haystack);
     }
@@ -220,8 +229,9 @@ class Str
      */
     public static function ireplace($needle, $replacement, ?string $haystack): ?string
     {
-        if ($haystack === null)
+        if ($haystack === null) {
             return null;
+        }
 
         return str_ireplace($needle, $replacement, $haystack);
     }

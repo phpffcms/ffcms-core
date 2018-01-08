@@ -27,14 +27,15 @@ class EventManager
     }
 
     /** Catch the event if it occurred after this initiation of interception
-     * @param string|array $event            
-     * @param \Closure $callback            
+     * @param string|array $event
+     * @param \Closure $callback
      */
     public function on($event, \Closure $callback): void
     {
         // check if event is a single string and parse it to array single item
-        if (!Any::isArray($event))
+        if (!Any::isArray($event)) {
             $event = [$event];
+        }
         
         foreach ($event as $item) {
             $this->events[$item][] = $callback;
@@ -50,13 +51,15 @@ class EventManager
     public function listen($event, \Closure $callback)
     {
         // check if $event is a single string and set it as array with one item
-        if (!Any::isArray($event))
+        if (!Any::isArray($event)) {
             $event = [$event];
+        }
         
         // each every one event in array
         foreach ($event as $item) {
-            if (Any::isArray($this->runned) && array_key_exists($item, $this->runned))
+            if (Any::isArray($this->runned) && array_key_exists($item, $this->runned)) {
                 return call_user_func_array($callback, $this->runned[$item]);
+            }
         }
         
         return false;
@@ -71,8 +74,9 @@ class EventManager
         // dynamicly parse input params
         $args = func_get_args();
         
-        if (count($args) < 1)
+        if (count($args) < 1) {
             return false;
+        }
         
         // get event name
         $eventName = array_shift($args);
@@ -99,6 +103,5 @@ class EventManager
     {
         App::$Memory->set('events.catched.save', $this->events);
         App::$Memory->set('events.runned.save', $this->runned);
-        
     }
 }

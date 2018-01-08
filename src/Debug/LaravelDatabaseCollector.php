@@ -30,7 +30,8 @@ class LaravelDatabaseCollector extends PDOCollector
         }
     }
 
-    protected function addQuery($row) {
+    protected function addQuery($row)
+    {
         $time = $row['time'] / 1000;
         $endTime = microtime(true);
         $startTime = $endTime - $time;

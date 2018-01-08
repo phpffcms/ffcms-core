@@ -63,8 +63,9 @@ class View
         }
 
         // check if theme is available
-        if (!Directory::exist($this->themePath))
+        if (!Directory::exist($this->themePath)) {
             throw new NativeException('Apps theme is not founded: ' . Str::replace(root, null, $this->themePath));
+        }
 
         // get input args and build class properties
         $args = func_get_args();
@@ -89,20 +90,24 @@ class View
         $source = $this->sourcePath;
 
         // if path is not defined - try to find it in arguments
-        if (!$path)
+        if (!$path) {
             $path = array_shift($arguments);
+        }
 
         // if arguments is not define - try to find in arguments
-        if (!$params)
+        if (!$params) {
             $params = array_shift($arguments);
+        }
 
         // if directory of caller is not defiend - lets find in argument
-        if (!$source)
+        if (!$source) {
             $source = array_shift($arguments);
+        }
         
         // path still not defined?
-        if (!$path)
+        if (!$path) {
             throw new SyntaxException('View not found: ' . App::$Security->strip_tags($path));
+        }
 
         // cleanup from slashes on start/end
         $path = trim($path, '/\\');
@@ -129,8 +134,9 @@ class View
         if (Str::contains('/', $path)) {
             // lets try to get full path for current theme
             $tmpPath = $path;
-            if (!Str::startsWith($this->themePath, $path))
+            if (!Str::startsWith($this->themePath, $path)) {
                 $tmpPath = Normalize::diskPath($this->themePath . '/' . $path . '.php');
+            }
         } else { // sounds like a object-depended view call from controller or etc
             // get stack trace of callbacks
             $calledLog = @debug_backtrace();
@@ -138,13 +144,15 @@ class View
 
             // lets try to find controller in backtrace
             foreach ($calledLog as $caller) {
-                if (isset($caller['class']) && Str::startsWith('Apps\Controller\\', $caller['class']))
+                if (isset($caller['class']) && Str::startsWith('Apps\Controller\\', $caller['class'])) {
                     $calledController = (string)$caller['class'];
+                }
             }
 
             // depended controller is not founded? Let finish
-            if (!$calledController)
+            if (!$calledController) {
                 throw new SyntaxException('View render is failed: callback controller not founded! Call with relative path: ' . $path);
+            }
 
             // get controller name
             $controllerName = Str::sub($calledController, Str::length('Apps\Controller\\' . env_name . '\\'));
@@ -154,23 +162,26 @@ class View
         }
 
         // check if builded view full path is exist
-        if (File::exist($tmpPath))
+        if (File::exist($tmpPath)) {
             return $tmpPath;
+        }
 
         // hmm, not founded. Lets try to find in caller directory (for widgets, apps packages and other)
         if ($source !== null) {
             $tmpPath = Normalize::diskPath($source . DIRECTORY_SEPARATOR . $path . '.php');
             if (File::exist($tmpPath)) {
                 // add notify for native views
-                if (App::$Debug)
+                if (App::$Debug) {
                     App::$Debug->addMessage('Render native viewer: ' . Str::replace(root, null, $tmpPath), 'info');
+                }
 
                 return $tmpPath;
             }
         }
 
-        if (App::$Debug)
+        if (App::$Debug) {
             App::$Debug->addMessage('Viewer not founded on rendering: ' . $path, 'warning');
+        }
 
         return null;
     }
@@ -193,8 +204,9 @@ class View
      */
     protected function renderSandbox($path, $params = null)
     {
-        if (!$path || !File::exist($path))
+        if (!$path || !File::exist($path)) {
             return null;
+        }
 
         // render defaults params as variables
         if (Any::isArray($params) && count($params) > 0) {
@@ -218,8 +230,9 @@ class View
             ob_end_clean();
             // prepare output message
             $msg = $e->getMessage();
-            if (!Str::likeEmpty($msg))
+            if (!Str::likeEmpty($msg)) {
                 $msg .= '. ';
+            }
 
             $msg .= __('Native exception catched in view: %path% in line %line%', ['path' => $path, 'line' => $e->getLine()]);
             exit($e->display($msg));
@@ -255,8 +268,9 @@ class View
     {
         $items = App::$Alias->getCustomLibraryArray($type);
         // check if custom library available
-        if (!$items || !Any::isArray($items) || count($items) < 1)
+        if (!$items || !Any::isArray($items) || count($items) < 1) {
             return null;
+        }
 
         $output = [];
         foreach ($items as $item) {
@@ -290,8 +304,9 @@ class View
      */
     public function showPlainCode(?string $type = null): ?string
     {
-        if (!App::$Alias->getPlainCode($type) || !Any::isArray(App::$Alias->getPlainCode($type)))
+        if (!App::$Alias->getPlainCode($type) || !Any::isArray(App::$Alias->getPlainCode($type))) {
             return null;
+        }
 
         $code = null;
         foreach (App::$Alias->getPlainCode($type) as $row) {

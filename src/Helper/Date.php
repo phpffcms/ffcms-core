@@ -28,8 +28,9 @@ class Date
     public static function convertToDatetime($rawDate, $format = 'd.m.Y')
     {
         // convert timestamp to date format
-        if (Any::isInt($rawDate))
+        if (Any::isInt($rawDate)) {
             $rawDate = date(\DateTime::ATOM, $rawDate);
+        }
 
         try {
             $object = new \DateTime($rawDate);
@@ -61,15 +62,17 @@ class Date
         // convert to timestamp
         $timestamp = $raw;
         // raw can be instance of eloquent active record object, convert to str
-        if (!Any::isInt($raw))
+        if (!Any::isInt($raw)) {
             $timestamp = self::convertToTimestamp((string)$timestamp);
+        }
 
         // calculate difference between tomorrow day midnight and passed date
         $diff = time() - $timestamp;
 
         // date in future, lets return as is
-        if ($diff < 0)
+        if ($diff < 0) {
             return self::convertToDatetime($timestamp, static::FORMAT_TO_SECONDS);
+        }
 
         // calculate delta and make offset sub. Maybe usage instance of Datetime is better, but localization is sucks!
         $deltaSec = $diff % 60;
@@ -86,8 +89,9 @@ class Date
         // sounds like more then 1 day's ago
         if ($deltaDays > 1) {
             // sounds like more then 2 week ago, just return as is
-            if ($deltaDays > 14)
+            if ($deltaDays > 14) {
                 return self::convertToDatetime($timestamp, static::FORMAT_TO_HOUR);
+            }
 
             return App::$Translate->get('DateHuman', '%days% days ago', ['days' => (int)$deltaDays]);
         }

@@ -21,10 +21,10 @@ class MultiCheckboxField extends NativeGenerator implements iField
     /**
      * MultiCheckboxField constructor.
      * Pass params inside.
-     * 
-     * @param array $properties            
-     * @param string $name            
-     * @param string|null $value            
+     *
+     * @param array $properties
+     * @param string $name
+     * @param string|null $value
      */
     public function __construct($properties, $name, $value = null)
     {
@@ -42,8 +42,9 @@ class MultiCheckboxField extends NativeGenerator implements iField
     {
         // check if options is defined
         $options = $this->properties['options'];
-        if (!Any::isIterable($options))
+        if (!Any::isIterable($options)) {
             throw new SyntaxException('Options for field ' . self::nohtml($this->name) . ' is not iterable');
+        }
 
         unset($this->properties['options']);
         

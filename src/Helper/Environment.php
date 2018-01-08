@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Helper;
 
-
 /**
  * Class Environment. Special function to get information about working environment
  * @package Ffcms\Core\Helper

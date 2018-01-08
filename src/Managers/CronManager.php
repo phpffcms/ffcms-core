@@ -2,7 +2,6 @@
 
 namespace Ffcms\Core\Managers;
 
-
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
@@ -23,8 +22,9 @@ class CronManager
     {
         /** @var array $configs */
         $configs = App::$Properties->getAll('Cron');
-        if (Any::isArray($configs))
+        if (Any::isArray($configs)) {
             $this->configs = $configs;
+        }
     }
 
     /**
@@ -34,8 +34,9 @@ class CronManager
     public function run()
     {
         // check if cron instances is defined
-        if (!isset($this->configs['instances']) || !Any::isArray($this->configs['instances']))
+        if (!isset($this->configs['instances']) || !Any::isArray($this->configs['instances'])) {
             return null;
+        }
 
         // get timestamp
         $time = time();
@@ -71,8 +72,9 @@ class CronManager
     public function register($class, $method, $delay = 60)
     {
         // check if declared callback is exist over autoload
-        if (!class_exists($class) || !method_exists($class, $method))
+        if (!class_exists($class) || !method_exists($class, $method)) {
             return false;
+        }
 
         $callback = (string)$class . '::' . (string)$method;
 
