@@ -21,4 +21,24 @@ trait ClassTools
         }
         return $hash;
     }
+
+    /**
+     * Get method required arguments count
+     * @param $class
+     * @param string $method
+     * @return int
+     */
+    public function getMethodRequiredArgCount($class, string $method): int
+    {
+        $instance = new \ReflectionMethod($class, $method);
+        $count = 0;
+        // calculate method defined arguments count
+        foreach ($instance->getParameters() as $arg) {
+            if (!$arg->isOptional()) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
 }

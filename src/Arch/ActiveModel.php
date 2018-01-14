@@ -5,7 +5,6 @@ namespace Ffcms\Core\Arch;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Any;
-use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Illuminate\Database\Eloquent\Model as LaravelModel;
 
@@ -17,8 +16,9 @@ use Illuminate\Database\Eloquent\Model as LaravelModel;
  * @method static ActiveModel orWhere($field = null, $compare = null, $value = null)
  * @method static ActiveModel orderBy($field, $sortType)
  * @method ActiveModel groupBy($field)
- * @method static ActiveModel|null first()
- * @method static ActiveModel|null find($id)
+ * @method static self|null first()
+ * @method static self|null find($id)
+ * @method static self|null findOrNew($id)
  * @method static ActiveModel|null whereNotNull($field)
  * @method static ActiveModel|null orWhereNotNull($field)
  * @method ActiveModel skip($count)
@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Model as LaravelModel;
  * @method ActiveModel whereMonth($field = null, $compare = null, $value = null)
  * @method ActiveModel whereDay($field = null, $compare = null, $value = null)
  * @method static ActiveModel select($columns = null)
+ * @method \Illuminate\Database\Eloquent\Collection get($columns = ['*'])
  * @method int count()
  * @inheritdoc
  */

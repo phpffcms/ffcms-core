@@ -2,20 +2,17 @@
 
 namespace Ffcms\Core;
 
+use Ffcms\Core\Arch\Controller;
 use Ffcms\Core\Arch\View;
 use Ffcms\Core\Cache\MemoryObject;
 use Ffcms\Core\Debug\DebugMeasure;
 use Ffcms\Core\Debug\Manager as Debug;
-use Ffcms\Core\Exception\ForbiddenException;
-use Ffcms\Core\Exception\JsonException;
 use Ffcms\Core\Exception\NativeException;
 use Ffcms\Core\Exception\NotFoundException;
-use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Exception\TemplateException;
 use Ffcms\Core\Helper\Mailer;
 use Ffcms\Core\Helper\Security;
 use Ffcms\Core\Helper\Type\Any;
-use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\I18n\Translate;
 use Ffcms\Core\Managers\BootManager;
@@ -23,6 +20,7 @@ use Ffcms\Core\Managers\CronManager;
 use Ffcms\Core\Managers\EventManager;
 use Ffcms\Core\Network\Request;
 use Ffcms\Core\Network\Response;
+use Ffcms\Core\Traits\ClassTools;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
@@ -31,7 +29,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
  */
 class App
 {
-    use DebugMeasure;
+    use DebugMeasure, ClassTools;
 
     /** @var \Ffcms\Core\Network\Request */
     public static $Request;
@@ -182,59 +180,35 @@ class App
      * Run applications and display output. Main entry point of system.
      * @return void
      */
-    final public function run(): void
+    public function run(): void
     {
-        $html = null;
-        // lets try to get html full content to page render
         try {
-            $this->startMeasure(__METHOD__ . '::callback');
             /** @var \Ffcms\Core\Arch\Controller $callClass */
-            $callClass = null;
+            $callClass = $this->getCallbackClass();
             $callMethod = 'action' . self::$Request->getAction();
+            $arguments = $this->getArguments();
 
-            // define callback class namespace/name full path
-            $cName = (self::$Request->getCallbackAlias() ?? '\Apps\Controller\\' . env_name . '\\' . self::$Request->getController());
-            if (!class_exists($cName)) {
-                throw new NotFoundException('Callback class not found: ' . App::$Security->strip_tags($cName));
-            }
-
-            $callClass = new $cName;
             // check if callback method (action) is exist in class object
             if (!method_exists($callClass, $callMethod)) {
                 throw new NotFoundException('Method "' . App::$Security->strip_tags($callMethod) . '()" not founded in "' . get_class($callClass) . '"');
             }
 
-            $this->stopMeasure(__METHOD__ . '::callback');
-            $params = [];
-            if (!Str::likeEmpty(self::$Request->getID())) {
-                $params[] = self::$Request->getID();
-                if (!Str::likeEmpty(self::$Request->getAdd())) {
-                    $params[] = self::$Request->getAdd();
-                }
-            }
+            // check if method arguments counts equals passed count
+            $requiredArgCount = $this->getMethodRequiredArgCount($callClass, $callMethod);
 
-            // get instance of callback object (class::method) as reflection
-            $instance = new \ReflectionMethod($callClass, $callMethod);
-            $argCount = 0;
-            // calculate method defined arguments count
-            foreach ($instance->getParameters() as $arg) {
-                if (!$arg->isOptional()) {
-                    $argCount++;
-                }
-            }
             // compare method arg count with passed
-            if (count($params) < $argCount) {
+            if (count($arguments) < $requiredArgCount) {
                 throw new NotFoundException(__('Arguments for method %method% is not enough. Expected: %required%, got: %current%.', [
                     'method' => $callMethod,
-                    'required' => $argCount,
-                    'current' => count($params)
+                    'required' => $requiredArgCount,
+                    'current' => count($arguments)
                 ]));
             }
 
-            $this->startMeasure($cName . '::' . $callMethod);
+            $this->startMeasure(get_class($callClass) . '::' . $callMethod);
             // make callback call to action in controller and get response
-            $actionResponse = call_user_func_array([$callClass, $callMethod], $params);
-            $this->stopMeasure($cName . '::' . $callMethod);
+            $actionResponse = call_user_func_array([$callClass, $callMethod], $arguments);
+            $this->stopMeasure(get_class($callClass) . '::' . $callMethod);
 
             // set response to controller attribute
             if (!Str::likeEmpty($actionResponse)) {
@@ -261,5 +235,38 @@ class App
         self::$Response->setContent($html);
         // echo full response to user via symfony http foundation
         self::$Response->send();
+    }
+
+    /**
+     * Get callback class instance
+     * @return Controller
+     * @throws NotFoundException
+     */
+    private function getCallbackClass()
+    {
+        // define callback class namespace/name full path
+        $cName = (self::$Request->getCallbackAlias() ?? '\Apps\Controller\\' . env_name . '\\' . self::$Request->getController());
+        if (!class_exists($cName)) {
+            throw new NotFoundException('Callback class not found: ' . App::$Security->strip_tags($cName));
+        }
+
+        return new $cName;
+    }
+
+    /**
+     * Get method arguments from request
+     * @return array
+     */
+    private function getArguments(): array
+    {
+        $args = [];
+        if (!Str::likeEmpty(self::$Request->getID())) {
+            $args[] = self::$Request->getID();
+            if (!Str::likeEmpty(self::$Request->getAdd())) {
+                $args[] = self::$Request->getAdd();
+            }
+        }
+
+        return $args;
     }
 }
