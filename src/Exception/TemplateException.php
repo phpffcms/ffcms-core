@@ -5,6 +5,7 @@ namespace Ffcms\Core\Exception;
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Controller;
 use Ffcms\Core\Helper\Type\Str;
+use Ffcms\Templex\Engine\Vars;
 
 abstract class TemplateException extends \Exception
 {
@@ -54,9 +55,8 @@ abstract class TemplateException extends \Exception
         if (defined('env_no_layout') && env_no_layout === true) {
             $fakeController->layout = null;
         }
-        
-        // add global title tag value
-        $fakeController->setGlobalVar('title', App::$Translate->get('Default', $this->title));
+        Vars::instance()->setGlobal('title', App::$Translate->get('Default', $this->title));
+
         // build error text
         $rawResponse = 'error';
         try {

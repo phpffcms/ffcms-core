@@ -2,7 +2,7 @@
 
 namespace Ffcms\Core\Traits;
 
-use Ffcms\Core\Template\Variables;
+use Ffcms\Templex\Engine\Vars;
 
 /**
  * Special street magic class for extending MVC model usage $this->undefined from any places.
@@ -18,7 +18,7 @@ trait DynamicGlobal
      */
     final public function __set($var, $value)
     {
-        Variables::instance()->setGlobal($var, $value);
+        Vars::instance()->setGlobal($var, $value);
     }
 
     /**
@@ -28,7 +28,7 @@ trait DynamicGlobal
      */
     final public function __get($var)
     {
-        $globals = Variables::instance()->getGlobalsArray();
+        $globals = Vars::instance()->getGlobalsArray();
         return array_key_exists($var, $globals) ? $globals[$var] : null;
     }
 
@@ -39,6 +39,6 @@ trait DynamicGlobal
      */
     final public function __isset($var)
     {
-        return Variables::instance()->issetGlobal($var);
+        return Vars::instance()->issetGlobal($var);
     }
 }

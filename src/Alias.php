@@ -48,41 +48,13 @@ class Alias
      */
     public $scriptUrl;
 
-
-    /**
-     * Default vendor library's
-     * @var array
-     */
-    protected $vendorNamedLibrary = [
-        'js' => null,
-        'css' => null
-    ];
-
-    /**
-     * Custom code library's
-     * @var array
-     */
-    protected $codeCustomLibrary = [
-        'js' => null,
-        'css' => null
-    ];
-
-    /**
-     * Custom code storage for templates
-     * @var array
-     */
-    protected $plainCode = [
-        'js' => null,
-        'css' => null
-    ];
-
     /**
      * Alias constructor. Build alias properties for system data to provide fast-access from apps and other places.
      */
     public function __construct()
     {
         // make alias for view pathway
-        $this->currentViewPath = App::$View->themePath;
+        $this->currentViewPath = App::$View->getCurrentPath();
 
         // make alias for baseUrl, script url and domain
         $this->baseDomain = App::$Request->getHttpHost();
@@ -105,89 +77,15 @@ class Alias
             $this->baseUrl .= '/' . App::$Request->getLanguage();
         }
 
-        // add cron initiation from user if enabled
-        if ((bool)App::$Properties->get('userCron') && env_name === 'Front') {
-            $this->addPlainCode('js', 'if(Math.random() > 0.8) { $.get("' . $this->scriptUrl . '/cron.php?rand=" + Math.random()); }');
-        }
-
-        // build vendor libs alias
-        $this->vendorNamedLibrary['js']['jquery'] = $this->scriptUrl . '/vendor/bower/jquery/dist/jquery.min.js';
-        $this->vendorNamedLibrary['css']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/css/bootstrap.min.css';
-        $this->vendorNamedLibrary['js']['bootstrap'] = $this->scriptUrl . '/vendor/bower/bootstrap/dist/js/bootstrap.min.js';
-        $this->vendorNamedLibrary['css']['fa'] = $this->scriptUrl . '/vendor/bower/components-font-awesome/css/font-awesome.min.css';
-        $this->vendorNamedLibrary['js']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/jquery-ui.min.js';
-        $this->vendorNamedLibrary['css']['jquery-ui'] = $this->scriptUrl . '/vendor/bower/jquery-ui/themes/base/jquery-ui.min.css';
+        // @todo: add cron initiation from user if enabled -> move to layout
+        //if ((bool)App::$Properties->get('userCron') && env_name === 'Front') {
+        //    $this->addPlainCode('js', 'if(Math.random() > 0.8) { $.get("' . $this->scriptUrl . '/cron.php?rand=" + Math.random()); }');
+        //}
 
         $themeAll = App::$Properties->get('theme');
         if (!isset($themeAll[env_name]) || Str::length($themeAll[env_name]) < 1) {
             $themeAll[env_name] = 'default';
         }
         $this->currentViewUrl = $this->scriptUrl . '/Apps/View/' . env_name . '/' . $themeAll[env_name];
-    }
-
-    /**
-     * Get vendor library url if defined by type and name. Example: getVendor('js', 'jquery')
-     * @param string $type
-     * @param string $name
-     * @return string|null
-     */
-    public function getVendor($type, $name)
-    {
-        return $this->vendorNamedLibrary[$type][$name];
-    }
-
-    /**
-     * Set custom library $link by $type
-     * @param string $type
-     * @param string $link
-     */
-    public function setCustomLibrary($type, $link)
-    {
-        $this->codeCustomLibrary[$type][] = $link;
-    }
-
-    /**
-     * Get custom library array by type
-     * @param string $type
-     * @return array|null
-     */
-    public function getCustomLibraryArray($type)
-    {
-        return $this->codeCustomLibrary[$type];
-    }
-
-    /**
-     * Unset custom library's by type
-     * @param $type
-     */
-    public function unsetCustomLibrary($type)
-    {
-        unset($this->codeCustomLibrary[$type]);
-    }
-
-    /**
-     * @param string $type
-     * @param string $code
-     * @return bool
-     */
-    public function addPlainCode($type, $code)
-    {
-        $allowed = ['css', 'js'];
-        if (!Arr::in($type, $allowed)) {
-            return false;
-        }
-
-        $this->plainCode[$type][] = $code;
-        return true;
-    }
-
-    /**
-     * Get plain code build container as string
-     * @param string $type
-     * @return null|string
-     */
-    public function getPlainCode($type)
-    {
-        return $this->plainCode[$type];
     }
 }

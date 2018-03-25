@@ -90,7 +90,6 @@ class App
      * @param array|null $services
      * @param bool $loader
      * @throws \Ffcms\Core\Exception\NativeException
-     * @throws \InvalidArgumentException
      */
     public function __construct(array $services = null, $loader = false)
     {
@@ -110,7 +109,7 @@ class App
      * @param array|null $services
      * @param bool $loader
      * @return App
-     * @throws \InvalidArgumentException
+     * @throws NativeException
      */
     public static function factory(array $services = null, $loader = false): self
     {
@@ -119,7 +118,7 @@ class App
 
     /**
      * Prepare native static symbolic links for app services
-     * @throws \InvalidArgumentException
+     * @throws NativeException
      */
     private function loadNativeServices(): void
     {
@@ -207,32 +206,29 @@ class App
 
             $this->startMeasure(get_class($callClass) . '::' . $callMethod);
             // make callback call to action in controller and get response
-            $actionResponse = call_user_func_array([$callClass, $callMethod], $arguments);
+            $response = call_user_func_array([$callClass, $callMethod], $arguments);
             $this->stopMeasure(get_class($callClass) . '::' . $callMethod);
 
-            // set response to controller attribute
-            if (!Str::likeEmpty($actionResponse)) {
-                $callClass->setOutput($actionResponse);
+            // if no response - throw 404 not found
+            if (!$response) {
+                throw new NotFoundException('Page not found: 404 error');
             }
-
-            // build full compiled output html data with default layout and widgets
-            $html = $callClass->buildOutput();
         } catch (\Exception $e) {
             // check if exception is system-based throw
             if ($e instanceof TemplateException) {
-                $html = $e->display();
+                $response = $e->display();
             } else { // or hook exception to system based :)))
                 if (App::$Debug) {
                     $msg = $e->getMessage() . $e->getTraceAsString();
-                    $html = (new NativeException($msg))->display();
+                    $response = (new NativeException($msg))->display();
                 } else {
-                    $html = (new NativeException($e->getMessage()))->display();
+                    $response = (new NativeException($e->getMessage()))->display();
                 }
             }
         }
 
         // set full rendered content to response builder
-        self::$Response->setContent($html);
+        self::$Response->setContent($response);
         // echo full response to user via symfony http foundation
         self::$Response->send();
     }
