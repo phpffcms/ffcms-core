@@ -5,7 +5,6 @@ namespace Ffcms\Core\Exception;
 use Ffcms\Core\App;
 use Ffcms\Core\Arch\Controller;
 use Ffcms\Core\Helper\Type\Str;
-use Ffcms\Templex\Engine\Vars;
 
 abstract class TemplateException extends \Exception
 {
@@ -49,29 +48,17 @@ abstract class TemplateException extends \Exception
      */
     protected function buildFakePage()
     {
-        // initialize fake controller to display page with exception
-        $fakeController = new Controller();
-        // check if used no layout template
-        if (defined('env_no_layout') && env_no_layout === true) {
-            $fakeController->layout = null;
-        }
-        Vars::instance()->setGlobal('title', App::$Translate->get('Default', $this->title));
-
-        // build error text
-        $rawResponse = 'error';
         try {
             $rawResponse = App::$View->render('native/errors/' . $this->tpl, ['msg' => $this->text]);
             if (Str::likeEmpty($rawResponse)) {
                 $rawResponse = $this->text;
             }
-        } catch (SyntaxException $e) {
+        } catch (\Exception $e) {
             $rawResponse = $this->text;
         }
-        // set controller body response
-        $fakeController->setOutput($rawResponse);
         // set status code for header
         App::$Response->setStatusCode((int)$this->status);
         // return compiled html output
-        return $fakeController->buildOutput();
+        return $rawResponse;
     }
 }

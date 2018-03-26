@@ -4,13 +4,7 @@ namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Debug\DebugMeasure;
-use Ffcms\Core\Exception\NativeException;
-use Ffcms\Core\Helper\FileSystem\File;
-use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iController;
-use Ffcms\Core\Template\Variables;
-use Ffcms\Core\Traits\DynamicGlobal;
-use Ffcms\Templex\Template;
 
 /**
  * Class Controller. Classic carcase of controller in MVC architecture.

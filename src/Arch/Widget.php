@@ -4,10 +4,8 @@ namespace Ffcms\Core\Arch;
 
 use Apps\ActiveRecord\App as AppRecord;
 use Ffcms\Core\Helper\Type\Any;
-use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iWidget;
-use Ffcms\Core\Traits\DynamicGlobal;
 
 /**
  * Class Widget. Provide constructor to work with widget-type based extensions for ffcms.
@@ -15,8 +13,6 @@ use Ffcms\Core\Traits\DynamicGlobal;
  */
 class Widget implements iWidget
 {
-    use DynamicGlobal;
-
     /** @var string|null */
     public static $class;
 
@@ -54,7 +50,6 @@ class Widget implements iWidget
     /**
      * Get widget configs from admin part as array $cfg=>$value
      * @return array|null|string
-     * @throws \Ffcms\Core\Exception\SyntaxException
      */
     public function getConfigs()
     {

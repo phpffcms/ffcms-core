@@ -6,10 +6,8 @@ use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\Type\Any;
-use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iModel;
-use Ffcms\Core\Traits\DynamicGlobal;
 use Ffcms\Core\Traits\ModelValidator;
 
 /**
@@ -18,7 +16,7 @@ use Ffcms\Core\Traits\ModelValidator;
  */
 class Model implements iModel
 {
-    use DynamicGlobal, ModelValidator {
+    use ModelValidator {
         ModelValidator::initialize as private validatorConstructor;
     }
 
