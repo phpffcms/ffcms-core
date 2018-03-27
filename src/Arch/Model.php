@@ -9,12 +9,14 @@ use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Interfaces\iModel;
 use Ffcms\Core\Traits\ModelValidator;
+use Ffcms\Templex\Helper\Html\Form\ModelInterface;
+use Ffcms\Templex\Helper\Html\Form\Model as TemplexModel;
 
 /**
  * Class Model. Classic constructor of models in MVC architecture with algorithm of passing attributes from user input data.
  * @package Ffcms\Core\Arch
  */
-class Model implements iModel
+abstract class Model extends TemplexModel implements iModel, ModelInterface
 {
     use ModelValidator {
         ModelValidator::initialize as private validatorConstructor;
@@ -30,39 +32,13 @@ class Model implements iModel
     {
         $this->before();
         $this->validatorConstructor($csrf);
+        parent::__construct();
     }
 
     /**
      * Make any things before model is initialized
      */
-    public function before()
-    {
-    }
-
-    /**
-     * Get label value by variable name
-     * @param string $param
-     * @return mixed
-     */
-    final public function getLabel($param)
-    {
-        $labels = $this->labels();
-        $response = null;
-        // maybe array-dotted declaration?
-        if (Str::contains('.', $param)) {
-            // not defined for all array-dotted nesting?
-            if (Str::likeEmpty($labels[$param])) {
-                // lets set default array label (before first dot-separation)
-                $response = $labels[Str::firstIn($param, '.')];
-            } else {
-                $response = $labels[$param];
-            }
-        } else {
-            $response = $labels[$param];
-        }
-
-        return (Str::likeEmpty($response) ? Str::replace('.', ' ', Str::splitCamelCase($param)) : $response);
-    }
+    public function before() {}
 
     /**
      * Set attribute labels for model variables

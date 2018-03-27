@@ -276,20 +276,6 @@ trait ModelValidator
     }
 
     /**
-     * Form default name (used in field building)
-     * @return string
-     */
-    public function getFormName()
-    {
-        if ($this->_formName === null) {
-            $cname = get_class($this);
-            $this->_formName = substr($cname, strrpos($cname, '\\') + 1);
-        }
-
-        return $this->_formName;
-    }
-
-    /**
      * @deprecated
      * Get input params GET/POST/PUT method
      * @param string $param

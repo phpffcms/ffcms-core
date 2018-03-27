@@ -10,7 +10,6 @@ interface iModel
 {
     public function before();
 
-    public function labels(): array;
     public function rules(): array;
     public function sources(): array;
     public function types(): array;
