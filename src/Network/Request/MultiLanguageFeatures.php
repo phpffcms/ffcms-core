@@ -6,6 +6,7 @@ use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Str;
+use Ffcms\Templex\Url\UrlRepository;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -46,6 +47,8 @@ trait MultiLanguageFeatures
             if (Str::startsWith('/' . $lang, $this->getPathInfo())) {
                 $this->language = $lang;
                 $this->languageInPath = true;
+                // inject templex url builder dependency
+                UrlRepository::factory()->setUrlAndSubdir(null, $lang);
             }
         }
 

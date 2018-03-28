@@ -2,12 +2,16 @@
 
 namespace Ffcms\Core\Interfaces;
 
-use Apps\ActiveRecord\Profile;
-use Apps\ActiveRecord\Role;
-use Apps\ActiveRecord\UserLog;
-use Apps\ActiveRecord\UserProvider;
-use Apps\ActiveRecord\WallPost;
-
+/**
+ * Interface iUser
+ * @package Ffcms\Core\Interfaces
+ * @property int $id
+ * @property string $login
+ * @property string $email
+ * @property string $password
+ * @property int $role_id
+ * @property string $approve_token
+ */
 interface iUser
 {
     /**

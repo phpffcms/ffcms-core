@@ -30,9 +30,9 @@ abstract class Model extends TemplexModel implements iModel, ModelInterface
      */
     public function __construct($csrf = false)
     {
+        parent::__construct();
         $this->before();
         $this->validatorConstructor($csrf);
-        parent::__construct();
     }
 
     /**
