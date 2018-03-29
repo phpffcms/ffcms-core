@@ -3,6 +3,7 @@
 namespace Ffcms\Core\Arch;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\FileSystem\Directory;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Templex\Engine;
 
@@ -33,6 +34,9 @@ class View extends Engine
         $env = ucfirst(Str::lowerCase(env_name));
 
         $this->path = root . DIRECTORY_SEPARATOR . 'Apps' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . $env . DIRECTORY_SEPARATOR . $theme;
+        if (!Directory::exist($this->path)) {
+            return;
+        }
 
         // initialize template engine with path and load default extensions
         parent::__construct($this->path);

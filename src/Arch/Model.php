@@ -100,7 +100,7 @@ abstract class Model extends TemplexModel implements iModel, ModelInterface
         $success = $this->runValidate($rules);
 
         // get not-passed validation fields as array
-        $badAttributes = $this->getBadAttribute();
+        $badAttributes = $this->getBadAttributes();
         // prevent warnings
         if (Any::isArray($badAttributes) && count($badAttributes) > 0) {
             foreach ($badAttributes as $attr) {

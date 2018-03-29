@@ -238,7 +238,7 @@ trait ModelValidator
      * Get fail validation attributes as array if exist
      * @return null|array
      */
-    public function getBadAttribute()
+    public function getBadAttributes(): ?array
     {
         return $this->_badAttr;
     }
