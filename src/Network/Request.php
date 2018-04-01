@@ -4,6 +4,7 @@ namespace Ffcms\Core\Network;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Str;
+use Ffcms\Templex\Url\UrlRepository;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
 
 /**
@@ -33,6 +34,7 @@ class Request extends FoundationRequest
         $this->runMultiLanguage();
         $this->runRouteBinding();
         $this->loadTrustedProxies();
+        $this->setTemplexFeatures();
     }
 
     /**
@@ -143,5 +145,24 @@ class Request extends FoundationRequest
             $path = Str::sub($path, --$offset);
         }
         return $path;
+    }
+
+    /**
+     * Set templex template engine URL features
+     * @return void
+     */
+    private function setTemplexFeatures(): void
+    {
+        $url = $this->getSchemeAndHttpHost();
+        $sub = null;
+        if ($this->getInterfaceSlug() && Str::length($this->getInterfaceSlug()) > 0) {
+            $sub = $this->getInterfaceSlug() . '/';
+        }
+
+        if ($this->languageInPath()) {
+            $sub .= $this->getLanguage();
+        }
+
+        UrlRepository::factory($this->getFullUrl())->setUrlAndSubdir($url, $sub);
     }
 }

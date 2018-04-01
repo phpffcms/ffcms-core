@@ -47,8 +47,6 @@ trait MultiLanguageFeatures
             if (Str::startsWith('/' . $lang, $this->getPathInfo())) {
                 $this->language = $lang;
                 $this->languageInPath = true;
-                // inject templex url builder dependency
-                UrlRepository::factory()->setUrlAndSubdir(null, $lang);
             }
         }
 
