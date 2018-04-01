@@ -49,7 +49,7 @@ abstract class TemplateException extends \Exception
     protected function buildFakePage()
     {
         try {
-            $rawResponse = App::$View->render('native/errors/' . $this->tpl, ['msg' => $this->text]);
+            $rawResponse = App::$View->render('_exceptions/' . $this->tpl, ['msg' => $this->text]);
             if (Str::likeEmpty($rawResponse)) {
                 $rawResponse = $this->text;
             }

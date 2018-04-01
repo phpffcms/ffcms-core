@@ -31,7 +31,7 @@ trait ModelValidator
     public function initialize($csrf = false)
     {
         $this->_tokenRequired = $csrf;
-        if ($csrf === true) {
+        if ($csrf) {
             // get current token value from session
             $currentToken = App::$Session->get('_csrf_token', false);
             // set new token value to session
