@@ -20,11 +20,6 @@ class Any
             return count($var) < 1;
         }
 
-        // var seems to be object?
-        if (is_object($var)) {
-            return count(get_object_vars($var)) < 1;
-        }
-
         // float,int,string,bool and null left. Check if not empty. Int and float will never equal to null.
         return ($var === null || $var === '' || $var === false);
     }
