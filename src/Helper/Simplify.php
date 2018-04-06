@@ -4,7 +4,7 @@ namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Any;
-use Ffcms\Core\Helper\Type\Obj;
+use Ffcms\Templex\Url\Url;
 
 /**
  * Class Simplify. Simplification of ofter used logic and methods.
@@ -49,6 +49,6 @@ class Simplify
             return $nick;
         }
 
-        return Url::link([$controllerAction, (int)$userId], $nick);
+        return Url::a([$controllerAction, [(int)$userId]], $nick);
     }
 }
