@@ -247,7 +247,7 @@ trait ModelValidator
      * Set model send method type. Allowed: post, get
      * @param string $acceptMethod
      */
-    final public function setSubmitMethod($acceptMethod)
+    final public function setSubmitMethod($acceptMethod): void
     {
         $this->_sendMethod = Str::upperCase($acceptMethod);
     }
@@ -256,7 +256,7 @@ trait ModelValidator
      * Get model submit method. Allowed: post, get
      * @return string
      */
-    final public function getSubmitMethod()
+    final public function getSubmitMethod(): ?string
     {
         return $this->_sendMethod;
     }
