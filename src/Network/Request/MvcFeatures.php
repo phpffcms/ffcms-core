@@ -15,9 +15,7 @@ trait MvcFeatures
 {
     protected $controller;
     protected $action;
-    protected $argumentId;
-    protected $argumentAdd;
-
+    protected $args;
 
     /**
      * Check if current url in redirect map
@@ -58,26 +56,16 @@ trait MvcFeatures
             return;
         }
 
-        // check if array length is more then 4 basic elements and slice it recursive
-        if (count($pathArray) > 4) {
-            $this->setPathdata(array_slice($pathArray, 0, 4));
-            return;
-        }
+        // extract controller info from full path array
+        $this->controller = ucfirst(Str::lowerCase(array_shift($pathArray)));
+        if (count($pathArray) > 0) {
+            // extract action
+            $this->action = ucfirst(Str::lowerCase(array_shift($pathArray)));
 
-        // Switch path array as reverse without break point! Caution: drugs inside!
-        switch (count($pathArray)) {
-            case 4:
-                $this->argumentAdd = $pathArray[3];
-            // no break
-            case 3:
-                $this->argumentId = $pathArray[2];
-            // no break
-            case 2:
-                $this->action = ucfirst(Str::lowerCase($pathArray[1]));
-            // no break
-            case 1:
-                $this->controller = ucfirst(Str::lowerCase($pathArray[0]));
-                break;
+            // safe other parts to arguments if exist
+            if (count($pathArray) > 0) {
+                $this->args = $pathArray;
+            }
         }
     }
 
@@ -100,15 +88,6 @@ trait MvcFeatures
     }
 
     /**
-     * Get current $id argument for controller action
-     * @return string|null
-     */
-    public function getID(): ?string
-    {
-        return urldecode($this->argumentId);
-    }
-
-    /**
      * Set current controller name
      * @param string $name
      */
@@ -127,29 +106,11 @@ trait MvcFeatures
     }
 
     /**
-     * Set current id argument value
-     * @param mixed $name
+     * Get arguments from pathway
+     * @return array
      */
-    public function setId($name): void
+    public function getArguments(): array
     {
-        $this->argumentId = $name;
-    }
-
-    /**
-     * Set current add argument value
-     * @param mixed $name
-     */
-    public function setAdd($name): void
-    {
-        $this->argumentAdd = $name;
-    }
-
-    /**
-     * Get current $add argument for controller action
-     * @return string|null
-     */
-    public function getAdd(): ?string
-    {
-        return urldecode($this->argumentAdd);
+        return (array)$this->args;
     }
 }

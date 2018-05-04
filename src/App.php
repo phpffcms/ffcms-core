@@ -185,7 +185,7 @@ class App
             /** @var \Ffcms\Core\Arch\Controller $callClass */
             $callClass = $this->getCallbackClass();
             $callMethod = 'action' . self::$Request->getAction();
-            $arguments = $this->getArguments();
+            $arguments = self::$Request->getArguments();
 
             // check if callback method (action) is exist in class object
             if (!method_exists($callClass, $callMethod)) {
@@ -247,22 +247,5 @@ class App
         }
 
         return new $cName;
-    }
-
-    /**
-     * Get method arguments from request
-     * @return array
-     */
-    private function getArguments(): array
-    {
-        $args = [];
-        if (!Str::likeEmpty(self::$Request->getID())) {
-            $args[] = self::$Request->getID();
-            if (!Str::likeEmpty(self::$Request->getAdd())) {
-                $args[] = self::$Request->getAdd();
-            }
-        }
-
-        return $args;
     }
 }
