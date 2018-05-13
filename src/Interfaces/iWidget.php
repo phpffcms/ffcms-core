@@ -9,16 +9,19 @@ interface iWidget
      * @param array|null $params
      * @return string|null
      */
-    public static function widget(array $params = null);
+    public static function widget(array $params = null): ?string;
 
     /**
      * Render widget
      * @return string|null
      */
-    public function display();
+    public function display(): ?string;
 
     /**
      * Special method on "before" run widget
+     * @return void
      */
-    public function init();
+    public function init(): void;
+    
+
 }

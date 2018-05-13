@@ -64,7 +64,9 @@ trait MvcFeatures
 
             // safe other parts to arguments if exist
             if (count($pathArray) > 0) {
-                $this->args = $pathArray;
+                $this->args = array_map(function($in){
+                    return Any::isStr($in) ? urldecode($in) : $in;
+                }, $pathArray);
             }
         }
     }
