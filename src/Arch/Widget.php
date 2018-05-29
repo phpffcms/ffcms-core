@@ -69,10 +69,10 @@ class Widget implements iWidget
 
     /**
      * Check if widget is enabled. For native widget is always enabled
-     * @param string $name
+     * @param string|null $name
      * @return bool
      */
-    public static function enabled($name): bool
+    public static function enabled(?string $name = null): bool
     {
         return true;
     }
