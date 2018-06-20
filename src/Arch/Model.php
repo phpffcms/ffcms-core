@@ -38,7 +38,9 @@ abstract class Model extends TemplexModel implements iModel, ModelInterface
     /**
      * Make any things before model is initialized
      */
-    public function before() {}
+    public function before()
+    {
+    }
 
     /**
      * Set attribute labels for model variables

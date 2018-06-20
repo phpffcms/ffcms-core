@@ -26,7 +26,7 @@ class Widget implements iWidget
      * @param array|null $params
      * @return null|string
      */
-    public static function widget(?array $params = null): ?string 
+    public static function widget(?array $params = null): ?string
     {
         self::$class = get_called_class();
         self::$view = App::$View;
@@ -63,9 +63,13 @@ class Widget implements iWidget
         return AppRecord::getConfigs('widget', $realName);
     }
 
-    public function display(): ?string {}
+    public function display(): ?string
+    {
+    }
 
-    public function init(): void {}
+    public function init(): void
+    {
+    }
 
     /**
      * Check if widget is enabled. For native widget is always enabled

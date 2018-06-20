@@ -22,6 +22,4 @@ interface iWidget
      * @return void
      */
     public function init(): void;
-    
-
 }

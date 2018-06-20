@@ -37,11 +37,17 @@ class Controller implements iController
     }
 
     /** Before action call method */
-    public function before() {}
+    public function before()
+    {
+    }
     
     /** Global bootable method */
-    public static function boot(): void {}
+    public static function boot(): void
+    {
+    }
 
     /** After action called method */
-    public function after() {}
+    public function after()
+    {
+    }
 }

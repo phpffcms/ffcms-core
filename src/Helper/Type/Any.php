@@ -144,4 +144,14 @@ class Any
     {
         return (!is_object($var) && !is_iterable($var));
     }
+
+    /**
+     * Check if object is anonymous function or callable instance not like a string notation
+     * @param $object
+     * @return bool
+     */
+    public static function isCallableNotString($object)
+    {
+        return is_callable($object) && !is_string($object);
+    }
 }
