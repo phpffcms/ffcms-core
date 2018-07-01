@@ -204,10 +204,11 @@ class App
                 ]));
             }
 
-            $this->startMeasure(get_class($callClass) . '::' . $callMethod);
+            // @todo: debugbar probably is inactive for now. Check why on stop() throws error
+            //$this->startMeasure(get_class($callClass) . '::' . $callMethod);
             // make callback call to action in controller and get response
             $response = call_user_func_array([$callClass, $callMethod], $arguments);
-            $this->stopMeasure(get_class($callClass) . '::' . $callMethod);
+            //$this->stopMeasure(get_class($callClass) . '::' . $callMethod);
 
             // if no response - throw 404 not found
             if (!$response) {

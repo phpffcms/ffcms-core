@@ -2,13 +2,9 @@
 
 namespace Ffcms\Core\Debug;
 
-use Cassandra\Exception;
 use DebugBar\DataCollector\ConfigCollector;
-use DebugBar\DebugBarException;
-use DebugBar\StandardDebugBar;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Any;
-use Ffcms\Core\Helper\Type\Obj;
 
 /**
  * Class Debug. Provide methods of display information about debug and collected data in debug bar
@@ -54,8 +50,10 @@ class Manager
             if ($this->bar->hasCollector('time')) {
                 $timeCollector = $this->bar->getCollector('time');
             }
-            $queryCollector = new LaravelDatabaseCollector($timeCollector, $log);
-            $this->bar->addCollector($queryCollector);
+
+            // @todo: fix me! query collector is broken!
+            //$queryCollector = new LaravelDatabaseCollector($timeCollector, $log);
+            //$this->bar->addCollector($queryCollector);
         }
         return $this->render->render();
     }
