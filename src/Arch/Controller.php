@@ -29,6 +29,9 @@ class Controller implements iController
      */
     public function __construct()
     {
+        if (App::$Debug) {
+            App::$Debug->startMeasure(get_class($this));
+        }
         $this->lang = App::$Request->getLanguage();
         $this->request = App::$Request;
         $this->response = App::$Response;
@@ -49,5 +52,12 @@ class Controller implements iController
     /** After action called method */
     public function after()
     {
+    }
+
+    public function __destruct()
+    {
+        if (App::$Debug) {
+            App::$Debug->stopMeasure(get_class($this));
+        }
     }
 }

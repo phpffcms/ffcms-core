@@ -141,7 +141,9 @@ class App
         self::$Event = new EventManager();
         self::$Cron = new CronManager();
         // stop debug timeline
-        $this->stopMeasure(__METHOD__);
+        if (self::$Debug) {
+            $this->stopMeasure(__METHOD__);
+        }
     }
 
     /**
@@ -204,11 +206,8 @@ class App
                 ]));
             }
 
-            // @todo: debugbar probably is inactive for now. Check why on stop() throws error
-            //$this->startMeasure(get_class($callClass) . '::' . $callMethod);
             // make callback call to action in controller and get response
             $response = call_user_func_array([$callClass, $callMethod], $arguments);
-            //$this->stopMeasure(get_class($callClass) . '::' . $callMethod);
 
             // if no response - throw 404 not found
             if (!$response) {

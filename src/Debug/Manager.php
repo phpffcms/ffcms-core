@@ -52,8 +52,8 @@ class Manager
             }
 
             // @todo: fix me! query collector is broken!
-            //$queryCollector = new LaravelDatabaseCollector($timeCollector, $log);
-            //$this->bar->addCollector($queryCollector);
+            $queryCollector = new LaravelDatabaseCollector($timeCollector, $log);
+            $this->bar->addCollector($queryCollector);
         }
         return $this->render->render();
     }
