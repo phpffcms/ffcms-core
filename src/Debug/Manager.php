@@ -47,13 +47,10 @@ class Manager
         if (!$this->bar->hasCollector('queries')) {
             $timeCollector = null;
             $log = App::$Database->connection()->getQueryLog();
+            //var_dump($log);
             if ($this->bar->hasCollector('time')) {
                 $timeCollector = $this->bar->getCollector('time');
             }
-
-            // @todo: fix me! query collector is broken!
-            $queryCollector = new LaravelDatabaseCollector($timeCollector, $log);
-            $this->bar->addCollector($queryCollector);
         }
         return $this->render->render();
     }
