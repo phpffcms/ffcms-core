@@ -227,10 +227,6 @@ class App
             }
         }
 
-        if (App::$Debug) {
-
-        }
-
         // set full rendered content to response builder
         self::$Response->setContent($response);
         // echo full response to user via symfony http foundation
