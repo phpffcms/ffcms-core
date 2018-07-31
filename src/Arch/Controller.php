@@ -31,6 +31,7 @@ class Controller implements iController
     {
         if (App::$Debug) {
             App::$Debug->startMeasure(get_class($this));
+            App::$Debug->bar->getCollector('messages')->info('Use controller: ' . get_class($this));
         }
         $this->lang = App::$Request->getLanguage();
         $this->request = App::$Request;

@@ -23,7 +23,10 @@ class Manager
         $this->bar = new FfcmsDebugBar();
         $this->render = $this->bar->getJavascriptRenderer();
         try {
-            $this->bar->addCollector(new ConfigCollector());
+            $config = App::$Properties->getAll();
+            $config['database']['password'] = '***HIDDEN***';
+            $config['mail']['password'] = '***HIDDEN***';
+            $this->bar->addCollector(new ConfigCollector($config));
         } catch (\Exception $oe) {
         }
     }
@@ -44,14 +47,6 @@ class Manager
      */
     public function renderOut()
     {
-        if (!$this->bar->hasCollector('queries')) {
-            $timeCollector = null;
-            $log = App::$Database->connection()->getQueryLog();
-            //var_dump($log);
-            if ($this->bar->hasCollector('time')) {
-                $timeCollector = $this->bar->getCollector('time');
-            }
-        }
         return $this->render->render();
     }
 
