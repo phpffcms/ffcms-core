@@ -111,6 +111,7 @@ class Security
      * @param string $password
      * @param string|null $salt
      * @return string
+     * @deprecated
      */
     public static function password_hash($password, $salt = null)
     {

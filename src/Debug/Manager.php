@@ -5,6 +5,7 @@ namespace Ffcms\Core\Debug;
 use DebugBar\DataCollector\ConfigCollector;
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Any;
+use Ffcms\Templex\Exceptions\Error;
 
 /**
  * Class Debug. Provide methods of display information about debug and collected data in debug bar
@@ -43,10 +44,12 @@ class Manager
     /**
      * Render debug bar code
      * @return string
-     * @throws \DebugBar\DebugBarException
      */
     public function renderOut()
     {
+        foreach(Error::all() as $file => $error) {
+            $this->addMessage('Template error: ' . $error, 'error');
+        }
         return $this->render->render();
     }
 

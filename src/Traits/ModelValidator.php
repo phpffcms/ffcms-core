@@ -5,6 +5,7 @@ namespace Ffcms\Core\Traits;
 use Dflydev\DotAccessData\Data as DotData;
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
+use Ffcms\Core\Helper\Crypt;
 use Ffcms\Core\Helper\ModelFilters;
 use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Obj;
@@ -35,7 +36,7 @@ trait ModelValidator
             // get current token value from session
             $currentToken = App::$Session->get('_csrf_token', false);
             // set new token value to session
-            $newToken = Str::randomLatinNumeric(mt_rand(32, 64));
+            $newToken = Crypt::randomString(mt_rand(32, 64));
             App::$Session->set('_csrf_token', $newToken);
             // if request is submited for this model - try to validate input data
             if ($this->send()) {
