@@ -54,11 +54,4 @@ class Controller implements iController
     public function after()
     {
     }
-
-    public function __destruct()
-    {
-        if (App::$Debug) {
-            App::$Debug->stopMeasure(get_class($this));
-        }
-    }
 }
