@@ -120,7 +120,7 @@ class ModelFilters
      */
     public static function int($object): bool
     {
-        return Any::isInt($object);
+        return Any::isInt($object) || Any::isEmpty($object);
     }
 
     /**
