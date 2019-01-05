@@ -29,6 +29,7 @@ class BootManager
     /**
      * BootManager constructor. Pass composer loader inside
      * @param bool|object $loader
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function __construct($loader = false)
     {
@@ -47,6 +48,8 @@ class BootManager
                 $this->compileBootableClasses();
                 $cache->set($this->objects)->expiresAfter(static::CACHE_TREE_TIME);
                 App::$Cache->save($cache);
+            } else {
+                $this->objects = $cache->get();
             }
         } else {
             $this->compileBootableClasses();
