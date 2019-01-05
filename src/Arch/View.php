@@ -35,7 +35,7 @@ class View extends Engine
 
         $this->path = root . DIRECTORY_SEPARATOR . 'Apps' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . $env . DIRECTORY_SEPARATOR . $theme;
         if (!Directory::exist($this->path)) {
-            if (!App::$Debug) {
+            if (App::$Debug) {
                 App::$Debug->addMessage('Template root directory is not exist: ' . $this->path, 'error');
             }
             return;
