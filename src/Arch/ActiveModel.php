@@ -7,6 +7,7 @@ use Ffcms\Core\Helper\Serialize;
 use Ffcms\Core\Helper\Type\Any;
 use Ffcms\Core\Helper\Type\Str;
 use Illuminate\Database\Eloquent\Model as LaravelModel;
+use Illuminate\Support\Collection;
 
 /**
  * Class ActiveModel. Basic implementation of laravel active records model with predefined settings
@@ -14,9 +15,14 @@ use Illuminate\Database\Eloquent\Model as LaravelModel;
  * @method static ActiveModel where($field = null, $compare = null, $value = null)
  * @method static ActiveModel whereIn($field = null, array $values = [])
  * @method static ActiveModel orWhere($field = null, $compare = null, $value = null)
+ * @method static ActiveModel whereNull($field)
+ * @method static ActiveModel whereBetween($field = null, array $values = [])
+ * @method static ActiveModel whereNotIn($field = null, array $values = [])
  * @method static ActiveModel orderBy($field, $sortType)
  * @method ActiveModel groupBy($field)
  * @method static self|null first()
+ * @method static self|null last()
+ * @method static self|null firstWhere($field = null, $compare = null, $value = null)
  * @method static self|null find($id)
  * @method static self|null findOrNew($id)
  * @method static ActiveModel|null whereNotNull($field)
@@ -29,6 +35,12 @@ use Illuminate\Database\Eloquent\Model as LaravelModel;
  * @method ActiveModel whereDay($field = null, $compare = null, $value = null)
  * @method static ActiveModel select($columns = null)
  * @method \Illuminate\Database\Eloquent\Collection get($columns = ['*'])
+ * @method ActiveModel each(callable $items)
+ * @method self|null forPage($pageNumber, $itemCount)
+ * @method bool contains($field, $value)
+ * @method bool isEmpty
+ * @method bool isNotEmpty
+ * @method ActiveModel map(callable &$item)
  * @method int count()
  * @inheritdoc
  */
@@ -92,7 +104,7 @@ class ActiveModel extends LaravelModel
      * @param string $key
      * @return bool
      */
-    public function isSerializeCastable(string $key)
+    public function isSerializeCastable(string $key): bool
     {
         return $this->hasCast($key, 'serialize');
     }
