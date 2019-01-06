@@ -18,7 +18,7 @@
   ],
   "require": {
     "php": ">=7.1",
-    "illuminate/database": "5.6.*@stable",
+    "illuminate/database": "5.7.*@stable",
     "symfony/http-foundation": "3.4.*@stable",
     "maximebf/debugbar": "1.*@stable",
     "ezyang/htmlpurifier": "4.*@stable",
