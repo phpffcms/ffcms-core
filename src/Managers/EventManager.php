@@ -1,9 +1,9 @@
 <?php
+
 namespace Ffcms\Core\Managers;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Any;
-use Ffcms\Core\Helper\Type\Obj;
 
 /**
  * Class EventManager. Control and run events.
@@ -26,7 +26,8 @@ class EventManager
         $this->runned = App::$Memory->get('events.runned.save');
     }
 
-    /** Catch the event if it occurred after this initiation of interception
+    /**
+     * Catch the event if it occurred after this initiation of interception
      * @param string|array $event
      * @param \Closure $callback
      */
@@ -46,9 +47,9 @@ class EventManager
      * Catch the event if it occurred before the initiation of interception
      * @param string|array $event
      * @param \Closure $callback
-     * @return mixed
+     * @return void
      */
-    public function listen($event, \Closure $callback)
+    public function listen($event, \Closure $callback): void
     {
         // check if $event is a single string and set it as array with one item
         if (!Any::isArray($event)) {
@@ -58,42 +59,39 @@ class EventManager
         // each every one event in array
         foreach ($event as $item) {
             if (Any::isArray($this->runned) && array_key_exists($item, $this->runned)) {
-                return call_user_func_array($callback, $this->runned[$item]);
+                call_user_func_array($callback, $this->runned[$item]);
             }
         }
-        
-        return false;
     }
     
     /**
-     * Initialize event on happend
-     * @return mixed
+     * Process event on happens
+     * @return void
      */
-    public function run()
+    public function run(): void
     {
         // dynamicly parse input params
         $args = func_get_args();
         
         if (count($args) < 1) {
-            return false;
+            return;
         }
         
         // get event name
         $eventName = array_shift($args);
         // get event args as array if passed
         $eventArgs = @array_shift($args);
-        
+
         // if event is registered
         if (isset($this->events[$eventName]) && Any::isArray($this->events[$eventName])) {
             foreach ($this->events[$eventName] as $callback) {
                 // call anonymous function with args if passed
-                return call_user_func_array($callback, $eventArgs);
+                call_user_func_array($callback, $eventArgs);
             }
         }
         
         // set to post runned actions
         $this->runned[$eventName] = $eventArgs;
-        return false;
     }
 
     /**

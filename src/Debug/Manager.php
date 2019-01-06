@@ -47,7 +47,7 @@ class Manager
      */
     public function renderOut()
     {
-        foreach(Error::all() as $file => $error) {
+        foreach (Error::all() as $file => $error) {
             foreach ($error as $line) {
                 $this->addMessage('Template error: ' . $line . '(' . $file . ')', 'error');
             }
