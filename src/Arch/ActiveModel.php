@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
  * @method static ActiveModel whereBetween($field = null, array $values = [])
  * @method static ActiveModel whereNotIn($field = null, array $values = [])
  * @method static ActiveModel orderBy($field, $sortType)
+ * @method static ActiveModel search($query = null, $trashhold = 4)
  * @method ActiveModel groupBy($field)
  * @method static self|null first()
  * @method static self|null last()
