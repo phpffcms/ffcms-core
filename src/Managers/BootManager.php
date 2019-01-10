@@ -29,7 +29,6 @@ class BootManager
     /**
      * BootManager constructor. Pass composer loader inside
      * @param bool|object $loader
-     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function __construct($loader = false)
     {

@@ -155,7 +155,7 @@ class File
             return false;
         }
 
-        if ($return === true) {
+        if ($return) {
             return $once === true ? require_once($path) : require $path;
         } else {
             ($once == true) ? require_once($path) : require $path;
