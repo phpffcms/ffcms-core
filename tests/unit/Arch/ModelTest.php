@@ -36,13 +36,6 @@ class ModelTest extends \Codeception\TestCase\Test
         ]);
     }
 
-    public function testGlobalVarSetGet()
-    {
-        $this->class->someVar = 'Test value';
-        $this->assertSame('Test value', $this->class->someVar);
-        $this->assertNull($this->class->unknownVar);
-    }
-
     public function testModelAttributes()
     {
         $this->class->test = 'test';
@@ -89,7 +82,7 @@ class DemoModel extends Model
     public $_tokenRequired = false;
     protected $_formName = 'DemoModel';
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['login', 'pass'], 'required'],
@@ -101,7 +94,7 @@ class DemoModel extends Model
         ];
     }
 
-    public function types()
+    public function types(): array
     {
         return [
             'data' => 'html',
@@ -110,7 +103,7 @@ class DemoModel extends Model
         ];
     }
 
-    public function labels()
+    public function labels(): array
     {
         return [
             'login' => 'Login',

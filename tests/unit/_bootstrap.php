@@ -17,13 +17,14 @@ if (!file_exists($root . '/Loader/Autoload.php')) {
 define('env_no_uri', true);
 define('env_type', 'html');
 class App extends Ffcms\Core\App {}
+
 function __($text, array $params = []) {
     return \App::$Translate->translate($text, $params);
 }
 
+
 try {
     $app = \App::factory();
-    $app->init();
 } catch (Exception $e) {
     die('PHPUnit bootstrap ffcms engine error');
 }

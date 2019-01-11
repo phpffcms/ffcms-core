@@ -18,8 +18,6 @@ class StrTest extends \Codeception\TestCase\Test
         $this->assertFalse(Str::likeEmpty(1));
         $this->assertFalse(Str::likeEmpty(0));
         $this->assertFalse(Str::likeEmpty('data'));
-        $this->assertFalse(Str::likeEmpty([]));
-        $this->assertFalse(Str::likeEmpty(['test']));
     }
 
     public function testStartsWith()
@@ -27,8 +25,6 @@ class StrTest extends \Codeception\TestCase\Test
         $this->assertTrue(Str::startsWith('th', 'this'));
         $this->assertTrue(Str::startsWith('эт', 'этотест')); // utf8
         $this->assertFalse(Str::startsWith('th', 'isht'));
-        $this->assertFalse(Str::startsWith('th', ['t', 'h', 'i', 's']));
-        $this->assertFalse(Str::startsWith(['t', 'h'], ['t', 'h', 'i', 's']));
     }
 
     public function testEndsWith()
@@ -36,8 +32,7 @@ class StrTest extends \Codeception\TestCase\Test
         $this->assertTrue(Str::endsWith('is', 'this'));
         $this->assertTrue(Str::endsWith('то', 'тестэто')); // utf8
         $this->assertFalse(Str::endsWith('is', 'isht'));
-        $this->assertFalse(Str::endsWith('is', ['t', 'h', 'i', 's']));
-        $this->assertFalse(Str::endsWith(1, 'this1'));
+        $this->assertTrue(Str::endsWith('1', 'this1'));
     }
 
     public function testFirstIn()
@@ -45,7 +40,7 @@ class StrTest extends \Codeception\TestCase\Test
         $this->assertSame('test', Str::firstIn('test.me', '.'));
         $this->assertSame('test', Str::firstIn('test.me.baby.tonight', '.'));
         $this->assertSame('это', Str::firstIn('это проверка', ' ')); //utf8
-        $this->assertSame(false, Str::firstIn('t', 'ttttt'));
+        $this->assertSame('', Str::firstIn('t', 'ttttt'));
     }
 
     public function testLastIn()
@@ -88,8 +83,7 @@ class StrTest extends \Codeception\TestCase\Test
     {
         $this->assertSame(3, Str::entryCount('this is test', 's'));
         $this->assertSame(0, Str::entryCount('this is test', 'a'));
-        $this->assertSame(0, Str::entryCount(['a' => 'a'], 'a'));
-        $this->assertSame(0, Str::entryCount('this is 1 test', 1));
+        $this->assertSame(1, Str::entryCount('this is 1 test', '1'));
     }
 
     public function testSplitCamelCase()
@@ -138,7 +132,6 @@ class StrTest extends \Codeception\TestCase\Test
         $this->assertFalse(Str::isUrl('ffcms.org'));
         $this->assertFalse(Str::isUrl('www.ffcms.org'));
         $this->assertFalse(Str::isUrl('main@gmail.com'));
-        $this->assertFalse(Str::isUrl(['f', 'f', 'c', 'm', 's', '.', 'o', 'r', 'g']));
     }
 
     public function testRandomLatinNumeric()
