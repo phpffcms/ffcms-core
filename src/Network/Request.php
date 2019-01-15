@@ -84,7 +84,7 @@ class Request extends FoundationRequest
         foreach ($pList as $proxy) {
             $resultList[] = trim($proxy);
         }
-        self::setTrustedProxies($resultList);
+        self::setTrustedProxies($resultList, self::HEADER_X_FORWARDED_ALL);
     }
 
     /**
@@ -163,6 +163,6 @@ class Request extends FoundationRequest
             $sub .= $this->getLanguage();
         }
 
-        UrlRepository::factory($this->getFullUrl())->setUrlAndSubdir($url, $sub);
+        UrlRepository::factory()->setUrlAndSubdir($url, $sub);
     }
 }

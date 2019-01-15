@@ -56,13 +56,6 @@ interface iUser
     public static function isMailExist(?string $email = null): bool;
 
     /**
-     * Check if user with $login is exist
-     * @param string|null $login
-     * @return bool
-     */
-    public static function isLoginExist(?string $login = null): bool;
-
-    /**
      * Get user person like a object via email
      * @param string|null $email
      * @return null|self
