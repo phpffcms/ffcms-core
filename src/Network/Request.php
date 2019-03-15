@@ -32,8 +32,9 @@ class Request extends FoundationRequest
         parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
         $this->searchRedirect();
         $this->runMultiLanguage();
-        $this->runRouteBinding();
+        $this->processBalancerProxies();
         $this->loadTrustedProxies();
+        $this->runRouteBinding();
         $this->setTemplexFeatures();
     }
 
@@ -69,13 +70,25 @@ class Request extends FoundationRequest
         $this->basePath = $this->baseUrl = $basePath;
     }
 
+    private function processBalancerProxies()
+    {
+        // fix cloudflare forwarding
+        $protos = $this->headers->get('cf-visitor', false);
+        if ($protos) {
+            $data = json_decode($protos);
+            if ($data && $data->scheme && (string)$data->scheme === 'https') {
+                $this->server->set('HTTPS', 'on');
+            }
+        }
+    }
+
     /**
      * Set trusted proxies from configs
      */
     private function loadTrustedProxies()
     {
         $proxies = App::$Properties->get('trustedProxy');
-        if ($proxies === null || Str::likeEmpty($proxies)) {
+        if (!$proxies || Str::likeEmpty($proxies)) {
             return;
         }
 
