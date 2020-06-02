@@ -1,38 +1,36 @@
 {
-  "name": "phpffcms/ffcms-core",
-  "description": "Core package for FFCMS 3 version",
-  "type": "library",
-  "keywords": [
-    "php",
-    "mvc",
-    "framework"
-  ],
-  "homepage": "http://ffcms.org",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Pyatinskyi M.M.",
-      "email": "zenn@ffcms.org",
-      "homepage": "http://ffcms.ru"
+    "name": "phpffcms/ffcms-core",
+    "description": "Core package for FFCMS 3 version",
+    "type": "library",
+    "keywords": [
+        "php",
+        "mvc",
+        "framework"
+    ],
+    "homepage": "http://ffcms.org",
+    "license": "MIT",
+    "authors": [{
+        "name": "Pyatinskyi M.M.",
+        "email": "zenn@ffcms.org",
+        "homepage": "http://ffcms.ru"
+    }],
+    "require": {
+        "php": ">=7.1",
+        "illuminate/database": "5.8.*@stable",
+        "symfony/http-foundation": "5.1.*@stable",
+        "symfony/cache": "5.1.*@stable",
+        "maximebf/debugbar": "1.*@stable",
+        "ezyang/htmlpurifier": "4.*@stable",
+        "gregwar/image": "2.*@stable",
+        "dflydev/dot-access-data": "1.1.*@stable",
+        "swiftmailer/swiftmailer": "6.0.*@stable",
+        "gregwar/captcha": "1.1.*@stable",
+        "suin/php-rss-writer": "1.6.*@stable",
+        "hybridauth/hybridauth": "2.10.*@stable"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ffcms\\Core\\": "src/"
+        }
     }
-  ],
-  "require": {
-    "php": ">=7.1",
-    "illuminate/database": "5.7.*@stable",
-    "symfony/http-foundation": "4.2.*@stable",
-    "symfony/cache": "4.2.*@stable",
-    "maximebf/debugbar": "1.*@stable",
-    "ezyang/htmlpurifier": "4.*@stable",
-    "gregwar/image": "2.*@stable",
-    "dflydev/dot-access-data": "1.1.*@stable",
-    "swiftmailer/swiftmailer": "6.0.*@stable",
-    "gregwar/captcha": "1.1.*@stable",
-    "suin/php-rss-writer": "1.6.*@stable",
-    "hybridauth/hybridauth": "2.10.*@stable"
-  },
-  "autoload": {
-    "psr-4": {
-      "Ffcms\\Core\\": "src/"
-    }
-  }
 }
