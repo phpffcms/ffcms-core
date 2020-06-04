@@ -166,7 +166,6 @@ class Request extends FoundationRequest
      */
     private function setTemplexFeatures(): void
     {
-        $url = $this->getSchemeAndHttpHost();
         $sub = null;
         if ($this->getInterfaceSlug() && Str::length($this->getInterfaceSlug()) > 0) {
             $sub = $this->getInterfaceSlug() . '/';
@@ -176,6 +175,6 @@ class Request extends FoundationRequest
             $sub .= $this->getLanguage();
         }
 
-        UrlRepository::factory()->setUrlAndSubdir($url, $sub);
+        UrlRepository::factory()->setUrlAndSubdir($this->getFullUrl(), $sub);
     }
 }
