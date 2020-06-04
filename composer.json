@@ -15,8 +15,8 @@
         "homepage": "http://ffcms.ru"
     }],
     "require": {
-        "php": ">=7.1",
-        "illuminate/database": "5.8.*@stable",
+        "php": ">=7.2.5",
+        "illuminate/database": "6.*@stable",
         "symfony/http-foundation": "5.1.*@stable",
         "symfony/cache": "5.1.*@stable",
         "maximebf/debugbar": "1.*@stable",
