@@ -44,7 +44,7 @@ interface iUser
     /**
      * Get user person all data like a object
      * @param string|int|null $id
-     * @return null|self
+     * @return self
      */
     public static function identity(?string $id = null);
 

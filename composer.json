@@ -7,12 +7,12 @@
         "mvc",
         "framework"
     ],
-    "homepage": "http://ffcms.org",
+    "homepage": "https://pmcore.ru",
     "license": "MIT",
     "authors": [{
-        "name": "Pyatinskyi M.M.",
-        "email": "zenn@ffcms.org",
-        "homepage": "http://ffcms.ru"
+        "name": "Piatinskii M.M.",
+        "email": "zenn1989@gmail.com",
+        "homepage": "https://pmcore.ru"
     }],
     "require": {
         "php": ">=7.2.5",
