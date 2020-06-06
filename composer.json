@@ -18,6 +18,7 @@
         "php": ">=7.2.5",
         "illuminate/database": "6.*@stable",
         "symfony/http-foundation": "5.1.*@stable",
+        "symfony/mime": "5.1.*@stable",
         "symfony/cache": "5.1.*@stable",
         "maximebf/debugbar": "1.*@stable",
         "ezyang/htmlpurifier": "4.*@stable",
