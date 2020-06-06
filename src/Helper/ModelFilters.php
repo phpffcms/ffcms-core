@@ -333,7 +333,7 @@ class ModelFilters
 
     /**
      * Check file size. If is null - will return true
-     * @param object $object
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $object
      * @param $value
      * @return bool
      */
@@ -354,7 +354,7 @@ class ModelFilters
         }
 
         // get file upload size in bytes
-        $realSize = $object->getClientSize();
+        $realSize = $object->getSize();
         if ($realSize === null) {
             return false;
         }
