@@ -129,6 +129,6 @@ class Manager
     {
         $property = App::$Properties->get('debug');
         // $_COOKIE used insted of symfony request, cuz debug initialize early
-        return ($property['all'] === true || $_COOKIE[$property['cookie']['key']] === $property['cookie']['value']);
+        return ($property['all'] === true || (isset($_COOKIE[$property['cookie']['key']]) && $_COOKIE[$property['cookie']['key']] === $property['cookie']['value']));
     }
 }

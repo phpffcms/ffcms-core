@@ -2,6 +2,10 @@
 
 namespace Ffcms\Core\Traits;
 
+use Ffcms\Core\Helper\Type\Any;
+use Ffcms\Core\Helper\Type\Arr;
+use Ffcms\Core\Helper\Type\Obj;
+
 /**
  * Assistance tools for fast using some magical things and opportunity of classic object-oriented programming
  */
@@ -17,6 +21,9 @@ trait ClassTools
     {
         $hash = null;
         foreach ($this as $property => $value) {
+            if (Any::isArray($value)) {
+                $value = implode('.', $value);
+            }
             $hash = md5($hash . $property . '=' . $value);
         }
         return $hash;
