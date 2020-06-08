@@ -208,6 +208,20 @@ class ModelFilters
     }
 
     /**
+     * Filter ['object', 'ipv4']
+     * @param string $object 
+     * @return bool 
+     */
+    public static function ipv4($object): bool
+    {
+        if (!Any::isStr($object) || Any::isEmpty($object)) {
+            return false;
+        }
+
+        return filter_var($object, FILTER_VALIDATE_IP);
+    }
+
+    /**
      * Filter ['object', 'equal', value]. Check if input data is equals to value
      * @param string $object
      * @param $value
