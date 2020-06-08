@@ -214,7 +214,11 @@ class ModelFilters
      */
     public static function ipv4($object): bool
     {
-        if (!Any::isStr($object) || Any::isEmpty($object)) {
+        if (Any::isEmpty($object)) {
+            return true;
+        }
+        
+        if (!Any::isStr($object)) {
             return false;
         }
 
