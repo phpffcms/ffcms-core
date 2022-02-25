@@ -16,7 +16,7 @@
     }],
     "require": {
         "php": "^7.3|^8.0",
-        "illuminate/database": "^6.20.23@stable",
+        "illuminate/database": "^6.20.44@stable",
         "symfony/http-foundation": "5.2.*@stable",
         "symfony/mime": "5.2.*@stable",
         "symfony/cache": "5.2.*@stable",
