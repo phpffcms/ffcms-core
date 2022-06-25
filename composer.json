@@ -15,19 +15,19 @@
         "homepage": "https://pmcore.ru"
     }],
     "require": {
-        "php": "^7.3|^8.0",
-        "illuminate/database": "^6.20.44@stable",
-        "symfony/http-foundation": "5.2.*@stable",
-        "symfony/mime": "5.2.*@stable",
-        "symfony/cache": "5.2.*@stable",
+        "php": "^8.0|^8.1",
+        "illuminate/database": "^9.18.*@stable",
+        "symfony/http-foundation": "5.4.*@stable",
+        "symfony/mime": "5.4.*@stable",
+        "symfony/cache": "5.4.*@stable",
         "maximebf/debugbar": "1.*@stable",
         "ezyang/htmlpurifier": "4.*@stable",
         "gregwar/image": "2.*@stable",
         "dflydev/dot-access-data": "1.1.*@stable",
-        "swiftmailer/swiftmailer": "6.2.*@stable",
+        "swiftmailer/swiftmailer": "6.3.*@stable",
         "gregwar/captcha": "1.1.*@stable",
         "suin/php-rss-writer": "1.6.*@stable",
-        "hybridauth/hybridauth": "2.10.*@stable"
+        "hybridauth/hybridauth": "3.8.*@stable"
     },
     "autoload": {
         "psr-4": {
