@@ -16,7 +16,7 @@
     }],
     "require": {
         "php": "^8.0",
-        "illuminate/database": "9.18.*@stable",
+        "illuminate/database": "8.83.*@stable",
         "symfony/http-foundation": "5.4.*@stable",
         "symfony/mime": "5.4.*@stable",
         "symfony/cache": "5.4.*@stable",
@@ -26,8 +26,7 @@
         "dflydev/dot-access-data": "1.1.*@stable",
         "swiftmailer/swiftmailer": "6.3.*@stable",
         "gregwar/captcha": "1.1.*@stable",
-        "suin/php-rss-writer": "1.6.*@stable",
-        "hybridauth/hybridauth": "3.8.*@stable"
+        "suin/php-rss-writer": "1.6.*@stable"
     },
     "autoload": {
         "psr-4": {
