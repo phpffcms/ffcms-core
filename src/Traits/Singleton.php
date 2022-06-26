@@ -35,13 +35,5 @@ trait Singleton
     }
 
     // disable some magic
-    protected function init()
-    {
-    }
-    final private function __wakeup()
-    {
-    }
-    final private function __clone()
-    {
-    }
+    protected function init() {}
 }
