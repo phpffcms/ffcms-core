@@ -4,6 +4,7 @@ namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
 use Ffcms\Core\Exception\SyntaxException;
+use Symfony\Component\Mailer\Mailer as SymfonyMailer;
 
 /**
  * Class Mailer. Email send overlay over swiftmailer instance
@@ -11,18 +12,17 @@ use Ffcms\Core\Exception\SyntaxException;
  */
 class Mailer
 {
-    /** @var \Swift_Mailer */
-    private $swift;
+    private $mailer;
     private $from;
 
     private $message;
 
     /**
      * Mailer constructor. Construct object with ref to swiftmailer and sender info
-     * @param \Swift_Mailer $instance
+     * @param \Symfony\Component\Mailer\Mailer $instance
      * @param string $from
      */
-    public function __construct(\Swift_Mailer $instance, string $from)
+    public function __construct(SymfonyMailer $instance, string $from)
     {
         $this->swift = $instance;
         $this->from = $from;
@@ -30,11 +30,11 @@ class Mailer
 
     /**
      * Factory constructor
-     * @param \Swift_Mailer $instance
+     * @param \Symfony\Component\Mailer\Mailer $instance
      * @param string $from
      * @return Mailer
      */
-    public static function factory(\Swift_Mailer $instance, string $from)
+    public static function factory(SymfonyMailer $instance, string $from)
     {
         return new self($instance, $from);
     }
