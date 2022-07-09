@@ -3,11 +3,13 @@
 namespace Ffcms\Core\Helper;
 
 use Ffcms\Core\App;
+use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Core\Exception\SyntaxException;
 use Symfony\Component\Mailer\Mailer as SymfonyMailer;
+use Symfony\Component\Mime\Email;
 
 /**
- * Class Mailer. Email send overlay over swiftmailer instance
+ * Class Mailer. Email send overlay over symfonymailer instance
  * @package Ffcms\Core\Helper
  */
 class Mailer
@@ -18,13 +20,14 @@ class Mailer
     private $message;
 
     /**
-     * Mailer constructor. Construct object with ref to swiftmailer and sender info
+     * Mailer constructor. Construct object with ref to symfonymailer and sender info
      * @param \Symfony\Component\Mailer\Mailer $instance
      * @param string $from
      */
     public function __construct(SymfonyMailer $instance, string $from)
     {
-        $this->swift = $instance;
+
+        $this->mailer = $instance;
         $this->from = $from;
     }
 
@@ -37,6 +40,15 @@ class Mailer
     public static function factory(SymfonyMailer $instance, string $from)
     {
         return new self($instance, $from);
+    }
+
+    /**
+     * Check if mailer features is enabled
+     */
+    public function isEnabled(): bool 
+    {
+        $cfg = App::$Properties->get('mail');
+        return (bool)$cfg['enable'];
     }
 
     /**
@@ -65,21 +77,24 @@ class Mailer
     public function send(string $address, string $subject, ?string $message = null): bool
     {
         // try to get message from global if not passed direct
-        if ($message === null) {
+        if (!$message) {
             $message = $this->message;
         }
 
         try {
-            if ($message === null) {
+            if (!$message || Str::likeEmpty($message)) {
                 throw new \Exception('Message body is empty!');
             }
 
-            // try to build message and send it
-            $message = (new \Swift_Message($subject))
-                ->setFrom($this->from)
-                ->setTo($address)
-                ->setBody($message, 'text/html');
-            $this->swift->send($message);
+            // build message body
+            $msg = (new Email())
+                ->from($this->from)
+                ->to($address)
+                ->subject($subject)
+                ->html($message);
+
+            // send msg via transporter
+            $this->mailer->send($msg);
             return true;
         } catch (\Exception $e) {
             if (App::$Debug) {

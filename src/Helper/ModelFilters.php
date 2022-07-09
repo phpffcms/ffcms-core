@@ -379,4 +379,32 @@ class ModelFilters
 
         return $realSize > $value[0] && $realSize <= $value[1];
     }
+
+    /**
+     * Check if password is seems to be secure (required length, symboCase, etc)
+     */
+    public static function passwordStrong($object, $value = null): bool
+    {
+        if (!Any::isLine($object)) {
+            return false;
+        }
+
+        // minimum length - 6 symbols
+        if (Str::length($object) < 6) {
+            return false;
+        }
+
+        // check if contains 1 upper-case symbol
+        if (Str::lowerCase($object) === $object) {
+            return false;
+        }
+
+        // check if contains only numbers
+        if (!preg_match('/[^0-9]/', $object)) {
+            return false;
+        }
+
+        // ok, all validation is passed successful
+        return true;
+    }
 }
