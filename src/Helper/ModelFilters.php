@@ -389,8 +389,8 @@ class ModelFilters
             return false;
         }
 
-        // minimum length - 6 symbols
-        if (Str::length($object) < 6) {
+        // minimum length - 8 symbols
+        if (Str::length($object) < 8) {
             return false;
         }
 
