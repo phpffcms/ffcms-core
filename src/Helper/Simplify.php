@@ -13,12 +13,12 @@ use Ffcms\Templex\Url\Url;
 class Simplify
 {
     /**
-     * Get user nickname by user id with predefined value on empty or not exist profile
+     * Get user name by user id with predefined value on empty or not exist profile
      * @param $userId
      * @param string $onEmpty
      * @return string
      */
-    public static function parseUserNick($userId = null, $onEmpty = 'guest'): ?string
+    public static function parseUserName($userId = null, $onEmpty = 'guest'): ?string
     {
         if (!Any::isInt($userId)) {
             return \App::$Security->strip_tags($onEmpty);
@@ -30,8 +30,8 @@ class Simplify
             return \App::$Security->strip_tags($onEmpty);
         }
 
-        // return user nickname from profile
-        return $identity->profile->getNickname();
+        // return user name from profile
+        return $identity->profile->getName();
     }
 
     /**
@@ -43,12 +43,12 @@ class Simplify
      */
     public static function parseUserLink($userId = null, $onEmpty = 'guest', $controllerAction = 'profile/show')
     {
-        $nick = self::parseUserNick($userId, $onEmpty);
+        $name = self::parseUserName($userId, $onEmpty);
         // new name is not found, lets return default
-        if ($nick === $onEmpty || (int)$userId < 1) {
-            return $nick;
+        if ($name === $onEmpty || (int)$userId < 1) {
+            return $name;
         }
 
-        return Url::a([$controllerAction, [(int)$userId]], $nick);
+        return Url::a([$controllerAction, [(int)$userId]], $name);
     }
 }
