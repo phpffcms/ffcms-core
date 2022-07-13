@@ -97,6 +97,7 @@ class Translate
     /**
      * Append translation data from exist full path
      * @param string $path
+     * @param bool $override
      * @return bool
      */
     public function append($path): bool
@@ -113,8 +114,8 @@ class Translate
             return false;
         }
 
-        // merge data
         $this->cached = Arr::merge($this->cached, $addTranslation);
+
         return true;
     }
 

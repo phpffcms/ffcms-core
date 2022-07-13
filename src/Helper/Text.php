@@ -6,7 +6,7 @@ use Ffcms\Core\Helper\Type\Str;
 
 class Text
 {
-    const WYSIWYG_BREAK_HTML = '<div style="page-break-after: always">';
+    const WYSIWYG_BREAK_HTML = '<div style="page-break-after';
 
     /**
      * Make snippet from text or html-text content.
@@ -14,7 +14,7 @@ class Text
      * @param int $length
      * @return string
      */
-    public static function snippet(string $text, int $length = 150)
+    public static function snippet(string $text, int $length = 200)
     {
         $breakerPos = mb_strpos($text, self::WYSIWYG_BREAK_HTML, null, 'UTF-8');
         // offset is founded, try to split preview from full text
