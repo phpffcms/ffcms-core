@@ -37,7 +37,7 @@ class Security
      * @param string|array $data
      * @return string
      */
-    public function secureHtml($data): ?string
+    public function secureHtml($data): string|array
     {
         return (Any::isArray($data) ? $this->purifier->purifyArray($data) : $this->purifier->purify($data));
     }
