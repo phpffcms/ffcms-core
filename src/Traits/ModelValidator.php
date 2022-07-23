@@ -213,7 +213,6 @@ trait ModelValidator
             $inputType = Str::lowerCase($sources[$propertyName]);
         }
 
-
         // check if field is array-nested element by dots and use first element as general
         $filterField = $propertyName;
         if (array_key_exists($filterField, $types)) {

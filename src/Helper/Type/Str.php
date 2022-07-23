@@ -254,7 +254,7 @@ class Str
      */
     public static function isUrl(string $string): bool
     {
-        return (!filter_var($string, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED) === false);
+        return (!filter_var($string, FILTER_VALIDATE_URL) === false);
     }
 
     /**
