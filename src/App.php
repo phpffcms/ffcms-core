@@ -2,6 +2,7 @@
 
 namespace Ffcms\Core;
 
+use Exception;
 use Ffcms\Core\Arch\Controller;
 use Ffcms\Core\Arch\View;
 use Ffcms\Core\Cache\MemoryObject;
@@ -113,7 +114,7 @@ class App
      */
     public static function factory(array $services = null, $loader = false): self
     {
-        return new self($services, $loader);
+        return new static($services, $loader);
     }
 
     /**
