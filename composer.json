@@ -17,9 +17,9 @@
     "require": {
         "php": "^8.0",
         "illuminate/database": "9.*@stable",
-        "symfony/http-foundation": "5.4.*@stable",
-        "symfony/mime": "5.4.*@stable",
-        "symfony/cache": "5.4.*@stable",
+        "symfony/http-foundation": "6.1.*@stable",
+        "symfony/mime": "6.1.*@stable",
+        "symfony/cache": "6.1.*@stable",
         "maximebf/debugbar": "1.*@stable",
         "ezyang/htmlpurifier": "4.*@stable",
         "gregwar/image": "2.*@stable",
