@@ -8,6 +8,7 @@ use Ffcms\Core\Exception\SyntaxException;
 use Ffcms\Core\Helper\Crypt;
 use Ffcms\Core\Helper\ModelFilters;
 use Ffcms\Core\Helper\Type\Any;
+use Ffcms\Core\Helper\Type\Arr;
 use Ffcms\Core\Helper\Type\Obj;
 use Ffcms\Core\Helper\Type\Str;
 
@@ -309,21 +310,35 @@ trait ModelValidator
             $method = $this->_sendMethod;
         }
 
+        $form = $this->getFormName();
+        $request = false;
         $method = Str::lowerCase($method);
         // get root request as array or string
         switch ($method) {
             case 'get':
-                $request = App::$Request->query->get($this->getFormName(), null);
+                if (is_array($_GET) && array_key_exists($form, $_GET)) {
+                    $request = $_GET[$this->getFormName()];
+                }
                 break;
             case 'post':
-                $request = App::$Request->request->get($this->getFormName(), null);
+                if (is_array($_POST) && array_key_exists($form, $_POST)) {
+                    $request = $_POST[$this->getFormName()];
+                }
                 break;
             case 'file':
-                $request = App::$Request->files->get($this->getFormName(), null);
+                if (is_array($_FILES) && array_key_exists($form, $_FILES)) {
+                    $request = $_FILES[$this->getFormName()];
+                }
                 break;
             default:
-                $request = App::$Request->get($this->getFormName(), null);
+                if (is_array($_REQUEST) && array_key_exists($form, $_REQUEST)) {
+                    $request = $_REQUEST[$this->getFormName()];
+                }
                 break;
+        }
+
+        if (!$request || !is_array($request)) {
+            return null;
         }
 
         $response = null;

@@ -104,7 +104,7 @@ class Request extends FoundationRequest
      * Get pathway as string
      * @return string
      */
-    public function getPathInfo()
+    public function getPathInfo(): string
     {
         $route = $this->languageInPath ? Str::sub(parent::getPathInfo(), Str::length($this->language) + 1) : parent::getPathInfo();
         if (!Str::startsWith('/', $route)) {
