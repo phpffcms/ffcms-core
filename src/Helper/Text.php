@@ -21,6 +21,8 @@ class Text
         if ($breakerPos !== false) {
             $text = Str::sub($text, 0, $breakerPos);
         } else { // page breaker is not founded, lets get a fun ;D
+            // strip tags except <p>, <br>
+            $text = strip_tags($text, '<p><br>');
             // find first paragraph ending
             $breakerPos = mb_strpos($text, '</p>', null, 'UTF-8');
             // no paragraph's ? lets try to get <br[\/|*]>

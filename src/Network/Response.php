@@ -25,6 +25,7 @@ class Response extends FoundationResponse
         if (!$full && !Str::startsWith(App::$Alias->baseUrl, $to)) {
             $to = App::$Alias->baseUrl . '/' . $to;
         }
+
         $redirect = new FoundationRedirect($to, $code);
         $redirect->send();
         exit('Redirecting to ' . $to . ' ...');
