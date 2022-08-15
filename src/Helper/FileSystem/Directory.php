@@ -17,7 +17,7 @@ class Directory
      * @param string $path
      * @return bool
      */
-    public static function exist($path)
+    public static function exist($path): bool
     {
         $path = Normalize::diskFullPath($path);
 
@@ -29,7 +29,7 @@ class Directory
      * @param string $path
      * @return bool
      */
-    public static function writable($path)
+    public static function writable($path): bool
     {
         $path = Normalize::diskFullPath($path);
 
@@ -46,7 +46,7 @@ class Directory
      * @param int $chmod
      * @return bool
      */
-    public static function create($path, $chmod = 0755)
+    public static function create($path, $chmod = 0755): bool
     {
         $path = Normalize::diskFullPath($path);
 
@@ -62,7 +62,7 @@ class Directory
      * @param string $path
      * @return bool
      */
-    public static function remove($path)
+    public static function remove($path): bool
     {
         $path = Normalize::diskFullPath($path);
 
@@ -96,7 +96,7 @@ class Directory
 
         if ($returnRelative === true) {
             foreach ($entry as $key => $value) {
-                $entry[$key] = trim(str_replace($path, null, $value), '/');
+                $entry[$key] = trim(str_replace($path, '', $value), '/');
             }
         }
 
@@ -109,7 +109,7 @@ class Directory
      * @param string $newDirName
      * @return bool
      */
-    public static function rename($path, $newDirName)
+    public static function rename($path, $newDirName): bool
     {
         $path = Normalize::diskFullPath($path);
 
@@ -128,9 +128,40 @@ class Directory
     }
 
     /**
+     * Move oldPath to newPath directory
+     * @param string $oldPath
+     * @param string $newPath
+     * @return bool
+     */
+    public static function move($oldPath, $newPath): bool
+    {
+        // normalize old/new path
+        $oldPath = Normalize::diskFullPath($oldPath);
+        $newPath = Normalize::diskFullPath($newPath);
+
+        // check if old path is really exists
+        if (!self::exist($oldPath)) {
+            return false;
+        }
+
+        // check if destination folder root is created or create it
+        $path = rtrim($newPath, DIRECTORY_SEPARATOR);
+        $separatedPath = explode(DIRECTORY_SEPARATOR, $path);
+        array_pop($separatedPath);
+        $clearPath = implode(DIRECTORY_SEPARATOR, $separatedPath);
+        if (!Directory::exist($clearPath)) {
+            Directory::create($clearPath);
+        }
+
+        // make rename & return response
+        return @rename($oldPath, $newPath);
+    }
+
+    /**
      * Change chmod recursive inside defined folder
      * @param string $path
      * @param int $mod
+     * @return void
      */
     public static function recursiveChmod($path, $mod = 0777)
     {
@@ -157,7 +188,7 @@ class Directory
      * @param string $path
      * @return int
      */
-    public static function size($path)
+    public static function size($path): int
     {
         $path = Normalize::diskFullPath($path);
         if (!self::exist($path)) {

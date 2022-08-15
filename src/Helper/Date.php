@@ -114,4 +114,30 @@ class Date
         // just few seconds left, lets return it
         return App::$Translate->get('DateHuman', '%s% seconds ago', ['s' => $deltaSec]);
     }
+
+    /**
+     * Get year from string date
+     * @param string $string
+     * @return int|null
+     */
+    public static function getYear($string = null): ?int
+    {
+        if (!$string) {
+            return null;
+        }
+        return (int)self::convertToDatetime($string, 'Y');
+    }
+
+    /**
+     * Get month from string date
+     * @param string $string
+     * @return int|null
+     */
+    public static function getMonth($string = null): ?int 
+    {
+        if (!$string) {
+            return null;
+        }
+        return (int)self::convertToDatetime($string, 'm');
+    }
 }
