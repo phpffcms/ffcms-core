@@ -316,24 +316,16 @@ trait ModelValidator
         // get root request as array or string
         switch ($method) {
             case 'get':
-                if (is_array($_GET) && array_key_exists($form, $_GET)) {
-                    $request = $_GET[$this->getFormName()];
-                }
+                $request = App::$Request->query->get($form, null);
                 break;
             case 'post':
-                if (is_array($_POST) && array_key_exists($form, $_POST)) {
-                    $request = $_POST[$this->getFormName()];
-                }
+                $request = App::$Request->request->get($form, null);
                 break;
             case 'file':
-                if (is_array($_FILES) && array_key_exists($form, $_FILES)) {
-                    $request = $_FILES[$this->getFormName()];
-                }
+                $request = App::$Request->files->get($form, null);
                 break;
             default:
-                if (is_array($_REQUEST) && array_key_exists($form, $_REQUEST)) {
-                    $request = $_REQUEST[$this->getFormName()];
-                }
+                $request = App::$Request->get($form, null);
                 break;
         }
 

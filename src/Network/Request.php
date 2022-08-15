@@ -6,6 +6,8 @@ use Ffcms\Core\App;
 use Ffcms\Core\Helper\Type\Str;
 use Ffcms\Templex\Url\UrlRepository;
 use Symfony\Component\HttpFoundation\Request as FoundationRequest;
+use Ffcms\Core\Network\Extends\InputBag;
+use Ffcms\Core\Network\Extends\InputBag\InputBag as InputBagInputBag;
 
 /**
  * Class Request. Classic implementation of httpfoundation.request with smooth additions and changes which allow
@@ -53,9 +55,14 @@ class Request extends FoundationRequest
      *
      * @api
      */
-    public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+    public function initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {
-        parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+        parent::initialize([], [], $attributes, [], $files, $server, $content);
+
+        // override InputBag with allowed array-driven access
+        $this->request = new InputBag($request);
+        $this->query = new InputBag($query);
+        $this->cookies = new InputBag($cookies);
 
         $basePath = trim(App::$Properties->get('basePath'), '/');
         if ($basePath !== null && Str::length($basePath) > 0) {
