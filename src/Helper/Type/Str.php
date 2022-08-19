@@ -3,6 +3,7 @@
 
 namespace Ffcms\Core\Helper\Type;
 
+
 /**
  * Class Str. Helper to work with string variables
  * @package Ffcms\Core\Helper\Type
@@ -324,6 +325,26 @@ class Str
     public static function isPhone(?string $string = null): bool
     {
         return (bool)preg_match('/^[+]?([\d]{0,3})?[\(\.\-\s]?([\d]{3})[\)\.\-\s]*([\d]{3})[\.\-\s]?([\d]{4})$/', $string);
+    }
+
+    /**
+     * Check is $string is valid date in format d.m.Y 
+     * @param string $string
+     * @return bool
+     */
+    public static function isDateDmy(?string $string = null): bool
+    {
+        $arr = explode('.', $string);
+        if (count($arr) !== 3) {
+            return false;
+        }
+
+        if (!is_numeric($arr[0]) || !is_numeric($arr[1]) || !is_numeric($arr[2])) {
+            return false;
+        }
+
+        // use checkdate and type override
+        return checkdate((int)$arr[1], (int)$arr[0], (int)$arr[2]);
     }
 
     /**

@@ -174,7 +174,7 @@ class ModelFilters
     /**
      * Filter ['object', 'phone']
      * @param string $object
-     * @return bool|int
+     * @return bool
      */
     public static function phone($object): bool
     {
@@ -187,6 +187,16 @@ class ModelFilters
         }
 
         return Str::isPhone($object);
+    }
+
+    /**
+     * Filter ['object', 'datedmy']
+     * @param string $object
+     * @return bool
+     */
+    public static function datedmy($object): bool
+    {
+        return Str::isDateDmy($object);
     }
 
     /**
