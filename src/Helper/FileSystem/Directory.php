@@ -109,9 +109,6 @@ class Directory
             });
         }
 
-        var_dump($entry);
-        //exit();
-
         return $entry;
     }
 
