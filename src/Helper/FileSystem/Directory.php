@@ -2,6 +2,8 @@
 
 namespace Ffcms\Core\Helper\FileSystem;
 
+use Ffcms\Core\Helper\Date;
+use Ffcms\Core\Helper\Type\Str;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -80,10 +82,11 @@ class Directory
      * Scan files in directory and return full or relative path
      * @param string $path
      * @param int $mod
-     * @param bool|false $returnRelative
+     * @param bool $returnRelative
+     * @param bool $dateOrder
      * @return array|bool
      */
-    public static function scan($path, $mod = GLOB_ONLYDIR, $returnRelative = false)
+    public static function scan($path, $mod = GLOB_ONLYDIR, $returnRelative = false, $dateOrder = false)
     {
         $path = Normalize::diskFullPath($path);
 
@@ -99,6 +102,15 @@ class Directory
                 $entry[$key] = trim(str_replace($path, '', $value), '/');
             }
         }
+
+        if ($dateOrder) {
+            usort($entry, function($a, $b) { 
+                return Date::convertToTimestamp(Str::cleanExtension($a)) - Date::convertToTimestamp(Str::cleanExtension($b));
+            });
+        }
+
+        var_dump($entry);
+        //exit();
 
         return $entry;
     }
