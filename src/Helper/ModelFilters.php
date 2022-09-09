@@ -194,8 +194,13 @@ class ModelFilters
      * @param string $object
      * @return bool
      */
-    public static function datedmy($object): bool
+    public static function datedmy($object = null): bool
     {
+        // do not process empty lines
+        if (Str::likeEmpty($object)) {
+            return true;
+        }
+
         return Str::isDateDmy($object);
     }
 
